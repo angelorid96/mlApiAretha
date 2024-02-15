@@ -1,0 +1,158 @@
+<?php
+// namespace aretha\plugins;
+class mlApi
+{
+
+    private static $iniFilePath        = "app.ini";
+    private static $isIniFile          = false;
+    private static $confapiML = null;
+
+    public function __construct()
+    {
+    }
+    public static function allErrors()
+    {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+    }
+    //===================================================================================================
+    //===================================================================================================
+    //  Load id app and secret id API ML
+    //===================================================================================================
+    //===================================================================================================
+    public static function init($iniFile = "")
+    {
+        mlApi::$list_endPoints = json_decode(file_get_contents('/xampp/htdocs/MlAretha/arethafw/plugins/ml/conf/endPoint.json'), true);
+        if (trim($iniFile) != "" && mlApi::endsWith($iniFile, ".ini")) {
+            if (is_file($iniFile)) {
+                mlApi::$confapiML = parse_ini_file($iniFile, true);
+                mlApi::$isIniFile = true;
+            }
+        } else {
+            if (is_file(mlApi::$iniFilePath)) {
+                mlApi::$confapiML = parse_ini_file(mlApi::$iniFilePath, true);
+                mlApi::$isIniFile = true;
+            }
+        }
+
+        if (mlApi::$isIniFile) {
+            if (isset(mlApi::$confapiML['api_settings']['default'])) {
+                $default = mlApi::$confapiML['api_settings']['default'];
+
+                mlApi::$cliend_id = mlApi::$confapiML['api_settings'][$default]['id'];
+                mlApi::$cliend_secret = mlApi::$confapiML['api_settings'][$default]['secret'];
+                mlApi::$url_redirect = mlApi::$confapiML['api_settings'][$default]['url_redirect'];
+            }
+        }
+    }
+    //===================================================================================================
+    //===================================================================================================
+    // Data Validators
+    //===================================================================================================
+    //===================================================================================================
+    public static function startsWith($haystack, $needle)
+    {
+        return substr($haystack, 0, strlen($needle)) === $needle;
+    }
+
+    public static function endsWith($haystack, $needle)
+    {
+        return substr($haystack, -strlen($needle)) === $needle;
+    }
+
+
+    //===================================================================================================
+    //===================================================================================================
+    // Vars id app and secret app API ML
+    //===================================================================================================
+    //===================================================================================================
+
+    private static $cliend_id = "";
+    private static $cliend_secret = "";
+    private static $url_redirect = "";
+    private static $list_endPoints = null;
+
+    public static function getClient_id()
+    {
+        return mlApi::$cliend_id;
+    }
+    public static function getClient_secret()
+    {
+        return mlApi::$cliend_secret;
+    }
+    public static function getUrl_redirect()
+    {
+        return mlApi::$url_redirect;
+    }
+    public static function getEndPoint($endPoint)
+    {
+        if (isset(mlApi::$list_endPoints[$endPoint])) {
+            return mlApi::$list_endPoints[$endPoint];
+        }
+        return false;
+    }
+    public static function getUrlAuth($endPoint){
+        return sprintf(mlApi::getEndPoint($endPoint), mlApi::getClient_id(),mlApi::getUrl_redirect());
+    }
+    // ===================================================================================================
+    // ===================================================================================================
+    // request endpoint API ML  -> return array associative
+    // ===================================================================================================
+    // ===================================================================================================
+    // $data_json={
+    //     'endPoint'=> 'name endPoint request',
+    //     'body'=>  'array(key=>parm1,key=>parm2,....)', array asociativo de parametros a remplazar en la url o enviar por body al endpoit
+    //     'method'=>  'get', metodo para realizar solicitud al endpoint
+    //     'access_token'=> 'token', token del cliente si es requerido. si no es requeerido dejar un cadena vacia 
+    // }
+
+    public static function request_endPoint($data_json)
+    {
+        $endPoint=mlApi::getEndPoint($data_json['endpoint']);
+        // echo '<br>';
+        // print_r($endPoint);
+        if(array_key_exists('body',$endPoint)){
+            foreach(array_keys($endPoint['body']) as $key){
+                if($key=='client_id'){
+                    $endPoint['body'][$key]=mlApi::getClient_id();  
+                }else if($key=='client_secret'){
+                    $endPoint['body'][$key]=mlApi::getClient_secret();  
+                }else if(array_key_exists($key,$data_json['body'])){
+                    $endPoint['body'][$key]=$data_json['body'][$key];
+                }
+            }
+        }
+        $urltmp = $endPoint['url'];
+        foreach (array_keys($data_json['body']) as $key) {
+            $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
+        }
+        // echo '<br>';
+        // echo $urltmp; 
+        // echo '<br>';
+        // print_r($endPoint);
+        // echo '<br>';
+        $endPoint['headers']=explode(',',sprintf($endPoint['headers'],$data_json['access_token']));
+        // print_r($endPoint['headers']);
+    
+        // print_r($endPoint);
+        // echo '<br>';
+    
+       
+    
+        $curl = curl_init($urltmp);
+    
+        curl_setopt($curl, CURLOPT_URL,$urltmp);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $endPoint['headers']);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+    
+        if ($data_json['method'] == 'post') {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $endPoint['body']);
+        }
+        $response = curl_exec($curl);
+        curl_close($curl);
+        preg_match('/\{/',$response,$match,PREG_OFFSET_CAPTURE);
+        return json_decode(substr($response,$match[0][1]),true);
+    }
+}
