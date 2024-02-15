@@ -1,17 +1,17 @@
 const apiAuth=(target)=>({
 
-// confDomJson variable json que puede contener los siguientes elementos con los respectivos keys
-// url -> si quiere cargar componentes especificos por medio de un archivo html o php. 
-// html -> envia los componente mediante texto
-// scopes -> envia un array con el nombre del id o class de los elementos para insertar los datos. asegurese de enviar el identificador del contenedor 
-// de interes.
-// Los indetifiacores de los elementos deben ser igual a su EndPoint para facilitar la manipulacion adecuada
-// Respuesta por deafult: incluye un boton en caso de requerir autenticacion y un dropdown que incluye opciones simples
-// En caso de no poder responder a un EndPoint no se agregara nada al elemento... se enviara un consol.log con el error.
+    //isAuth proporciona un menu Nav utilizando bootstrap con los endpoints que quiera mostrar
+    // confDomJson debera contener las siguentes llaves
+    // url: si tiene un archivo template html donde esta contenido su menu
+    // scope: lista de endpoints con los que se generara su menu
+    // orientation: orientacion del menu si existe scope
+    // En caso de no pasar ninguna de las llaves solo se generara el identificador del usurio con una serie de opciones realcionadas a este
+    // defaulMenu valor booleano si decea un menu por default. si no establece orientation sera horizontal
+    // Si no se incluye un identficaro de elemento ID o CLASS. no se mostrara nada.   
     isAuth:(confDomJson)=>{
+        console.log('dasd');
         aretha().post('arethafw/plugins/ml/php/isAuthToken.php',JSON.stringify(confDomJson),(response)=>{
-            data=JSON.parse(response);
-            aretha(target).html(data['isAuth']['html']);
+            console.log(response);
         });
     },
     redirecAuth:()=>{

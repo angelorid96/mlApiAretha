@@ -20,9 +20,10 @@ class apiToken
     {
         $da = new \aretha\dao\DataAccess();
         $query = sprintf(
-            "INSERT INTO api_tokens(user_id,nickname,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s') returning user_id;",
+            "INSERT INTO api_tokens(user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s','%s') returning user_id;",
             $da->escape_string($this->poApiToken->getUser_id()),
             $da->escape_string($this->poApiToken->getNickname()),
+            $da->escape_string($this->poApiToken->getSite_userId()),
             $da->escape_string($this->poApiToken->getAcces_token()),
             $da->escape_string($this->poApiToken->getRefresh_token()),
             $da->escape_string($this->poApiToken->getDateAcces_token()),
@@ -44,7 +45,7 @@ class apiToken
     {
         $da = new \aretha\dao\DataAccess();
         $query = sprintf(
-            "SELECT user_id,nickname,access_token,refresh_token,date_token,date_refresh_token FROM api_tokens WHERE nickname = '%s';",
+            "SELECT user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token FROM api_tokens WHERE nickname = '%s';",
             $da->escape_string($this->poApiToken->getNickname())
         );
 
@@ -57,10 +58,11 @@ class apiToken
                     $oBusinessPO = new \mod_apitoken\plainObjects\apiTokenPO();
                     $oBusinessPO->setUser_id($row[0]);
                     $oBusinessPO->setNickname($row[1]);
-                    $oBusinessPO->setAcces_token($row[2]);
-                    $oBusinessPO->setRefresh_token($row[3]);
-                    $oBusinessPO->setDateAcces_token($row[4]);
-                    $oBusinessPO->setDateRefresh_token($row[5]);
+                    $oBusinessPO->setSite_userID($row[2]);
+                    $oBusinessPO->setAcces_token($row[3]);
+                    $oBusinessPO->setRefresh_token($row[4]);
+                    $oBusinessPO->setDateAcces_token($row[5]);
+                    $oBusinessPO->setDateRefresh_token($row[6]);
                     $arrResult[] = $oBusinessPO;
                 }
             }

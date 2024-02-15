@@ -5,6 +5,7 @@ class apiTokenPO{
 
     private $user_id;
     private $nickname;
+    private $site_user;
     private $acces_token;
     private $refresh_token;
     private $date_acces_token;
@@ -16,6 +17,9 @@ class apiTokenPO{
     }
     public function getNickname(){
         return $this->nickname;
+    }
+    public function getSite_userId(){
+        return $this->site_user;
     }
     public function getAcces_token(){
         return $this->acces_token;
@@ -38,6 +42,9 @@ class apiTokenPO{
     }
     public function setNickname($nickname){
         $this->nickname=$nickname;
+    }
+    public function setSite_userID($site_user){
+        $this->site_user=$site_user;
     }
     public function setAcces_token($acToken){
         $this->acces_token=$acToken;
