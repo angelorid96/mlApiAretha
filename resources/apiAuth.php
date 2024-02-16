@@ -30,8 +30,7 @@ if (isset($_REQUEST['code']) && $_REQUEST['code'] != '') {
 
     $existUser = $oApiToken->existId();
     if ($existUser) {
-        echo '<br>';
-        echo 'debug';
+        header('Location:../');
     }
     // echo $oApiToken->insert();
     if($oApiToken->insert()){

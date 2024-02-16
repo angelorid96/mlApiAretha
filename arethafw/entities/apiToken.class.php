@@ -41,6 +41,36 @@ class apiToken
             return 0;
         }
     }
+    public function selectByUserID()
+    {
+        $da = new \aretha\dao\DataAccess();
+        $query = sprintf(
+            "SELECT user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token FROM api_tokens WHERE user_id = %d;",
+            $da->escape_string($this->poApiToken->getUser_id())
+        );
+
+        if ($da->connect()) {
+            $result = $da->execGetQuery($query);
+            $da->disconnect();
+            $arrResult = array();
+            if ($result != false) {
+                foreach ($result as $row) {
+                    $oBusinessPO = new \mod_apitoken\plainObjects\apiTokenPO();
+                    $oBusinessPO->setUser_id($row[0]);
+                    $oBusinessPO->setNickname($row[1]);
+                    $oBusinessPO->setSite_userID($row[2]);
+                    $oBusinessPO->setAcces_token($row[3]);
+                    $oBusinessPO->setRefresh_token($row[4]);
+                    $oBusinessPO->setDateAcces_token($row[5]);
+                    $oBusinessPO->setDateRefresh_token($row[6]);
+                    $arrResult[] = $oBusinessPO;
+                }
+            }
+            return $arrResult;
+        } else {
+            return false;
+        }
+    }
     public function selectByNickname()
     {
         $da = new \aretha\dao\DataAccess();

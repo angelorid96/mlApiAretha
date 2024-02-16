@@ -28,6 +28,7 @@
         }
     },
     "users": {
+        "title":"none",
         "userID": {
             "name": "Mi informacion",
             "url": "https://api.mercadolibre.com/users/user_id",
@@ -37,11 +38,56 @@
         },
         "payment_methods": {
             "name": "Metodos de pago",
-            "url": "https://api.mercadolibre.com/users/user_id",
+            "url": "https://api.mercadolibre.com/users/user_id/accepted_payment_methods",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "none"
         }
     },
-    "site": {}
+    "site": {
+        "title":"Site Ml",
+        "price": {
+            "name": " Ver precios de venta en ML",
+            "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?price=1",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        },
+        "categories": {
+            "name": "Ver categorías disponibles",
+            "url": "https://api.mercadolibre.com/sites/site_user/categories",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        },  "category": {
+            "name": "ver informacion  de un categoria",
+            "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?price=1",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        }
+    },
+    "q&a": {
+        "title":"Preuntas y Respuestas",
+        "questions":{
+            "name": "Ver preguntas",
+            "url": "https://api.mercadolibre.com/my/received_questions/search",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        }
+    },
+    "shipping": {
+        "title":"Envios",
+        "shipping_methods":{
+            "name": "Ver metodos de envio",
+            "url": "https://api.mercadolibre.com/sites/site_user/shipping_methods",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        }
+    },
+    "products": {
+        "title":"Productos"
+    }
 }

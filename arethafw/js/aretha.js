@@ -300,7 +300,7 @@ const aretha = (q) => ({
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function (data) {
 			if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-				s(xhr);
+				s(xhr.response);
 			}
 		}
 		xhr.onerror = function () {

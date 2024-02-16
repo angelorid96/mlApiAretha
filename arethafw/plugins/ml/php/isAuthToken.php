@@ -14,8 +14,10 @@ $response = array(
     'message'   => "none",
 
 );
-$responseDefault = true;
-$list_endPoints = null;
+$defaultMenu = false;
+$notMenu=false;
+$list_menu_endpoints=null;
+$orientationMenu='horizontal';
 $docHtml = new DOMDocument();
 $tmp_json = json_decode(file_get_contents('php://input'), true);
 if ($tmp_json != null) {
@@ -23,14 +25,25 @@ if ($tmp_json != null) {
         if (is_file($tmp_json['url'])) {
             $docHtml->loadHTMLFile($tmp_json['url']);
         }
-    } else if (key_exists('scope', $tmp_json)) {
-        $list_endPoints = $tmp_json['scope'];
+    }else if (key_exists('defaultMenu', $tmp_json)){
+        $defaultMenu=true;
+        $list_menu_endpoints = mlApi::getNames_endpoints(array('users'));
+        $docHtml->loadHTMLFile('../html/auth.html');
     }
-    $responseDefault = false;
-} else {
-    $docHtml->loadHTMLFile('../html/auth.html');
-}
 
+    if (key_exists('scope', $tmp_json)) {
+        // var_dump($tmp_json['scope']);
+        $list_menu_endpoints = mlApi::getNames_endpoints($tmp_json['scope']);
+        // var_dump($list_menu_endpoints);
+    }
+    if (key_exists('orientation', $tmp_json)) {
+        $orientationMenu=$tmp_json['orientation'];
+    }
+}else{
+    $notMenu=true;
+    $docHtml=null;
+}
+// $docHtml->loadHTMLFile('../html/auth.html');
 function isExpiredAccessToken($date_token)
 {
     $date_now = new DateTime(date("Y-m-d H:i:s"));
@@ -41,7 +54,7 @@ function isExpiredAccessToken($date_token)
 }
 
 if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
-    $response['auth'] = array(
+    $response['urlAuth'] = array(
         'status' => 'success',
         'url' => mlApi::getUrlAuth($_REQUEST['endpoint']),
     );
@@ -52,8 +65,9 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
         $oApiToken = new \mod_apitoken\entities\apiToken();
         $oApiToken->getPO()->setNickname($_SESSION['nickname']);
         $oApiToken->getPO()->setUser_id($_SESSION['user_id']);
-        $existUser = $oApiToken->selectByNickname();
-        $list_menu_endpoints = mlApi::getNames_endpoints(array('users'));
+        // $existUser = $oApiToken->selectByNickname();
+        $existUser = $oApiToken->selectByUserID();
+        
         // var_dump($list_menu_endpoints);
         if (count($existUser) > 0) {
             $oApiTokenTmp = $existUser[0];
@@ -71,24 +85,85 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                     //lanzar modal para volver a logear... activar el boton de nuevo
                 }
             }
-            if ($responseDefault) {
-                $docHtml->getElementById('nickname')->appendChild($docHtml->createTextNode($oApiToken->getPO()->getNickname()));
+            if ($defaultMenu) {
+                if($orientationMenu!='horizontal'){
+                    // echo $orientationMenu;
+                    $docHtml->getElementById('menu')->removeAttribute('class');
+                    $docHtml->getElementById('menu')->setAttribute('class','nav flex-column');
+                }
+                $docHtml->getElementById('dropdown_user')->insertBefore($docHtml->createTextNode($oApiToken->getPO()->getNickname()));
+                // var_dump($list_menu_endpoints);
                 foreach ($list_menu_endpoints as $key) {
                     foreach ($key as $item) {
+                        // var_dump($item[0]);
                         $item_menu = $docHtml->createElement('a', $item[1]);
                         $item_menu->setAttribute('class', 'dropdown-item');
                         $item_menu->setAttribute('id', $item[0]);
-                        $docHtml->getElementById('list-menu')->appendChild($item_menu);
+                        $docHtml->getElementById('user-menu')->appendChild($item_menu);
                     }
                 }
-            } else if ($list_endPoints != null) {
+            }else{
+                // echo '<br>';  echo '<br>';  echo '<br>';
+                //create Nav struct
+                $nav=$docHtml->createElement('ul');
+                ($orientationMenu!='horizontal')?$nav->setAttribute('class','nav flex-column'):$nav->setAttribute('class','nav');
+                $nav->setAttribute('id','menu');//var_dump($list_menu_endpoints['site'][3][0]);
 
-            } else {
+                foreach (array_keys($list_menu_endpoints) as $key) {
 
+            
+                    $col_item=$docHtml->createElement('div');
+                    $col_item->setAttribute('class','col-md-auto');
+
+                    $li=$docHtml->createElement('li');
+                    $li->setAttribute('class','nav-item');
+                    $dropdown=$docHtml->createElement('div');
+                    $dropdown->setAttribute('class','dropdown');
+                    $dropdown->setAttribute('id',$key);
+                    $button=$docHtml->createElement('button');
+                    $button->setAttribute('class','btn btn-secondary dropdown-toggle');
+                    $button->setAttribute('type','button');
+                    $button->setAttribute('id',sprintf('dropdown_%s',$key));
+                    $button->setAttribute('data-bs-toggle','dropdown');
+                    $button->setAttribute('aria-expanded','false');
+                    // $button->setAttribute('style','width: 100%;');
+                    $ul=$docHtml->createElement('ul');
+                    $ul->setAttribute('class','dropdown-menu');
+                    $ul->setAttribute('aria-labelledby',sprintf('dropdown_%s',$key));
+                    // $ul->setAttribute('style','width: 100%;');
+                    foreach ($list_menu_endpoints[$key] as $item) {
+                      if($item[0]=='title'){
+                        $button->appendChild($docHtml->createTextNode($item[1]));  
+                      }else{
+                        $li_item=$docHtml->createElement('li');
+                        $a_item=$docHtml->createElement('a');
+                        $a_item->appendChild($docHtml->createTextNode($item[1]));
+                        $a_item->setAttribute('class','dropdown-item');
+                        $a_item->setAttribute('id',$item[0]);
+
+                        $li_item->appendChild($a_item);
+                        $ul->appendChild($li_item);
+                      }
+                    }
+                    if($key=='users'){
+                        $nickname = $docHtml->createElement('h9');
+                        $nickname->appendChild($docHtml->createTextNode($oApiToken->getPO()->getNickname()));
+                        $i_icon = $docHtml->createElement('i');
+                        $i_icon->setAttribute('class', 'bi bi-person-fill');
+                        $nickname->appendChild($i_icon);
+                        $button->appendChild($nickname);
+                    }
+                    $dropdown->appendChild($button);
+                    $dropdown->appendChild($ul);
+                    $li->appendChild($dropdown);
+                    $col_item->appendChild($li);
+                    $nav->appendChild($col_item);
+                }
+                 $docHtml->appendChild($nav);
             }
-            // $menu=preg_replace('[\n|\r|\n\r|\t|\0|\x0B]', '', trim($docHtml->saveHTML()));
-            // echo $menu;
-            $response['isAuth']['html'] =$docHtml->saveHTML();
+           
+           
+            $response['isAuth']['html']=$docHtml->saveHTML($docHtml->getElementById('menu'));
         }
     } else {
         $response['isAuth'] = array(
@@ -102,3 +177,5 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
 }
 
 echo json_encode($response);
+
+?>
