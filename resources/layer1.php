@@ -12,7 +12,7 @@ Aretha::sessionStart();
                     <div class="col-md-5" id="user">
                         <h5>Admin ML</h5>
                     </div>
-                  
+
                     <div class="col-md-auto" id='auth'>
 
                     </div>
@@ -23,29 +23,24 @@ Aretha::sessionStart();
 </div>
 
 <script type="text/javascript">
-    apiAuth('#auth').isAuth({scope:['site','q&a','shipping','products','users']});
+    apiAuth('#auth').isAuth({
+        scope: ['site', 'q&a', 'shipping', 'products', 'users']
+    });
     $('body').off('click', '#authML');
     $('body').on('click', '#authML', (e) => {
         e.preventDefault();
         apiAuth('#content').redirecAuth();
-        // aretha().get({
-        // 			"url":"resources/apiAuth.php",
-        // 			"data":`State=${$('#authML').val()}`,
-        // 			"useNotFoundPage": true,
-        // 			"notFoundPage": 'arethafw/html/404.html',
-        // 			success: function (data) {
-        //                 const response=JSON.parse(data);
-        //                 if(response.State=='redic'){
-        //                     // console.log(response.url);
-        //                     window.open(response.url,'_self');
-        //                 }else{
-
-        //                 }
-        //                 // console.log();
-        // 			},
-        // 			notfound: function (xhr) {
-        // 				aretha('#content').html(xhr);
-        // 			}
-        // 		});
+    });
+    $('body').off('click', '#userID');
+    $('body').on('click', '#userID', (e) => {
+        e.preventDefault();
+        apiAuth('#content').requestEndPoint({
+            EndPoint:{
+                endpoint_parent: 'users',
+            endpointChild: 'userID',
+            },
+            urlPage:'html/userInfo.html',
+            listIdPage:{},
+        });
     });
 </script>

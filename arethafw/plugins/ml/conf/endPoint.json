@@ -34,14 +34,14 @@
             "url": "https://api.mercadolibre.com/users/user_id",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "user_id"
         },
         "payment_methods": {
             "name": "Metodos de pago",
             "url": "https://api.mercadolibre.com/users/user_id/accepted_payment_methods",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "user_id"
         }
     },
     "site": {
@@ -51,20 +51,20 @@
             "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?price=1",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "site_user"
         },
         "categories": {
             "name": "Ver categorías disponibles",
             "url": "https://api.mercadolibre.com/sites/site_user/categories",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "site_user"
         },  "category": {
             "name": "ver informacion  de un categoria",
             "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?price=1",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "site_user"
         }
     },
     "q&a": {
@@ -84,7 +84,7 @@
             "url": "https://api.mercadolibre.com/sites/site_user/shipping_methods",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "site_user"
         }
     },
     "products": {

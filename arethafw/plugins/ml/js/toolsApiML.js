@@ -8,19 +8,30 @@ const apiAuth=(target)=>({
     // En caso de no pasar ninguna de las llaves solo se generara el identificador del usurio con una serie de opciones realcionadas a este
     // defaultMenu valor booleano si decea un menu por default. si no establece orientation sera horizontal
     // Si no se incluye un identficaro de elemento ID o CLASS. no se mostrara nada.   
-    isAuth:(confDomJson)=>{
+    isAuth:async(confDomJson)=>{
 
-        fetch('arethafw/plugins/ml/php/isAuthToken.php',{
+        // fetch('arethafw/plugins/ml/php/isAuthToken.php',{
+        //     method:'POST',
+        //     headers:{
+        //         'Content-Type':'application/x-www-form-urlencoded'
+        //     },
+        //     body:JSON.stringify(confDomJson),
+        // }).then((response)=>response.json())
+        // .then((body)=>{
+        //     console.log(body);
+        //     aretha(target).html(body['isAuth']['html']);
+        // });  
+        const response= await fetch('arethafw/plugins/ml/php/isAuthToken.php',{
             method:'POST',
             headers:{
                 'Content-Type':'application/x-www-form-urlencoded'
             },
             body:JSON.stringify(confDomJson),
-        }).then((response)=>response.json())
-        .then((body)=>{
-            console.log(body);
-            aretha(target).html(body['isAuth']['html']);
-        });   
+        });
+        const data =await response.json();
+
+        aretha(target).html(data['isAuth']['html']);
+        
         // aretha().post('arethafw/plugins/ml/php/isAuthToken.php',JSON.stringify(confDomJson),(response)=>{
         //     console.log(response);
         // });
@@ -43,5 +54,29 @@ const apiAuth=(target)=>({
                 aretha(target).html(xhr);
             }
         });
-    }
+    },
+    post:async(json_data)=>{
+        const response=await fetch('arethafw/plugins/ml/php/requestEndPoint.php',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(json_data),
+        });
+        // console.log(response);
+       const data= await response.json();
+        return data;
+    },
+    requestEndPoint:async(json_data)=>{
+        // let data=await apiAuth().post(json_data);
+        // console.log(data.status);
+        if(typeof document.getElementById(target) === 'object'){
+           if(json_data.defaultPage){
+                console.log('mostrando pagina defualt');
+           }
+        }
+        
+
+        // return data;
+    },
 });

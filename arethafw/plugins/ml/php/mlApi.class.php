@@ -126,6 +126,15 @@ class mlApi
         // var_dump($tmpKeys_menu);
         return $tmpKeys_menu;
     }
+    public static function data_required($endPoint_parent, $endPoint){
+         // echo $endPoint;
+         if (key_exists($endPoint_parent, mlApi::$list_endPoints) && key_exists($endPoint, mlApi::$list_endPoints[$endPoint_parent])) {
+            if(mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required']!='none'){
+                return explode(',',mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required']);
+            }
+        }
+        return false;
+    }
     // ===================================================================================================
     // ===================================================================================================
     // request endpoint API ML  -> return array associative
@@ -183,25 +192,34 @@ class mlApi
 
 
             $curl = curl_init($urltmp);
-
             curl_setopt($curl, CURLOPT_URL, $urltmp);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $endPoint['headers']);
             curl_setopt($curl, CURLOPT_HEADER, true);
 
-            if ($data_json['method'] == 'post') {
+            if ($endPoint['method'] == 'POST') {
+                curl_setopt($curl, CURLOPT_POST, true);
+            }else if ($endPoint['method'] == 'PUT') {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');           
+            }else if ($endPoint['method'] == 'DELETE') {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+            }
+
+            if ($endPoint['method'] != 'GET') {
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $endPoint['body']);
             }
-            $response = curl_exec($curl);
 
-            // var_dump($response);
+
+            $response = curl_exec($curl);
+            // echo '<br>';
+            // var_dump($endPoint);
             curl_close($curl);
             preg_match('/\{/', $response, $match, PREG_OFFSET_CAPTURE);
+            $response['nameEndPoint']=$endPoint['name'];
             return json_decode(substr($response, $match[0][1]), true);
         }
 
-        return array(
-            $data_json['endpoint_parent'] => array(
+        return array('reject'=>array(
                 'status' => 'fail',
                 'error' => sprintf('Invalid:%s  no encontrado en %s', $data_json['endpointChild'], $data_json['endpoint_parent'])
             ),
