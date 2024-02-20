@@ -37,10 +37,13 @@ Aretha::sessionStart();
         apiAuth('#content').requestEndPoint({
             EndPoint:{
                 endpoint_parent: 'users',
-            endpointChild: 'userID',
+                endpointChild: 'userID',
             },
             urlPage:'html/userInfo.html',
-            listIdPage:{},
+            listIdPage:{
+                'card-header-name':['first_name','last_name'],
+                'data-email':'email',
+            },
         });
     });
 </script>

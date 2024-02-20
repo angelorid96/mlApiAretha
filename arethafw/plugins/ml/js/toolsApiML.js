@@ -68,7 +68,7 @@ const apiAuth=(target)=>({
         return data;
     },
     requestEndPoint:async(json_data)=>{
-        // let data=await apiAuth().post(json_data);
+        // let data=await apiAuth().post(json_data.EndPoint);
         // console.log(data.status);
         if(typeof document.getElementById(target) === 'object'){
            if(json_data.defaultPage){
