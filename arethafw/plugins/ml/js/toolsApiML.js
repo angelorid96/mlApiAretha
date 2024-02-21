@@ -1,4 +1,4 @@
-const apiAuth=(target)=>({
+const apiML=(target)=>({
 
     //isAuth proporciona un menu Nav utilizando bootstrap con los endpoints que quiera mostrar
     // confDomJson debera contener las siguentes llaves
@@ -10,27 +10,27 @@ const apiAuth=(target)=>({
     // Si no se incluye un identficaro de elemento ID o CLASS. no se mostrara nada.   
     isAuth:async(confDomJson)=>{
 
-        // fetch('arethafw/plugins/ml/php/isAuthToken.php',{
-        //     method:'POST',
-        //     headers:{
-        //         'Content-Type':'application/x-www-form-urlencoded'
-        //     },
-        //     body:JSON.stringify(confDomJson),
-        // }).then((response)=>response.json())
-        // .then((body)=>{
-        //     console.log(body);
-        //     aretha(target).html(body['isAuth']['html']);
-        // });  
-        const response= await fetch('arethafw/plugins/ml/php/isAuthToken.php',{
+        fetch('arethafw/plugins/ml/php/isAuthToken.php',{
             method:'POST',
             headers:{
                 'Content-Type':'application/x-www-form-urlencoded'
             },
             body:JSON.stringify(confDomJson),
-        });
-        const data =await response.json();
+        }).then((response)=>response.json())
+        .then((body)=>{
+            console.log(body);
+            aretha(target).html(body['isAuth']['html']);
+        });  
+        // const response= await fetch('arethafw/plugins/ml/php/isAuthToken.php',{
+        //     method:'POST',
+        //     headers:{
+        //         'Content-Type':'application/x-www-form-urlencoded'
+        //     },
+        //     body:JSON.stringify(confDomJson),
+        // });
+        // const data =await response.json();
 
-        aretha(target).html(data['isAuth']['html']);
+        // aretha(target).html(data['isAuth']['html']);
         
         // aretha().post('arethafw/plugins/ml/php/isAuthToken.php',JSON.stringify(confDomJson),(response)=>{
         //     console.log(response);
@@ -68,15 +68,21 @@ const apiAuth=(target)=>({
         return data;
     },
     requestEndPoint:async(json_data)=>{
-        // let data=await apiAuth().post(json_data.EndPoint);
-        // console.log(data.status);
-        if(typeof document.getElementById(target) === 'object'){
-           if(json_data.defaultPage){
-                console.log('mostrando pagina defualt');
-           }
+        let data=await apiML().post(json_data);
+        console.log(data);
+
+        if(data.status=='warning'){
+            
+        }else{
+            if(typeof document.getElementById(target) === 'object'){
+                if(json_data.urlPage){
+                    if(data.status=='success'){
+                         aretha(target).html(data.html);
+                    }
+                }
+             }
         }
         
-
-        // return data;
-    },
+        return data.endpoint_data;
+    }
 });

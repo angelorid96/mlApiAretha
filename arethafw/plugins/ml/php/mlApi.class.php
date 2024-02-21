@@ -215,8 +215,9 @@ class mlApi
             // var_dump($endPoint);
             curl_close($curl);
             preg_match('/\{/', $response, $match, PREG_OFFSET_CAPTURE);
+            $response=json_decode(substr($response, $match[0][1]), true);
             $response['nameEndPoint']=$endPoint['name'];
-            return json_decode(substr($response, $match[0][1]), true);
+            return $response;
         }
 
         return array('reject'=>array(
