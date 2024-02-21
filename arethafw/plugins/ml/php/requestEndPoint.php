@@ -68,30 +68,8 @@ if ($tmp_json != null) {
                     }
                 }
             }
-            // echo '<br>';
-            // var_dump($tmp_json);
-            // $response_endpoint = array(
-            //     "first_name" => "Pedro",
-            //     "last_name" => "Picapiedras",
-            //     "country_id" => "AR",
-            //     "email" => "test_user_15879541@testuser.com",
-            //     "identification" => array(
-            //         "type" => "CURP",
-            //         "number" => "CADODA45435B34"
-            //     ), "address" => array(
-            //         "state" => "Veracruz",
-            //         "city" => "córdoba",
-            //         "address" => "calle 32 av 434 col centro #6546",
-            //         "zip_code" => "94587"
-            //     ),
-            //     "phone" => array(
-            //         "area_code" => "011",
-            //         "number" => "4444-4444",
-            //         "extension" => "001",
-            //         "verified" => false
-            //     ),
-            // );
-
+        
+            var_dump($tmp_json['EndPoint']);
             $response_endpoint = mlApi::request_endPoint($tmp_json['EndPoint']);
 
             if (key_exists('error', $response_endpoint)) {

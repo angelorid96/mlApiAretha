@@ -178,16 +178,16 @@ class mlApi
             foreach (array_keys($data_json['body']) as $key) {
                 $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
             }
-            // echo '<br>';
-            // echo $urltmp; 
-            // echo '<br>';
+            echo '<br>';
+            echo $urltmp; 
+            echo '<br>';
             // print_r($endPoint);
             // echo '<br>';
             $endPoint['headers'] = explode(',', sprintf($endPoint['headers'], $data_json['access_token']));
             // print_r($endPoint['headers']);
 
-            // var_dump($endPoint);
-            // echo '<br>';
+            var_dump($endPoint);
+            echo '<br>';
 
 
 

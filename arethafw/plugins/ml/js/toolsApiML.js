@@ -9,32 +9,24 @@ const apiML=(target)=>({
     // defaultMenu valor booleano si decea un menu por default. si no establece orientation sera horizontal
     // Si no se incluye un identficaro de elemento ID o CLASS. no se mostrara nada.   
     isAuth:async(confDomJson)=>{
-
-        fetch('arethafw/plugins/ml/php/isAuthToken.php',{
+        const response= await fetch('arethafw/plugins/ml/php/isAuthToken.php',{
             method:'POST',
             headers:{
                 'Content-Type':'application/x-www-form-urlencoded'
             },
             body:JSON.stringify(confDomJson),
-        }).then((response)=>response.json())
-        .then((body)=>{
-            console.log(body);
-            aretha(target).html(body['isAuth']['html']);
-        });  
-        // const response= await fetch('arethafw/plugins/ml/php/isAuthToken.php',{
-        //     method:'POST',
-        //     headers:{
-        //         'Content-Type':'application/x-www-form-urlencoded'
-        //     },
-        //     body:JSON.stringify(confDomJson),
-        // });
-        // const data =await response.json();
-
-        // aretha(target).html(data['isAuth']['html']);
-        
-        // aretha().post('arethafw/plugins/ml/php/isAuthToken.php',JSON.stringify(confDomJson),(response)=>{
-        //     console.log(response);
-        // });
+        });
+        const data =await response.json();
+        console.log(data);
+        if(typeof document.getElementById(target) === 'object'){
+            if('html' in data.isAuth){
+                aretha(target).html(aretha(target).html()+data['isAuth']['html']);
+            }else{
+                return data.isAuth;
+            }
+        }else{
+            return data.isAuth;
+        }
     },
     redirecAuth:()=>{
         aretha().get({
@@ -55,29 +47,48 @@ const apiML=(target)=>({
             }
         });
     },
-    post:async(json_data)=>{
-        const response=await fetch('arethafw/plugins/ml/php/requestEndPoint.php',{
+    post:async(json_data,url,target_op,innet_id=false)=>{
+        const response=await fetch(url,{
             method:'POST',
             headers:{
                 'Content-Type': 'application/json'
             },
             body:JSON.stringify(json_data),
         });
-        // console.log(response);
-       const data= await response.json();
-        return data;
+        const data= await (await response.clone()).text();
+        // console.log(data);
+        if(innet_id){
+            // console.log(typeof target_op!=="undefined");
+            if( typeof target!=='undefined'){
+                aretha(target).html(data);
+            }else if(typeof target_op!=='undefined'){
+                aretha(target_op).html(data);
+            }
+        }else{
+            const data_json= await response.json();
+
+            return data_json;
+        }
     },
     requestEndPoint:async(json_data)=>{
-        let data=await apiML().post(json_data);
-        console.log(data);
+        let data=await apiML().post(json_data,'arethafw/plugins/ml/php/requestEndPoint.php');
+        // console.log(data);
 
         if(data.status=='warning'){
+            aretha('#error-title').html('Error al obtener informacion!');
+            aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.message}</p>`);
+            document.getElementById('card-error').style.visibility='visible';
+
             
+            setTimeout(() => {
+                document.getElementById('card-error').style.visibility='hidden';
+            },9000);
         }else{
             if(typeof document.getElementById(target) === 'object'){
                 if(json_data.urlPage){
                     if(data.status=='success'){
                          aretha(target).html(data.html);
+                         document.getElementById(target.replace('#','')).style.visibility='visible';
                     }
                 }
              }

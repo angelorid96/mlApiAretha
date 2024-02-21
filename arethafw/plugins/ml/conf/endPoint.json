@@ -89,6 +89,26 @@
     },
     "products": {
         "title":"Productos",
-        "":""
+        "view":{
+            "name": "Ver producto",
+            "url": "https://api.mercadolibre.com/items/item_id",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "item_id"
+        },
+        "publish":{
+            "name": "Publicar producto",
+            "url": "https://api.mercadolibre.com/items",
+            "headers": "Authorization: Bearer %s",
+            "method": "POST",
+            "required": "none"
+        },
+        "predict":{
+            "name": "Predecier categoria",
+            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&search?q=q_char",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "site_user"
+        }
     }
 }

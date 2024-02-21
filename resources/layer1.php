@@ -8,102 +8,116 @@ Aretha::sessionStart();
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-5" id="user">
+                    <div class="col-auto" id="user">
                         <h5>Admin ML</h5>
                     </div>
-
                     <!-- <div class="col-md-auto offset-md-4" id='auth'> -->
-                    <div class="col-md-auto offset-md-3" id='auth'>
-
+                    <div class="col-auto offset-8 p-0" id='auth'>
+                        <ul class="nav" id="menu">
+                            <div class="col-md-auto">
+                                <li class="nav-item">
+                                    <div class="dropdown" id="products"><button class="btn btn-secondary dropdown-toggle" type="button" id="dropdown_products" data-bs-toggle="dropdown" aria-expanded="false">Productos</button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdown_products">
+                                            <li><a class="dropdown-item" id="list_products" class-endpoint="products">Listar productos</a></li>
+                                            <li><a class="dropdown-item" id="publish" class-endpoint="products">Publicar producto</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="row p-3">
-    <div class="col-sm">
-        <div class="card" id="body-api">
+<div class="row pt-5">
+    <div class="col-md-12">
+        <div class="card" id="body-api" style="visibility:hidden;">
 
         </div>
     </div>
 </div>
 <div class="row p-3">
-    <div class="col-sm">
-        <div class="card text-white bg-warning mb-3" >
-        <div class="card-header">Header</div>
-        <div class="card-body">
-            <h5 class="card-title">Warning card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <div class="col-md-12">
+        <div class="card border-warning" id="card-error" style="visibility:hidden;">
+            <div class="card-header text-center h5" id="error-title">Error al llamar recuerso</div>
+            <div class="card-body text-warning" id="error-body">
+                <!-- <p class="card-text"></p> -->
+            </div>
         </div>
     </div>
 </div>
-</div>
-< <script type="text/javascript">
-    apiML('#auth').isAuth({
-    // defaultMenu:true,
-    scope: ['site','products', 'users']
+<script type="text/javascript">
+    apiML('#menu').isAuth({
+        defaultMenu:true,
+        // scope: ['site', 'products', 'users']
     });
     $('body').off('click', '#authML');
     $('body').on('click', '#authML', (e) => {
-    e.preventDefault();
-    apiAuth('#content').redirecAuth();
+        e.preventDefault();
+        apiAuth('#content').redirecAuth();
     });
     $('body').off('click', '#userID');
     $('body').on('click', '#userID', (e) => {
-    e.preventDefault();
-    apiML('#body-api').requestEndPoint({
-    EndPoint: {
-    endpoint_parent: 'users',
-    endpointChild: 'userID',
-    },
-    urlPage: 'html/userInfo.html',
-    listIdPage: {
-    'card-header-name': ['first_name', 'last_name'],
-    'data-email': 'email',
-    'data-tel': {
-    'phone': 'number'
-    },
-    'data-dni': {
-    'identification': 'number'
-    },
-    'data-dir1': {
-    'address': 'address'
-    },
-    'data-dir2': {
-    'address': ['city', 'state', 'zip_code']
-    },
-    },
+        e.preventDefault();
+        apiML('#body-api').requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'users',
+                endpointChild: 'userID',
+            },
+            urlPage: 'html/userInfo.html',
+            listIdPage: {
+                'card-header-name': ['first_name', 'last_name'],
+                'data-email': 'email',
+                'data-tel': {
+                    'phone': 'number'
+                },
+                'data-dni': {
+                    'identification': 'number'
+                },
+                'data-dir1': {
+                    'address': 'address'
+                },
+                'data-dir2': {
+                    'address': ['city', 'state', 'zip_code']
+                },
+            },
+        });
     });
+    $('body').off('click', '#publish');
+    $('body').on('click', '#publish', (e) => {
+        e.preventDefault();
+        apiML().post({
+               EndPoint: {
+                endpoint_parent: 'products',
+                endpointChild: 'publish',
+               },
+        },'resources/layer2.php','#body-api',true);
+        document.getElementById('body-api').style.visibility='visible';
+        // apiML('#body-api').requestEndPoint({
+        //     EndPoint: {
+        //         endpoint_parent: 'users',
+        //         endpointChild: 'userID',
+        //     },
+        //     urlPage: 'html/userInfo.html',
+        //     listIdPage: {
+        //         'card-header-name': ['first_name', 'last_name'],
+        //         'data-email': 'email',
+        //         'data-tel': {
+        //             'phone': 'number'
+        //         },
+        //         'data-dni': {
+        //             'identification': 'number'
+        //         },
+        //         'data-dir1': {
+        //             'address': 'address'
+        //         },
+        //         'data-dir2': {
+        //             'address': ['city', 'state', 'zip_code']
+        //         },
+        //     },
+        // });
     });
-    $('body').off('click', '#category');
-    $('body').on('click', '#category', (e) => {
-    e.preventDefault();
-    apiML().requestEndPoint({
-    EndPoint: {
-    endpoint_parent: 'site',
-    endpointChild: 'category',
-    body:{
-    category_id:'MLA572598',
-    },
-    },
-    // urlPage: 'html/userInfo.html',
-    // listIdPage: {
-    // 'card-header-name': ['first_name', 'last_name'],
-    // 'data-email': 'email',
-    // 'data-tel': {
-    // 'phone': 'number'
-    // },
-    // 'data-dni': {
-    // 'identification': 'number'
-    // },
-    // 'data-dir1': {
-    // 'address': 'address'
-    // },
-    // 'data-dir2': {
-    // 'address': ['city', 'state', 'zip_code']
-    // },
-    // },
-    });
-    });
-    </script>
+    
+</script>
