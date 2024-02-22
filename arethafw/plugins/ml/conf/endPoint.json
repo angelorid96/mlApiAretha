@@ -105,7 +105,7 @@
         },
         "predict":{
             "name": "Predecier categoria",
-            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&search?q=q_char",
+            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&q=q_char",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"

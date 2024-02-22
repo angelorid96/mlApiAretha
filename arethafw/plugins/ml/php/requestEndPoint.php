@@ -69,7 +69,7 @@ if ($tmp_json != null) {
                 }
             }
         
-            var_dump($tmp_json['EndPoint']);
+            // var_dump($tmp_json['EndPoint']);
             $response_endpoint = mlApi::request_endPoint($tmp_json['EndPoint']);
 
             if (key_exists('error', $response_endpoint)) {

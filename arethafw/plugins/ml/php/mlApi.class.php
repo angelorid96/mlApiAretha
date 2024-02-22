@@ -178,16 +178,16 @@ class mlApi
             foreach (array_keys($data_json['body']) as $key) {
                 $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
             }
-            echo '<br>';
-            echo $urltmp; 
-            echo '<br>';
+            // echo '<br>';
+            // echo $urltmp; 
+            // echo '<br>';
             // print_r($endPoint);
             // echo '<br>';
             $endPoint['headers'] = explode(',', sprintf($endPoint['headers'], $data_json['access_token']));
             // print_r($endPoint['headers']);
 
-            var_dump($endPoint);
-            echo '<br>';
+            // var_dump($endPoint);
+            // echo '<br>';
 
 
 
@@ -211,12 +211,31 @@ class mlApi
 
 
             $response = curl_exec($curl);
+            
             // echo '<br>';
-            // var_dump($endPoint);
+            // var_dump($response);
+              
+            
             curl_close($curl);
-            preg_match('/\{/', $response, $match, PREG_OFFSET_CAPTURE);
-            $response=json_decode(substr($response, $match[0][1]), true);
-            $response['nameEndPoint']=$endPoint['name'];
+            preg_match('/(\{.*?)$/', $response, $json_matches);
+            // echo '<br>';
+            $response_str=$json_matches[0];
+            // var_dump($response_str);
+            
+            if($response_str[strlen($response_str)-1]==']'){
+                // echo '<br>';
+                $response_str=substr($response_str,0,strlen($response_str)-1);
+            }
+
+            $response=json_decode($response_str,true);
+
+
+            if(key_exists('name',$endPoint)){
+                $response['nameEndPoint']=$endPoint['name'];
+            }
+
+            // echo '<br>';
+            // var_dump($response);
             return $response;
         }
 
