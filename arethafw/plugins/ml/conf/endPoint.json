@@ -109,6 +109,20 @@
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"
+        },
+        "categories":{
+            "name": "Categorias disponibles en el sitio",
+            "url": "https://api.mercadolibre.com/sites/site_user/categories",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "site_user"
+        },
+        "category":{
+            "name": "Informacion de un categoria",
+            "url": "https://api.mercadolibre.com/categories/category_id/attributes",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
         }
     }
 }

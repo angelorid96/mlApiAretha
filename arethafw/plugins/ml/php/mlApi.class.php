@@ -218,18 +218,26 @@ class mlApi
             
             curl_close($curl);
             preg_match('/(\{.*?)$/', $response, $json_matches);
-            // echo '<br>';
             $response_str=$json_matches[0];
+            // echo '<br>';
             // var_dump($response_str);
             
             if($response_str[strlen($response_str)-1]==']'){
                 // echo '<br>';
-                $response_str=substr($response_str,0,strlen($response_str)-1);
+                // $response_str=substr($response_str,0,strlen($response_str)-1);
+                $response_str=sprintf('[%s',$response_str);
             }
+            $response_str=sprintf('{"data":%s}',$response_str);
+            // echo '<br>';
+            // var_dump($response_str);
+            // echo '<br>';
+            // var_dump(json_decode($response_str,true));
+              
+
 
             $response=json_decode($response_str,true);
 
-
+            
             if(key_exists('name',$endPoint)){
                 $response['nameEndPoint']=$endPoint['name'];
             }

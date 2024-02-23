@@ -55,7 +55,7 @@ const apiML=(target)=>({
             },
             body:JSON.stringify(json_data),
         });
-        const data= await (await response.clone()).text();
+        const data= await response.text();
         // console.log(data);
         if(innet_id){
             // console.log(typeof target_op!=="undefined");
@@ -65,9 +65,9 @@ const apiML=(target)=>({
                 aretha(target_op).html(data);
             }
         }else{
-            const data_json= await response.json();
-
-            return data_json;
+            
+            
+            return JSON.parse(data);
         }
     },
     requestEndPoint:async(json_data)=>{
@@ -93,7 +93,7 @@ const apiML=(target)=>({
                 }
              }
         }
-        
+       
         return data.endpoint_data;
     }
 });
