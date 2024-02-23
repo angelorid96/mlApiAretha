@@ -119,6 +119,13 @@
         },
         "category":{
             "name": "Informacion de un categoria",
+            "url": "https://api.mercadolibre.com/categories/category_id",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        },
+        "attributes":{
+            "name": "Informacion de un categoria",
             "url": "https://api.mercadolibre.com/categories/category_id/attributes",
             "headers": "Authorization: Bearer %s",
             "method": "GET",

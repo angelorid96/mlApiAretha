@@ -39,13 +39,12 @@ if ($isExpireTK['value']) {
                                 </div>
                             </div>
                             <div class="col-md-3 mt-0">
-                                <a class="btn btn-primary disabled" id="predictCategoryBTN" role="button">
+                                <a class="btn btn-primary disabled" id="predictCategoryBTN" role="button" aria-disabled="true">
                                     Predecir Categorias
                                 </a>
                             </div>
                             <div class="col-md-12 mb-0">
                                 <div class="col-md-12 text-center h4" id="error_category" style="visibility:hidden;">
-                                    El campo <strong>Titulo</strong> no se permite vacio.
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -101,13 +100,17 @@ if ($isExpireTK['value']) {
             },
         });
         // console.log(categories);
+        let option_cat_item = document.createElement('option');
+        option_cat_item.setAttribute('value', 'none');
+        option_cat_item.appendChild(document.createTextNode('seleccione categoria'));
+        document.getElementById('category_parent').appendChild(option_cat_item);
         for (let index in categories.data) {
-                // console.log(cat_pre.data[index]);
-                let item = categories.data[index];
-                let option_cat_item=document.createElement('option');
-                option_cat_item.setAttribute('value',`${item['id']}`);
-                option_cat_item.appendChild(document.createTextNode(`${item['name']}`));
-                document.getElementById('category_parent').appendChild(option_cat_item);
+            // console.log(cat_pre.data[index]);
+            let item = categories.data[index];
+            option_cat_item = document.createElement('option');
+            option_cat_item.setAttribute('value', `${item['id']}`);
+            option_cat_item.appendChild(document.createTextNode(`${item['name']}`));
+            document.getElementById('category_parent').appendChild(option_cat_item);
         }
     }
 
@@ -156,9 +159,11 @@ if ($isExpireTK['value']) {
             document.getElementById('view_category').style.visibility = 'hidden';
             input_title.setAttribute('class', input_title.getAttribute('class') + ' border-warning');
             document.getElementById('error_category').style.visibility = 'visible';
+            document.getElementById('error_category').appendChild(document.createTextNode('El campo <strong>Titulo</strong> no se permite vacio.'));
             setTimeout(() => {
                 document.getElementById('error_category').style.visibility = 'hidden';
                 input_title.setAttribute('class', input_title.getAttribute('class').replace('border-warning', ''));
+                document.getElementById('error_category').innerHTML = '';
             }, 5000);
         }
     });
@@ -168,19 +173,64 @@ if ($isExpireTK['value']) {
         let btn_predict = document.getElementById('predictCategoryBTN');
         if (e.target.checked) {
             btn_predict.setAttribute('class', btn_predict.getAttribute('class').replace('disabled', ''));
+            btn_predict.setAttribute('aria-disabled', 'false');
+            document.getElementById('category_parent').disabled = true;
+            document.getElementById('category_child').disabled = true;
         } else {
             btn_predict.setAttribute('class', `${btn_predict.getAttribute('class')} disabled`)
+            btn_predict.setAttribute('aria-disabled', 'true');
             document.getElementById('view_category').innerHTML = '';
             document.getElementById('view_category').style.visibility = 'hidden';
+            document.getElementById('category_parent').disabled = false;
         }
         document.getElementById('predictCategory').setAttribute('class', document.getElementById('predictCategory').getAttribute('class').replace('show', ''))
     });
     $('body').off('change', '#category_parent');
-    $('body').on('change', '#category_parent', (e) => {
+    $('body').on('change', '#category_parent', async (e) => {
         // e.preventDefault();
-        console.log(e);
-        document.getElementById('category_child').disabled=false;
-        let index_select=e.target.options.selectedIndex
-        let item_select=e.target.options[index_select];
+        // console.log(e);
+        document.getElementById('category_child').disabled = false;
+        let index_select = e.target.options.selectedIndex
+        let item_select = e.target.options[index_select];
+        // console.log(item_select.value);
+        if (item_select.value != 'none') {
+            let category = await apiML('#body-api').requestEndPoint({
+                EndPoint: {
+                    endpoint_parent: 'products',
+                    endpointChild: 'category',
+                    body: {
+                        category_id: item_select.value,
+                    }
+                },
+            });
+            console.log(category);
+            let max_length_title=category.data.settings.max_title_length;
+            let title=document.getElementById('title');
+            title.setAttribute('maxlength',`${max_length_title}`);
+            // console.log(title.value);
+            if(title.value.length>max_length_title){
+                document.getElementById('error_category').style.visibility = 'visible';
+                document.getElementById('error_category').appendChild(document.createTextNode(`Esta categoria solo acepta ${max_length_title} caracteres.`));
+            }
+            document.getElementById('category_child').innerHTML = '';
+            let option_cat_item = document.createElement('option');
+            option_cat_item.selected = true;
+            option_cat_item.setAttribute('value', 'none');
+            option_cat_item.appendChild(document.createTextNode('Seleccione una sub categoria'));
+            document.getElementById('category_child').appendChild(option_cat_item);
+            for (let index in category.data.children_categories) {
+                // console.log(cat_pre.data[index]);
+                let item = category.data.children_categories[index];
+                option_cat_item = document.createElement('option');
+                option_cat_item.setAttribute('value', `${item['id']}`);
+                option_cat_item.appendChild(document.createTextNode(`${item['name']}`));
+                document.getElementById('category_child').appendChild(option_cat_item);
+            }
+
+        } else {
+            document.getElementById('category_child').innerHTML = '';
+            document.getElementById('category_child').disabled = true;
+        }
+
     });
 </script>
