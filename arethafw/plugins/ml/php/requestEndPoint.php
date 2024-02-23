@@ -100,7 +100,7 @@ if ($tmp_json != null) {
                                 if (array_is_list($tmp_json['listIdPage'][$key_id])) {
                                     $tmp_list = array();
                                     foreach ($tmp_json['listIdPage'][$key_id] as $val) {
-                                        array_push($tmp_list, $response_endpoint[$val]);
+                                        array_push($tmp_list, $response_endpoint['data'][$val]);
                                     }
                                     // echo 'is list <br>';
                                     // var_dump($tmp_list);
@@ -112,18 +112,18 @@ if ($tmp_json != null) {
                                         if (is_array($tmp_json['listIdPage'][$key_id][$key_Child_id])) {
                                             $tmp_list = array();
                                             foreach ($tmp_json['listIdPage'][$key_id][$key_Child_id] as $val) {
-                                                array_push($tmp_list, $response_endpoint[$key_Child_id][$val]);
+                                                array_push($tmp_list, $response_endpoint['data'][$key_Child_id][$val]);
                                             }
                                             $elementID->appendChild($docHtml->createTextNode(con_value_endpoint($tmp_list, ' ')));
                                         } else {
-                                            $elementID->appendChild($docHtml->createTextNode($response_endpoint[$key_Child_id][$tmp_json['listIdPage'][$key_id][$key_Child_id]]));
+                                            $elementID->appendChild($docHtml->createTextNode($response_endpoint['data'][$key_Child_id][$tmp_json['listIdPage'][$key_id][$key_Child_id]]));
                                         }
                                     }
                                 }
                             } else {
                                 // echo '<br>';
                                 // var_dump($tmp_json['listIdPage'][$key_id]);
-                                $elementID->appendChild($docHtml->createTextNode($response_endpoint[$tmp_json['listIdPage'][$key_id]]));
+                                $elementID->appendChild($docHtml->createTextNode($response_endpoint['data'][$tmp_json['listIdPage'][$key_id]]));
                             }
                         }
                         $response['endpoint_data'] = 'none';
