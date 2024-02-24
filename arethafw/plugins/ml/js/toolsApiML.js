@@ -17,10 +17,14 @@ const apiML=(target)=>({
             body:JSON.stringify(confDomJson),
         });
         const data =await response.json();
-        console.log(data);
+        // console.log(data);
         if(typeof document.getElementById(target) === 'object'){
             if('html' in data.isAuth){
-                aretha(target).html(aretha(target).html()+data['isAuth']['html']);
+                if(data.isAuth.status!='fail'){
+                    aretha(target).html(aretha(target).html()+data['isAuth']['html']);
+                }else{
+                    aretha(target).html(data['isAuth']['html']);
+                }
             }else{
                 return data.isAuth;
             }

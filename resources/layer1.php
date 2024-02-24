@@ -56,7 +56,7 @@ Aretha::sessionStart();
     $('body').off('click', '#authML');
     $('body').on('click', '#authML', (e) => {
         e.preventDefault();
-        apiAuth('#content').redirecAuth();
+        apiML('#content').redirecAuth();
     });
     $('body').off('click', '#userID');
     $('body').on('click', '#userID', (e) => {

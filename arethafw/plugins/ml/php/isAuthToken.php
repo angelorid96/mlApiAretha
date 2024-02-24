@@ -3,6 +3,7 @@
 // include "/xampp/htdocs/MlAretha/arethafw/Aretha.php";
 include "../../../Aretha.php";
 include "./mlApi.class.php";
+include './isExpireToken.php';
 Aretha::init('../../../conf/app.ini');
 mlApi::init('../conf/app.ini');
 Aretha::allErrors();
@@ -43,15 +44,6 @@ if ($tmp_json != null) {
     $notMenu = true;
     $docHtml = null;
 }
-// $docHtml->loadHTMLFile('../html/auth.html');
-function isExpiredAccessToken($date_token)
-{
-    $date_now = new DateTime(date("Y-m-d H:i:s"));
-    $date_6hhPlus = new DateTime($date_token);
-    $date_6hhPlus->modify('+6 hour');
-
-    return ($date_now >= $date_6hhPlus) ? true : false;
-}
 
 if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
     $response['urlAuth'] = array(
@@ -62,6 +54,9 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
 
     if (isset($_SESSION['nickname']) && isset($_SESSION['user_id'])) {
         // $oApiToken = new are
+
+        $isExpireTK = isExpiredAccessToken();
+
         $oApiToken = new \mod_apitoken\entities\apiToken();
         $oApiToken->getPO()->setNickname($_SESSION['nickname']);
         $oApiToken->getPO()->setUser_id($_SESSION['user_id']);
@@ -73,18 +68,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
             $oApiTokenTmp = $existUser[0];
             // echo '<br>';
             // var_dump( new DateTime($oApiToken->getDateAcces_token()));
-            if (isExpiredAccessToken($oApiTokenTmp->getDateAcces_token())) {
-                $response_endpoint = mlApi::request_endPoint(array('endpoint_parent' => 'auth', 'endpointChild' => 'refresh_token', 'body' => array('refresh_token' => $oApiTokenTmp->getRefresh_token()), 'method' => 'post', 'access_token' => ''));
-                // $oApiToken->getPO()->setUser_id(intval($response['user_id']));
-                // $oApiToken->getPO()->setNickname($response_user['nickname']);
-                $oApiToken->getPO()->setAcces_token($response_endpoint['access_token']);
-                $oApiToken->getPO()->setRefresh_token($response_endpoint['refresh_token']);
-                $oApiToken->getPO()->setDateAcces_token(date("Y-m-d H:i:s"));
-                $oApiToken->getPO()->setDateRefresh_token(date("Y-m-d H:i:s"));
-                if ($oApiToken->update()) {
-                    //lanzar modal para volver a logear... activar el boton de nuevo
-                }
-            }
+            
             if ($notMenu) {
                 $response['status'] = 'success';
                 $response['code'] = '000';
@@ -179,7 +163,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
         }
     } else {
         $response['isAuth'] = array(
-            'status' => 'false',
+            'status' => 'fail',
             'html' => '<h5>Bienvenido: necesita autenticarse</h5>' .
                 '<button class="btn btn-primary btn-sm" type="button" id="authML" value="authfirs">' .
                 'Ir a ML' .

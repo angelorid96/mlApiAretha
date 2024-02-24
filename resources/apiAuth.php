@@ -14,17 +14,17 @@ if (isset($_REQUEST['code']) && $_REQUEST['code'] != '') {
     // echo $_REQUEST['code'];
     $oApiToken = new \mod_apitoken\entities\apiToken();
     $response = mlApi::request_endPoint(array('endpoint_parent'=>'auth','endpointChild' => 'token', 'body' => array('code' => $_REQUEST['code']), 'method' => 'post', 'access_token' => ''));
-    $response_user = mlApi::request_endPoint(array('endpoint_parent'=>'users','endpointChild' => 'userID', 'body' => array('user_id' => $response['user_id']), 'method' => 'get', 'access_token' => $response['access_token']));
+    $response_user = mlApi::request_endPoint(array('endpoint_parent'=>'users','endpointChild' => 'userID', 'body' => array('user_id' => $response['data']['user_id']), 'method' => 'get', 'access_token' => $response['data']['access_token']));
     // echo '<br>';
     // var_dump($response);
     // echo '<br>';
     // var_dump($response_user);
 
-    $oApiToken->getPO()->setUser_id(intval($response['user_id']));
-    $oApiToken->getPO()->setNickname($response_user['nickname']);
-    $oApiToken->getPO()->setSite_userID($response_user['site_id']);
-    $oApiToken->getPO()->setAcces_token($response['access_token']);
-    $oApiToken->getPO()->setRefresh_token($response['refresh_token']);
+    $oApiToken->getPO()->setUser_id(intval($response['data']['user_id']));
+    $oApiToken->getPO()->setNickname($response_user['data']['nickname']);
+    $oApiToken->getPO()->setSite_userID($response_user['data']['site_id']);
+    $oApiToken->getPO()->setAcces_token($response['data']['access_token']);
+    $oApiToken->getPO()->setRefresh_token($response['data']['refresh_token']);
     $oApiToken->getPO()->setDateAcces_token(date("Y-m-d H:i:s"));
     $oApiToken->getPO()->setDateRefresh_token(date("Y-m-d H:i:s"));
 
