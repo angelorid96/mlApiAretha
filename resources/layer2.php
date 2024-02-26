@@ -81,19 +81,24 @@ if ($isExpireTK['value']) {
                                         </div>
                                     </div>
                                     <div class="col-md-2 mb-2 ms-1">
+                                        <label for="price" class="form-label">Precio</label>
                                         <div class="input-group ">
                                             <span class="input-group-text">$</span>
-                                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                            <input type="text" class="form-control" id="price" aria-label="Amount (to the nearest dollar)">
                                             <span class="input-group-text"> MXN</span>
                                         </div>
                                     </div>
                                     <div class="col-md-2 mb-2 ms-1">
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Estado del Producto</option>
+                                        <label for="condition" class="form-label">Estado del producto</label>
+                                        <select class="form-select" id="condition" aria-label="Default select example">
                                             <option value="1">Nuevo</option>
                                             <option value="2">Usado</option>
                                             <option value="3">Reacondicionado</option>
                                         </select>
+                                    </div>
+                                    <div class="col-md-2 mb-2 ms-1">
+                                        <label for="condition" class="form-label">Cantidad disponible</label>
+                                        <input type="text" class="form-control"  id="available_quantity" aria-label="catidad disponible">
                                     </div>
                                     <div class="col-md-12 mb-2 pt-2">
                                         <a class="btn btn-primary" id="category-confirm" role="button" aria-disabled="true">

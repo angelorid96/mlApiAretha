@@ -33,24 +33,24 @@ function isExpiredAccessToken()
                 'access_token' =>$oApiTokenTmp->getRefresh_token(),
             );
 
-            $list_required_endpoint = mlApi::data_required($tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild']);
+            $list_required_endpoint = mlApi::data_required($tmp_json['endpoint_parent'], $tmp_json['endpointChild']);
             // echo '<br>';
             // var_dump($list_required_endpoint);
             if (is_array($list_required_endpoint)) {
                 foreach ($list_required_endpoint as $key_required) {
                     if ($key_required == 'user_id') {
-                        $tmp_json['EndPoint']['body']['user_id'] = $oApiTokenTmp->getUser_id();
+                        $tmp_json['body']['user_id'] = $oApiTokenTmp->getUser_id();
                     } else if ($key_required == 'seller_id') {
-                        $tmp_json['EndPoint']['body']['seller_id'] = $oApiTokenTmp->getUser_id();
+                        $tmp_json['body']['seller_id'] = $oApiTokenTmp->getUser_id();
                     } else if ($key_required == 'site_user') {
-                        $tmp_json['EndPoint']['body']['site_user'] = $oApiTokenTmp->getSite_userId();
+                        $tmp_json['body']['site_user'] = $oApiTokenTmp->getSite_userId();
                     }
                 }
             }
             $response_endpoint = mlApi::request_endPoint($tmp_json);
 
-            $oApiToken->getPO()->setAcces_token($response_endpoint['access_token']);
-            $oApiToken->getPO()->setRefresh_token($response_endpoint['refresh_token']);
+            $oApiToken->getPO()->setAcces_token($response_endpoint['data']['access_token']);
+            $oApiToken->getPO()->setRefresh_token($response_endpoint['data']['refresh_token']);
             $oApiToken->getPO()->setDateAcces_token(date("Y-m-d H:i:s"));
             $oApiToken->getPO()->setDateRefresh_token(date("Y-m-d H:i:s"));
             if ($oApiToken->update()) {
