@@ -236,8 +236,20 @@ class mlApi
 
 
             $response=json_decode($response_str,true);
+            $new_response=null;
 
-            
+            if($data_json['endpointChild']=='required_attributes'){
+                $new_response=array('data'=>array());
+                    // var_dump($response);
+                    // echo '<br>';
+                foreach ($response['data']['groups'] as $key) {
+                    foreach($key['components'] as $key_attri){
+                        array_push($new_response['data'],$key_attri);
+                    }
+                }
+                $response=$new_response;
+            }
+
             if(key_exists('name',$endPoint)){
                 $response['nameEndPoint']=$endPoint['name'];
             }

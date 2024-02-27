@@ -59,12 +59,12 @@
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"
-        },  "category": {
-            "name": "ver informacion  de un categoria",
-            "url": "https://api.mercadolibre.com/categories/category_id",
+        },  "listing_types": {
+            "name": "Tipos de publicacion por sitio",
+            "url": "https://api.mercadolibre.com/sites/site_user/listing_types",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
-            "required": "none"
+            "required": "site_user"
         }
     },
     "q&a": {
@@ -125,8 +125,21 @@
             "required": "none"
         },
         "attributes":{
-            "name": "Informacion de un categoria",
+            "name": "Atributos de la categoria",
             "url": "https://api.mercadolibre.com/categories/category_id/attributes",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        },
+        "required_attributes":{
+            "name": "Atributos obligatoriosde la categoria",
+            "url": "https://api.mercadolibre.com/categories/category_id/technical_specs/input",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        },"sale_terms":{
+            "name": "Terminos de venta",
+            "url": "https://api.mercadolibre.com/categories/category_id/sale_terms",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "none"
