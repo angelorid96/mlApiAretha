@@ -88,14 +88,7 @@
         }
     },
     "products": {
-        "title":"Productos",
-        "view":{
-            "name": "Ver producto",
-            "url": "https://api.mercadolibre.com/items/item_id",
-            "headers": "Authorization: Bearer %s",
-            "method": "GET",
-            "required": "item_id"
-        },
+        "title":"Publicar prodcuto",
         "publish":{
             "name": "Publicar producto",
             "url": "https://api.mercadolibre.com/items",
@@ -140,6 +133,23 @@
         },"sale_terms":{
             "name": "Terminos de venta",
             "url": "https://api.mercadolibre.com/categories/category_id/sale_terms",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "none"
+        }
+    },
+    "items": {
+        "title":"Publicaciones",
+        "view":{
+            "name": "Ver producto",
+            "url": "https://api.mercadolibre.com/items/item_id",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "item_id"
+        },
+        "upload":{
+            "name": "Subir una imagen",
+            "url": "https://api.mercadolibre.com/pictures/items/upload",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "none"
