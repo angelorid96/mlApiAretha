@@ -164,7 +164,7 @@ class mlApi
 
         if ($endPoint != false) {
             if (array_key_exists('body', $endPoint)) {
-                foreach (array_keys($endPoint['body']) as $key) {
+                foreach (array_keys($data_json['body']) as $key) {
                     if ($key == 'client_id') {
                         $endPoint['body'][$key] = mlApi::getClient_id();
                     } else if ($key == 'client_secret') {

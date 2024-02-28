@@ -177,6 +177,7 @@ if ($isExpireTK['value']) {
                                     <option value="none" selected>atributos</option>
                                 </select>
                                 <button class="btn btn-outline-secondary" type="button" id="add_attr_btn">Agregar</button>
+                                <button class="btn btn-outline-secondary" type="button" id="remove_attr_btn">Eliminar</button>
                             </div>
                         </div>
                     </div>
@@ -209,17 +210,52 @@ if ($isExpireTK['value']) {
                     <div class="row g-3 mt-2" id="img_input">
 
                     </div>
+                    <div class="row g-3 mt-2 justify-content-md-center">
+                        <div class="col-md-12 mb-2 ms-1">
+                            <p class="h3 text-center">Variaciones</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="formFileMultiple" class="form-label">seleccione atributo que tendra variaciones</label>
+                            <div class="input-group mb-3">
+                                <select class="form-select" id="attr_var" aria-label="Default select example">
+                                    <option value="none">atributos</option>
+                                </select>
+                                <button class="btn btn-outline-secondary" type="button" id="add_attr_var_btn">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2" id="attr_var_view">
+
+                    </div>
+                    <div class="row g-3 mt-2" id="panel_grid" hidden>
+                        <div class="col-md-12 mb-2 ms-1">
+                            <p class="h3 text-center">Guia de tallas</p>
+                        </div>
+                        <div class="col-md-4  align-self-start">
+                            <button class="btn btn-outline-secondary" type="button" id="get_attr_grid_layout">Consultar atributos</button>
+                        </div>
+
+                    </div>
+                    <div class="row g-3 mt-2" id="panel_grip_view">
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
 <script type="text/javascript">
     const max_nuber_images = 12;
     const max_nuber_images_var = 10;
     const max_description_length = 50000;
     let count_images_add = 0;
+    let domain_id_value='';
+
+    let select_variation_attr = document.createElement('select');
+    select_variation_attr.setAttribute('class', 'form-select');
+    select_variation_attr.setAttribute('id', 'select_var_attr_item');
 
     let view_categories = async () => {
         let categories = await apiML('#body-api').requestEndPoint({
@@ -333,6 +369,7 @@ if ($isExpireTK['value']) {
     $('body').on('click', '#predict_cat', async (e) => {
         e.preventDefault();
         // console.log(e);
+        domain_id_value=aretha().targetize(e).getAttribute('domain_id');
         let category = await apiML('#body-api').requestEndPoint({
             EndPoint: {
                 endpoint_parent: 'products',
@@ -342,7 +379,8 @@ if ($isExpireTK['value']) {
                 }
             },
         });
-        console.log(category);
+
+        // console.log(category);
         let max_length_title = category.data.settings.max_title_length;
         // max_nuber_images = category.data.settings.max_pictures_per_item;
         // max_description_length = category.data.settings.max_description_length;
@@ -596,8 +634,17 @@ if ($isExpireTK['value']) {
         let select_child = document.getElementById('attributes_add');
         // console.log(select_child);
         let index_select = select_child.options.selectedIndex
-        console.log(select_child.options[index_select].value);
+        // console.log(select_child.options[index_select].value);
         document.getElementById(`${select_child.options[index_select].value}`).hidden = false;
+
+    });
+    $('body').off('click', '#remove_attr_btn');
+    $('body').on('click', '#remove_attr_btn', (e) => {
+        let select_child = document.getElementById('attributes_add');
+        // console.log(select_child);
+        let index_select = select_child.options.selectedIndex
+        // console.log(select_child.options[index_select].value);
+        document.getElementById(`${select_child.options[index_select].value}`).hidden = true;
 
     });
     $('body').off('click', '#category-confirm');
@@ -689,18 +736,39 @@ if ($isExpireTK['value']) {
                     div_col.appendChild(attr_comp);
                 } else {
                     let group_div = document.createElement('div');
-
                     attr_label = document.createElement('label');
                     attr_label.setAttribute('class', 'form-label');
                     attr_label.setAttribute('form', `${attr.id}`);
                     attr_label.appendChild(document.createTextNode(`${attr.name}`));
                     attr_comp = document.createElement('input');
                     attr_comp.setAttribute('class', 'form-control');
-                    // attr_comp.setAttribute('type', `${attr.attributes[0].value_type}`);
                     attr_comp.setAttribute('type', 'text');
-                    // attr_comp.setAttribute('maxlength', `${attr.value_max_length}`);
-                    attr_comp.setAttribute('id', `${attr.id}`);
+                    attr_comp.setAttribute('id', `input_${attr.id}`);
                     div_col.appendChild(attr_label);
+                    if ('values' in attr) {
+                        attr_comp.hidden = true;
+                        let select_attr = document.createElement('select');
+                        select_attr.setAttribute('class', 'form-select');
+                        select_attr.setAttribute('id', 'select_attr_values');
+                        let op_sel = null;
+                        // op_sel.setAttribute('value', `${attr.values[index_val].id}`);
+                        // op_sel.appendChild(document.createTextNode());
+                        // op_sel.selected=true;
+                        // select_attr.appendChild(op_sel);
+                        for (let index_val = 0; index_val < attr.values.length; index_val++) {
+                            op_sel = document.createElement('option');
+                            op_sel.setAttribute('value', `${attr.values[index_val].id}`);
+                            op_sel.setAttribute('input-id', `input_${attr.id}`);
+                            op_sel.appendChild(document.createTextNode(`${attr.values[index_val].name}`));
+                            select_attr.appendChild(op_sel);
+                        }
+                        op_sel = document.createElement('option');
+                        op_sel.setAttribute('value', 'manual');
+                        op_sel.setAttribute('input-id', `input_${attr.id}`);
+                        op_sel.appendChild(document.createTextNode('otro'));
+                        select_attr.appendChild(op_sel);
+                        div_col.append(select_attr);
+                    }
                     if ('allowed_units' in attr) {
                         group_div.setAttribute('class', 'input-group mb-3');
                         let sl_units = document.createElement('select');
@@ -724,7 +792,6 @@ if ($isExpireTK['value']) {
                 if (!attr.tags.hasOwnProperty('catalog_required')) {
                     if (!attr.tags.hasOwnProperty('catalog_listing_required')) {
                         div_col.hidden = true;
-                        div_col.setAttribute('id', `attr_id_${attr.id}`);
                         let op_attr_add = document.createElement('option');
                         op_attr_add.setAttribute('value', `attr_id_${attr.id}`)
                         op_attr_add.appendChild(document.createTextNode(attr.name));
@@ -732,67 +799,24 @@ if ($isExpireTK['value']) {
                     }
                 }
             }
-            // // if (attr.component == 'COMBO') {
-            // //     attr_label = document.createElement('label');
-            // //     attr_label.setAttribute('class', 'form-label');
-            // //     attr_label.setAttribute('form', `${attr.attributes[0].id}`);
-            // //     attr_label.appendChild(document.createTextNode(`${attr.label}`));
-            // //     attr_comp = document.createElement('input');
-            // //     attr_comp.setAttribute('class', 'form-select');
-            // //     attr_comp.setAttribute('type', 'select');
-            // //     attr_comp.setAttribute('id', `${attr.attributes[0].id}`);
-            // //     for (let index_val = 0; index_val < attr.attributes[0].values.length; index_val++) {
-            // //         let op_sel = document.createElement('option');
-            // //         op_sel.setAttribute('value', `${attr.attributes[0].values[index_val].id}`);
-            // //         op_sel.appendChild(document.createTextNode(`${attr.attributes[0].values[index_val].name}`));
-            // //         attr_comp.appendChild(op_sel);
-            // //     }
-            // //     div_col.appendChild(attr_label);
-            // //     div_col.appendChild(attr_comp);
-            // // } else if (attr.component == 'BOOLEAN_INPUT') {
-            // //     attr_label = document.createElement('label');
-            // //     attr_label.setAttribute('class', 'form-label');
-            // //     attr_label.setAttribute('form', `${attr.attributes[0].id}`);
-            // //     attr_label.appendChild(document.createTextNode(`${attr.label} ${attr.attributes[0].name}`));
-            // //     attr_comp = document.createElement('input');
-            // //     attr_comp.setAttribute('class', 'form-select');
-            // //     attr_comp.setAttribute('type', 'select');
-            // //     attr_comp.setAttribute('id', `${attr.attributes[0].id}`);
-            // //     for (let index_val = 0; index_val < attr.attributes[0].values.length; index_val++) {
-            // //         let op_sel = document.createElement('option');
-            // //         op_sel.setAttribute('value', `${attr.attributes[0].values[index_val].id}`);
-            // //         op_sel.appendChild(document.createTextNode(`${attr.attributes[0].values[index_val].name}`));
-            // //         attr_comp.appendChild(op_sel);
-            // //     }
-            // //     div_col.appendChild(attr_label);
-            // //     div_col.appendChild(attr_comp);
-            // // } else {
-            // //     attr_label = document.createElement('label');
-            // //     attr_label.setAttribute('class', 'form-label');
-            // //     attr_label.setAttribute('form', `${attr.attributes[0].id}`);
-            // //     attr_label.appendChild(document.createTextNode(`${attr.label}`));
-            // //     attr_comp = document.createElement('input');
-            // //     attr_comp.setAttribute('class', 'form-control');
-            // //     // attr_comp.setAttribute('type', `${attr.attributes[0].value_type}`);
-            // //     attr_comp.setAttribute('type', 'text');
-            // //     attr_comp.setAttribute('maxlength', `${attr.attributes[0].value_max_length}`);
-            // //     attr_comp.setAttribute('id', `${attr.attributes[0].id}`);
-            // //     div_col.appendChild(attr_label);
-            // //     div_col.appendChild(attr_comp);
-            // // }
-            // // if (!attr.attributes[0].tags.includes('required')) {
-            // //     if (!attr.attributes[0].tags.includes('catalog_required')) {
-            // //         if (!attr.attributes[0].tags.includes('catalog_listing_required')) {
-            // //             div_col.hidden=true;
-            // //             div_col.setAttribute('id',`attr_id_${attr.attributes[0].id}`);
-            // //             let op_attr_add = document.createElement('option');
-            // //             op_attr_add.setAttribute('value', `attr_id_${attr.attributes[0].id}`)
-            // //             op_attr_add.appendChild(document.createTextNode(attr.attributes[0].name));
-            // //             attributes_add.appendChild(op_attr_add);
-            // //         }
-            // //     }
+            if (attr.tags.hasOwnProperty('allow_variations')) {
+                let op_att_var = document.createElement('option');
+                op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
+                op_att_var.setAttribute('input-id', `${attr.id}`);
+                op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                document.getElementById('attr_var').appendChild(op_att_var);
+            }
+            // if (attr.tags.hasOwnProperty('variation_attribute')) {
+            //     let op_att_var = document.createElement('option');
+            //     op_att_var.setAttribute('value', `attr_id_${attr.id}`);
+            //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+            //     select_variation_attr.appendChild(op_att_var);
             // }
+            if (attr.id == 'GENDER') {
+                document.getElementById('panel_grid').hidden = false;
+            }
 
+            div_col.setAttribute('id', `attr_id_${attr.id}`);
             view_attr.appendChild(div_col);
         }
         aretha('#collapseTwo').addClass('show');
@@ -840,10 +864,139 @@ if ($isExpireTK['value']) {
         if ((files.length != 0)) {
             if ((count_images_add + files.length) > max_nuber_images) {
                 index_files = max_nuber_images - count_images_add;
-                alert(`se agregaran solo ${index_files} imagen de las seleccionadas. rebasa el limite permitido`)
+                alert(`se agregaran solo ${index_files} imagenes de las seleccionadas. rebasa el limite permitido`)
             } else if (files.length > max_nuber_images) {
                 alert(`numero de images permitido rebasado`);
             }
         }
+    });
+    $('body').off('change', '#select_attr_values');
+    $('body').on('change', '#select_attr_values', (e) => {
+        e.preventDefault();
+        // console.log(e);
+        let select_child = aretha().targetize(e);
+        // console.log(select_child);
+        let index_select = select_child.options.selectedIndex
+        let item_select = select_child.options[index_select];
+
+        // console.log(item_select);
+        if (item_select.value == 'manual') {
+            document.getElementById(`${item_select.getAttribute('input-id')}`).hidden = false;
+        } else {
+            document.getElementById(`${item_select.getAttribute('input-id')}`).hidden = true;
+        }
+    });
+    $('body').off('click', '#add_attr_var_btn');
+    $('body').on('click', '#add_attr_var_btn', (e) => {
+        let new_col_item_var = null;
+        let row_attr_var = null;
+
+        let select_child = document.getElementById('attr_var');
+        let index_select = select_child.options.selectedIndex
+        // select_child.options[index_select]    <div class="col-md-2 mb-2 ms-1">
+        let id = select_child.options[index_select].getAttribute('input-id');
+        let row_root = document.getElementById('panel_grip_view');
+        let count_elemts = document.getElementById('panel_grip_view').childElementCount;
+
+        new_col_item_var = document.createElement('div');
+        new_col_item_var.setAttribute('class', 'col-md-4');
+        new_col_item_var.setAttribute('id', `col_item_var_${id}${count_elemts}`);
+
+        let row_title_var = document.createElement('div');
+        row_title_var.setAttribute('class', 'row');
+        row_title_var.innerHTML = `<p class="h6 text-center">Variacion de ${id} <button type="button" class="btn-close" id-item="${`col_item_var_${id}${count_elemts}`}" id="remove_item_attr" aria-label="Close"></button></p> `;
+
+        new_col_item_var.appendChild(row_title_var);
+
+        // console.log(`attr_id_${id}`);
+
+        let clone_elem_attr = document.getElementById(`attr_id_${id}`).cloneNode(true);
+        clone_elem_attr.setAttribute('id', '');
+        clone_elem_attr.setAttribute('class', 'col');
+        clone_elem_attr.hidden = false;
+        new_col_item_var.appendChild(clone_elem_attr);
+
+
+        let col_div_cont = document.createElement('div');
+        col_div_cont.setAttribute('class', 'col');
+        let label_av_qt = document.createElement('label');
+        label_av_qt.setAttribute('for', `comp_var_attr_${id}`);
+        label_av_qt.appendChild(document.createTextNode('cantidad'));
+        let comp_av_ql = document.createElement('input');
+        comp_av_ql.setAttribute('class', 'form-control');
+        comp_av_ql.setAttribute('type', 'text');
+        comp_av_ql.setAttribute('id', `av_var_attr_${id}`);
+        col_div_cont.appendChild(label_av_qt);
+        col_div_cont.appendChild(comp_av_ql);
+
+        row_attr_var = document.createElement('div');
+        row_attr_var.setAttribute('class', 'row');
+        row_attr_var.appendChild(col_div_cont);
+
+        new_col_item_var.appendChild(row_attr_var);
+
+
+        col_div_cont = document.createElement('div');
+        col_div_cont.setAttribute('class', 'col');
+        label_av_qt = document.createElement('label');
+
+        // let group=document.createElement('div');
+        // group.setAttribute('class','input-group mb-3');
+
+        // let btn_add_attr=document.createElement('button');
+        // btn_add_attr.setAttribute('class','btn btn-outline-secondary');
+        // btn_add_attr.setAttribute('type','button');
+        // btn_add_attr.setAttribute('id','add_attr_var_item');
+        // btn_add_attr.appendChild(document.createTextNode('añadir'));
+
+        // let btn_rm_attr=document.createElement('button');
+        // btn_rm_attr.setAttribute('class','btn btn-outline-secondary');
+        // btn_rm_attr.setAttribute('type','button');
+        // btn_rm_attr.setAttribute('id','rm_attr_var_item');
+        // btn_rm_attr.appendChild(document.createTextNode('eliminar'));
+
+        // label_av_qt.setAttribute('for', 'select_var_attr');
+        // label_av_qt.appendChild(document.createTextNode('agregar atributos a variacion'));
+        // let selet_var_attr=select_variation_attr.cloneNode(true);
+        // select_variation_attr.setAttribute('id-item',`col_item_var_${id}${count_elemts}`);
+        // col_div_cont.appendChild(label_av_qt);
+
+        // group.appendChild(select_variation_attr);
+        // group.appendChild(btn_add_attr);
+        // group.appendChild(btn_rm_attr);
+        // col_div_cont.appendChild(group);
+
+        row_attr_var = document.createElement('div');
+        row_attr_var.setAttribute('class', 'row');
+        row_attr_var.appendChild(col_div_cont);
+
+        new_col_item_var.appendChild(row_attr_var);
+
+        row_root.appendChild(new_col_item_var);
+
+
+    });
+    $('body').off('click', '#remove_item_attr');
+    $('body').on('click', '#remove_item_attr', (e) => {
+        e.preventDefault();
+        document.getElementById(aretha().targetize(e).getAttribute('id-item')).remove();
+
+    });
+    $('body').off('click', '#get_attr_grid_layout');
+    $('body').on('click', '#get_attr_grid_layout', async (e) => {
+        e.preventDefault();
+
+        console.log(domain_id_value);
+        let chart_attrs = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'site',
+                endpointChild: 'chart_attr',
+                body: {
+                    domain_id:domain_id_value,
+                }
+            },
+        });
+        console.log(chart_attrs);
+
     });
 </script>

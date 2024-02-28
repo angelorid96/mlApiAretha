@@ -28,7 +28,7 @@
         }
     },
     "users": {
-        "title":"none",
+        "title": "none",
         "userID": {
             "name": "Mi informacion",
             "url": "https://api.mercadolibre.com/users/user_id",
@@ -45,7 +45,7 @@
         }
     },
     "site": {
-        "title":"Site Ml",
+        "title": "Site Ml",
         "price": {
             "name": " Ver precios de venta en ML",
             "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?price=1",
@@ -59,17 +59,30 @@
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"
-        },  "listing_types": {
+        },
+        "listing_types": {
             "name": "Tipos de publicacion por sitio",
             "url": "https://api.mercadolibre.com/sites/site_user/listing_types",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"
+        },
+        "chart_attr": {
+            "name": "Atributos para guia de tallas",
+            "url": "https://api.mercadolibre.com/domains/domain_id/technical_specs/?section=grids",
+            "headers": "Authorization: Bearer %s",
+            "body": {
+                "domain_id": "",
+                "site_id": "",
+                "seller_id": ""
+            },
+            "method": "POST",
+            "required": "site_user,seller_id"
         }
     },
     "q&a": {
-        "title":"Preuntas y Respuestas",
-        "questions":{
+        "title": "Preuntas y Respuestas",
+        "questions": {
             "name": "Ver preguntas",
             "url": "https://api.mercadolibre.com/my/received_questions/search",
             "headers": "Authorization: Bearer %s",
@@ -78,8 +91,8 @@
         }
     },
     "shipping": {
-        "title":"Envios",
-        "shipping_methods":{
+        "title": "Envios",
+        "shipping_methods": {
             "name": "Ver metodos de envio",
             "url": "https://api.mercadolibre.com/sites/site_user/shipping_methods",
             "headers": "Authorization: Bearer %s",
@@ -88,49 +101,50 @@
         }
     },
     "products": {
-        "title":"Publicar prodcuto",
-        "publish":{
+        "title": "Publicar prodcuto",
+        "publish": {
             "name": "Publicar producto",
             "url": "https://api.mercadolibre.com/items",
             "headers": "Authorization: Bearer %s",
             "method": "POST",
             "required": "none"
         },
-        "predict":{
+        "predict": {
             "name": "Predecier categoria",
             "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&q=q_char",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"
         },
-        "categories":{
+        "categories": {
             "name": "Categorias disponibles en el sitio",
             "url": "https://api.mercadolibre.com/sites/site_user/categories",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "site_user"
         },
-        "category":{
+        "category": {
             "name": "Informacion de un categoria",
             "url": "https://api.mercadolibre.com/categories/category_id",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "none"
         },
-        "attributes":{
+        "attributes": {
             "name": "Atributos de la categoria",
             "url": "https://api.mercadolibre.com/categories/category_id/attributes",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "none"
         },
-        "required_attributes":{
+        "required_attributes": {
             "name": "Atributos obligatoriosde la categoria",
             "url": "https://api.mercadolibre.com/categories/category_id/technical_specs/input",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "none"
-        },"sale_terms":{
+        },
+        "sale_terms": {
             "name": "Terminos de venta",
             "url": "https://api.mercadolibre.com/categories/category_id/sale_terms",
             "headers": "Authorization: Bearer %s",
@@ -139,15 +153,15 @@
         }
     },
     "items": {
-        "title":"Publicaciones",
-        "view":{
+        "title": "Publicaciones",
+        "view": {
             "name": "Ver producto",
             "url": "https://api.mercadolibre.com/items/item_id",
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "item_id"
         },
-        "upload":{
+        "upload": {
             "name": "Subir una imagen",
             "url": "https://api.mercadolibre.com/pictures/items/upload",
             "headers": "Authorization: Bearer %s",
