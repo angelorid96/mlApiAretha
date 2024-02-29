@@ -164,14 +164,22 @@ class mlApi
 
         if ($endPoint != false) {
             if (array_key_exists('body', $endPoint)) {
-                foreach (array_keys($data_json['body']) as $key) {
+                foreach (array_keys($endPoint['body']) as $key) {
                     if ($key == 'client_id') {
                         $endPoint['body'][$key] = mlApi::getClient_id();
                     } else if ($key == 'client_secret') {
                         $endPoint['body'][$key] = mlApi::getClient_secret();
-                    } else if (array_key_exists($key, $data_json['body'])) {
+                    } 
+                    // else if (array_key_exists($key, $data_json['body'])) {
+                    //     $endPoint['body'][$key] = $data_json['body'][$key];
+                    // }
+                }
+                if (array_key_exists('body', $data_json)) {
+                    foreach (array_keys($data_json['body']) as $key) {
                         $endPoint['body'][$key] = $data_json['body'][$key];
                     }
+                    var_dump($endPoint);
+                    echo '<br>';
                 }
             }
             $urltmp = $endPoint['url'];
