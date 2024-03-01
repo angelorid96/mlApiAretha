@@ -42,6 +42,24 @@
             "headers": "Authorization: Bearer %s",
             "method": "GET",
             "required": "user_id"
+        }, 
+        "shipping_preferences": {
+            "name": "preferencias de envio",
+            "url": "https://api.mercadolibre.com/users/user_id/shipping_preferences",
+            "headers": "Authorization: Bearer %s",
+            "method": "GET",
+            "required": "user_id"
+        },
+        "shipping_modes": {
+            "name": "metodo envio segun categoria",
+            "url": "https://api.mercadolibre.com/users/user_id/shipping_modes",
+            "headers": "Authorization: Bearer %s",
+            "method": "POST",
+            "body": {
+                "category_id": "",
+                "channels": ""
+            },
+            "required": "user_id"
         }
     },
     "site": {

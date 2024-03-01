@@ -178,8 +178,8 @@ class mlApi
                     foreach (array_keys($data_json['body']) as $key) {
                         $endPoint['body'][$key] = $data_json['body'][$key];
                     }
-                    var_dump($endPoint);
-                    echo '<br>';
+                    // var_dump($endPoint);
+                    // echo '<br>';
                 }
             }
             $urltmp = $endPoint['url'];
