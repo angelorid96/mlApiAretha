@@ -32,24 +32,24 @@ if ($isExpireTK['value']) {
                             <label for="title" class="form-label">Titulo</label>
                         </div>
                         <div class="col-md-6  offset-md-3 mt-0">
-                            <input type="text" class="form-control" aria-describedby="titlePubilish" id="title">
+                            <input type="text" class="form-control apiML-param" value-type="string" aria-describedby="titlePubilish" id="title">
                             <div id="titlePubilish" class="form-text">
                                 Recomendaciones para el titulo Producto + Marca + modelo del producto + etc.
                             </div>
                         </div>
                         <div class="col-md-3 mt-0">
-                            <a class="btn btn-primary disabled" id="predictCategoryBTN" role="button" aria-disabled="true">
+                            <button class="btn btn-primary" id="predictCategoryBTN" disabled>
                                 Predecir Categorias
-                            </a>
+                            </button>
                         </div>
                         <div class="col-md-12 mb-0">
-                            <div class="col-md-12 text-center h4" id="error_category" style="visibility:hidden;">
+                            <div class="col-md-12 text-center h4" id="error_category" hidden>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="collapse" id="predictCategory">
                                 <div class="card card-body">
-                                    <div class="row justify-content-md-center pb-2" id="view_category" style="visibility:hidden;">
+                                    <div class="row justify-content-md-center pb-2" id="view_category" hidden>
                                     </div>
                                 </div>
                             </div>
@@ -79,12 +79,16 @@ if ($isExpireTK['value']) {
 
                                     </div>
                                 </div>
+                                <div class="col d-none">
+                                    <input type="text" class="form-control apiML-param apiML-shipp" id="category_id" value-type="text" hidden>
+                                    <input type="text" class="form-control" id="domain_id" value-type="text" hidden>
+                                </div>
                                 <div class="col-md-3 mb-2 ms-1">
                                     <label for="price" class="form-label">Precio</label>
                                     <div class="input-group ">
                                         <span class="input-group-text">$</span>
-                                        <input type="text" class="form-control" id="price" aria-label="Amount (to the nearest dollar)">
-                                        <select class="form-select" id="moneda" aria-label="Default select example">
+                                        <input type="text" class="form-control apiML-param" id="price" value-type="number" aria-label="Amount (to the nearest dollar)">
+                                        <select class="form-select apiML-param" id="current_id" value-type="text" aria-label="Default select example">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
                                         </select>
@@ -92,20 +96,20 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Estado del producto</label>
-                                    <select class="form-select" id="condition" aria-label="Default select example">
+                                    <select class="form-select apiML-param" id="ITEM_CONDITION" id-endpoint="attributes" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
                                         <option value="none">...</option>
-                                        <option value="2230284" value-text="new">Nuevo</option>
-                                        <option value="2230581" value-text="used">Usado</option>
-                                        <option value="2230582" value-text="Reacondicionado">Reacondicionado</option>
+                                        <option value="2230284">Nuevo</option>
+                                        <option value="2230581">Usado</option>
+                                        <option value="2230582">Reacondicionado</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Cantidad disponible</label>
-                                    <input type="text" class="form-control" id="available_quantity" aria-label="catidad disponible">
+                                    <input type="text" class="form-control apiML-param" id="available_quantity" value-type="number" aria-label="catidad disponible">
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Tipo de publicacion</label>
-                                    <select class="form-select" id="condition" aria-label="Default select example">
+                                    <select class="form-select" id="listing_type_id" value-type="string" aria-label="Default select example">
                                         <option value="none">...</option>
                                         <option value="gold_pro">Premium</option>
                                         <option value="gold_special">Clásica</option>
@@ -114,7 +118,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-3  ms-2 mt-4">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="flexRadioDisabled" id="buying_mode" checked disabled>
+                                        <input class="form-check-input apiML-param" type="radio" name="flexRadioDisabled" id-endpoint="tags" type-endpoint="list" value-type="string" value="immediate_payment" checked disabled>
                                         <label class="form-check-label" for="flexRadioCheckedDisabled">
                                             Modalidad de compra inmediata
                                         </label>
@@ -122,7 +126,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Tipo de garantia</label>
-                                    <select class="form-select" id="WARRANTY_TYPE" aria-label="Default select example">
+                                    <select class="form-select apiML-param" id="WARRANTY_TYPE" id-endpoint="sale_terms" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
                                         <option value="none">...</option>
                                         <option value="2230279">Garantia de fabrica</option>
                                         <option value="2230280">Garantia del vendedor</option>
@@ -131,8 +135,8 @@ if ($isExpireTK['value']) {
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="price" class="form-label">Tiempo de garantia</label>
                                     <div class="input-group ">
-                                        <input type="text" class="form-control" id="WARRANTY_TIME" aria-label="Amount (to the nearest dollar)">
-                                        <select class="form-select" id="WARRANTY_TIME_UNIT" aria-label="Default select example">
+                                        <input type="text" class="form-control apiML-param" id="WARRANTY_TIME" need-unit id-endpoint="sale_terms" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Amount (to the nearest dollar)">
+                                        <select class="form-select" id="WARRANTY_TIME_unit" aria-label="Default select example">
                                             <option value="none">...</option>
                                             <option value="dias">dias</option>
                                             <option value="meses">meses</option>
@@ -143,11 +147,11 @@ if ($isExpireTK['value']) {
                                 <div class="col-md-2 mb-2 ms-5">
                                     <label for="condition" class="form-label">Canal de publicacion</label>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input apiML-param" type="checkbox" id-endpoint="channels" type-struct="object" value-type="string" tag-var="id" id="marketplace_check" value="marketplace">
+                                        <input class="form-check-input apiML-param apiML-shipp" type="checkbox" id-endpoint="channels" type-endpoint="list" type-struct="object" value-type="string" tag-var="id" id="marketplace_check" value="marketplace">
                                         <label class="form-check-label" for="marketplace_check">Mercado Libre</label>
                                     </div>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input apiML-param" type="checkbox" id="mshops_check" id-endpoint="channels" tag-var="id" value-type="string" type-struct="object" value="mshops">
+                                        <input class="form-check-input apiML-param apiML-shipp" type="checkbox" id="mshops_check" id-endpoint="channels" tag-var="id" type-endpoint="list" value-type="string" type-struct="object" value="mshops">
                                         <label class="form-check-label" for="mshops_check">Mercado Shop</label>
                                     </div>
                                 </div>
@@ -320,36 +324,76 @@ if ($isExpireTK['value']) {
             }
         }
         let view_pref_shipp = async () => {
+
+            let body_json=apiML('.apiML-shipp').jsontargetize();
+            console.log(body_json);
             let pref_ship = await apiML().requestEndPoint({
                 EndPoint: {
                     endpoint_parent: 'users',
-                    endpointChild: 'shipping_preferences',
+                    endpointChild: 'shipping_modes',
+                    body:body_json,
                 },
             });
-            // console.log(pref_ship);
-            let option_mode_ship = document.createElement('option');
-            option_mode_ship.setAttribute('value', 'none');
-            option_mode_ship.appendChild(document.createTextNode('modos'));
-            document.getElementById('mode_shipp').appendChild(option_mode_ship);
-            for (let index = 0; index < pref_ship.data.logistics.length; index++) {
+            console.log(pref_ship);
+            // let option_mode_ship = document.createElement('option');
+            // option_mode_ship.setAttribute('value', 'none');
+            // option_mode_ship.appendChild(document.createTextNode('modos'));
+            // document.getElementById('mode_shipp').appendChild(option_mode_ship);
+            // for (let index = 0; index < pref_ship.data.logistics.length; index++) {
 
-                let item = pref_ship.data.logistics[index];
-                // console.log(item);
-                option_mode_ship = document.createElement('option');
-                option_mode_ship.setAttribute('value', `${item['mode']}`);
-                option_mode_ship.appendChild(document.createTextNode(`${item['mode']}`));
-                document.getElementById('mode_shipp').appendChild(option_mode_ship);
-            }
+            //     let item = pref_ship.data.logistics[index];
+            //     // console.log(item);
+            //     option_mode_ship = document.createElement('option');
+            //     option_mode_ship.setAttribute('value', `${item['mode']}`);
+            //     option_mode_ship.appendChild(document.createTextNode(`${item['mode']}`));
+            //     document.getElementById('mode_shipp').appendChild(option_mode_ship);
+            // }
         }
-        let show_error_element = (target, msg, action, time_view = 5000) => {
-            aretha(target).addClass(action);
-            document.getElementById('error_category').style.visibility = 'visible';
-            document.getElementById('error_category').appendChild(document.createTextNode(msg));
-            setTimeout(() => {
-                document.getElementById('error_category').style.visibility = 'hidden';
-                aretha(target).removeClass(action);
-                document.getElementById('error_category').innerHTML = '';
-            }, time_view);
+
+        /*
+            args -> array de objetos que contiene 
+                target -> identificador del elemeto a manipular
+                msg -> mensaje a isertar en el elemento target
+                btstyle -> estilo bootstrap que le quiere dar al elemento target
+                action -> accion que desea ralizar sobre el elemento target
+             ejemplo. [{target:"error_category",msg:"El campo <strong>Titulo</strong> no se permite vacio.",btstyle:"border-warning",action:"hidden"}...]
+        */
+        let show_error_element = (args, time_view = 5000) => {
+
+            args.forEach((item) => {
+                // console.log(item);
+                let select_elm;
+                if (item.target.charAt(0) == '.') {
+                    select_elm = document.querySelector(item.target);
+                } else if (item.target.charAt(0) == '#') {
+                    select_elm = document.getElementById(item.target.replace('#', ''));
+                } else {
+                    select_elm = document.getElementById(item.target);
+                }
+                select_elm.classList.add(item.btstyle);
+                select_elm.innerHTML = item.msg;
+                switch (item.action) {
+                    case 'hidden':
+                        select_elm.hidden = false;
+                        break;
+                    case 'disabled':
+                        select_elm.disabled = false;
+                        break;
+                }
+                setTimeout(() => {
+                    select_elm.classList.remove(item.btstyle);
+                    select_elm.innerHTML = '';
+                    switch (item.action) {
+                        case 'hidden':
+                            select_elm.hidden = true;
+                            break;
+                        case 'disabled':
+                            select_elm.disabled = true;
+                            break;
+                    }
+                }, time_view);
+
+            });
         }
 
         view_categories();
@@ -392,50 +436,44 @@ if ($isExpireTK['value']) {
                     div_col.appendChild(btn_category_item);
                     document.getElementById('view_category').appendChild(div_col);
                 }
-                document.getElementById('view_category').style.visibility = 'visible';
-                document.getElementById('predictCategory').setAttribute('class', 'collapse show')
+                document.getElementById('view_category').hidden = false;
+                aretha('#predictCategory').addClass('show');
 
             } else {
-                document.getElementById('view_category').style.visibility = 'hidden';
-                input_title.setAttribute('class', input_title.getAttribute('class') + ' border-warning');
-                document.getElementById('error_category').style.visibility = 'visible';
-                document.getElementById('error_category').appendChild(document.createTextNode('El campo <strong>Titulo</strong> no se permite vacio.'));
-                setTimeout(() => {
-                    document.getElementById('error_category').style.visibility = 'hidden';
-                    input_title.setAttribute('class', input_title.getAttribute('class').replace('border-warning', ''));
-                    document.getElementById('error_category').innerHTML = '';
-                }, 5000);
+                show_error_element([{
+                    target: "error_category",
+                    msg: "El campo <strong>Titulo</strong> no se permite vacio.",
+                    btstyle: "border-warning",
+                    action: "hidden"
+                }]);
             }
         });
         $('body').off('click', '#checkPredictCategory');
         $('body').on('click', '#checkPredictCategory', (e) => {
             // e.preventDefault();
-            let btn_predict = document.getElementById('predictCategoryBTN');
+
             if (e.target.checked) {
-                btn_predict.setAttribute('class', btn_predict.getAttribute('class').replace('disabled', ''));
-                btn_predict.setAttribute('aria-disabled', 'false');
+                document.getElementById('predictCategoryBTN').disabled = false;
                 document.getElementById('category_parent').disabled = true;
                 document.getElementById('category_child1').disabled = true;
                 document.getElementById('childs_category').innerHTML = '';
             } else {
-                btn_predict.setAttribute('class', `${btn_predict.getAttribute('class')} disabled`)
-                btn_predict.setAttribute('aria-disabled', 'true');
+                document.getElementById('predictCategoryBTN').disabled = true;
                 document.getElementById('view_category').innerHTML = '';
-                document.getElementById('view_category').style.visibility = 'hidden';
+                document.getElementById('view_category').hidden = true;
                 document.getElementById('category_parent').disabled = false;
                 document.getElementById('childs_category').innerHTML = '';
                 document.getElementById('category_child1').innerHTML = '';
-                document.getElementById('category_parent').options.selectedIndex = 0;
+                document.getElementById('category_parent').selectedIndex = 0;
+                aretha('#predictCategory').removeClass('show');
             }
-            document.getElementById('predictCategory').setAttribute('class', document.getElementById('predictCategory').getAttribute('class').replace('show', ''))
+
         });
         $('body').off('click', '#predict_cat');
         $('body').on('click', '#predict_cat', async (e) => {
             e.preventDefault();
-            // console.log(e);
-            console.log(this);
-            domain_id_value = aretha().targetize(e).getAttribute('domain_id');
-            let category = await apiML('#body-api').requestEndPoint({
+
+            let category = await apiML().requestEndPoint({
                 EndPoint: {
                     endpoint_parent: 'products',
                     endpointChild: 'category',
@@ -445,10 +483,16 @@ if ($isExpireTK['value']) {
                 },
             });
 
-            console.log(domain_id_value);
+
+            // console.log(aretha().targetize(e).getAttribute('category_id'));
+            document.getElementById('category_id').setAttribute('value', aretha().targetize(e).getAttribute('category_id'));
+            document.getElementById('domain_id').setAttribute('value', aretha().targetize(e).getAttribute('domain_id'));
+
+            // console.log(aretha().targetize(e).getAttribute('category_id'));
+            // aretha('#category_id').attr('value',aretha().targetize(e).getAttribute('category_id'));
+            // aretha('#domain_id').attr('value',aretha().targetize(e).getAttribute('domain_id'));
+
             let max_length_title = category.data.settings.max_title_length;
-            // max_nuber_images = category.data.settings.max_pictures_per_item;
-            // max_description_length = category.data.settings.max_description_length;
             let title = document.getElementById('title');
             title.setAttribute('maxlength', `${max_length_title}`);
             document.getElementById('childs_category').innerHTML = '';
@@ -466,7 +510,7 @@ if ($isExpireTK['value']) {
                                 break;
                             }
                         }
-                        select_parent.options.selectedIndex = index_select_new;
+                        select_parent.selectedIndex = index_select_new;
                     } else if (index == 1) {
                         document.getElementById('category_child1').innerHTML = '';
                         let option_cat_item = document.createElement('option');
@@ -508,19 +552,19 @@ if ($isExpireTK['value']) {
                         break;
                     }
                 }
-                select_parent.options.selectedIndex = index_select_new;
+                select_parent.selectedIndex = index_select_new;
             }
+            // document.getElementById('view_category').innerHTML = '';
+            // document.getElementById('view_category').hidden=true;
 
 
         });
         $('body').off('change', '#category_parent');
         $('body').on('change', '#category_parent', async (e) => {
             // e.preventDefault();
-            // console.log(e);
             document.getElementById('category_child1').disabled = false;
             let select_parent = aretha().targetize(e);
-            let index_select = select_parent.options.selectedIndex
-            let item_select = select_parent.options[index_select];
+            let item_select = select_parent.options[select_parent.selectedIndex];
             // console.log(item_select.value);
             if (item_select.value != 'none') {
                 let category = await apiML('#body-api').requestEndPoint({
@@ -532,14 +576,21 @@ if ($isExpireTK['value']) {
                         }
                     },
                 });
-                // console.log(category);
+                document.getElementById('category_id').setAttribute('value', item_select.value);
+                document.getElementById('domain_id').setAttribute('value', category.data.settings.catalog_domain);
                 let max_length_title = category.data.settings.max_title_length;
                 let title = document.getElementById('title');
                 title.setAttribute('maxlength', `${max_length_title}`);
                 // console.log(title.value);
                 if (title.value.length > max_length_title) {
-                    document.getElementById('error_category').style.visibility = 'visible';
-                    document.getElementById('error_category').appendChild(document.createTextNode(`Esta categoria solo acepta ${max_length_title} caracteres.`));
+                    show_error_element([{
+                        target: "error_category",
+                        msg: `Esta categoria solo acepta ${max_length_title} caracteres.`,
+                        btstyle: "border-warning",
+                        action: "hidden"
+                    }]);
+                    // document.getElementById('error_category').style.visibility = 'visible';
+                    // document.getElementById('error_category').appendChild(document.createTextNode(`Esta categoria solo acepta ${max_length_title} caracteres.`));
                 }
                 document.getElementById('category_child1').innerHTML = '';
                 document.getElementById('childs_category').innerHTML = '';
@@ -569,9 +620,8 @@ if ($isExpireTK['value']) {
             e.preventDefault();
             // console.log(e);
             let select_child = aretha().targetize(e);
-            // console.log(select_child);
-            let index_select = select_child.options.selectedIndex
-            let item_select = select_child.options[index_select];
+            // console.log(select_child)
+            let item_select = select_child.options[select_child.selectedIndex];
             // console.log(item_select.value);
             if (item_select.value != 'none') {
                 let category = await apiML('#body-api').requestEndPoint({
@@ -584,13 +634,19 @@ if ($isExpireTK['value']) {
                     },
                 });
                 // console.log(category.data);
+                document.getElementById('category_id').setAttribute('value', item_select.value);
+                document.getElementById('domain_id').setAttribute('value', category.data.settings.catalog_domain);
                 let max_length_title = category.data.settings.max_title_length;
                 let title = document.getElementById('title');
                 title.setAttribute('maxlength', `${max_length_title}`);
                 // console.log(title.value);
                 if (title.value.length > max_length_title) {
-                    document.getElementById('error_category').style.visibility = 'visible';
-                    document.getElementById('error_category').appendChild(document.createTextNode(`Esta categoria solo acepta ${max_length_title} caracteres.`));
+                    show_error_element([{
+                        target: "error_category",
+                        msg: `Esta categoria solo acepta ${max_length_title} caracteres.`,
+                        btstyle: "border-warning",
+                        action: "hidden"
+                    }]);
                 }
                 document.getElementById('childs_category').innerHTML = '';
                 if (category.data.children_categories.length > 0) {
@@ -632,8 +688,7 @@ if ($isExpireTK['value']) {
             // console.log(e);
             let select_child = aretha().targetize(e);
             // console.log(select_child);
-            let index_select = select_child.options.selectedIndex
-            let item_select = select_child.options[index_select];
+            let item_select = select_child.options[select_child.selectedIndex];
             // console.log(item_select.value);
             if (item_select.value != 'none') {
                 let category = await apiML('#body-api').requestEndPoint({
@@ -646,13 +701,19 @@ if ($isExpireTK['value']) {
                     },
                 });
                 // console.log(category.data);
+                document.getElementById('category_id').setAttribute('value', item_select.value);
+                document.getElementById('domain_id').setAttribute('value', category.data.settings.catalog_domain);
                 let max_length_title = category.data.settings.max_title_length;
                 let title = document.getElementById('title');
                 title.setAttribute('maxlength', `${max_length_title}`);
                 // console.log(title.value);
                 if (title.value.length > max_length_title) {
-                    document.getElementById('error_category').style.visibility = 'visible';
-                    document.getElementById('error_category').appendChild(document.createTextNode(`Esta categoria solo acepta ${max_length_title} caracteres.`));
+                    show_error_element([{
+                        target: "error_category",
+                        msg: `Esta categoria solo acepta ${max_length_title} caracteres.`,
+                        btstyle: "border-warning",
+                        action: "hidden"
+                    }]);
                 }
 
                 while (select_child.parentElement.nextElementSibling != null) {
@@ -696,20 +757,16 @@ if ($isExpireTK['value']) {
         });
         $('body').off('click', '#add_attr_btn');
         $('body').on('click', '#add_attr_btn', (e) => {
+            e.preventDefault();
             let select_child = document.getElementById('attributes_add');
-            // console.log(select_child);
-            let index_select = select_child.options.selectedIndex
-            // console.log(select_child.options[index_select].value);
-            document.getElementById(`${select_child.options[index_select].value}`).hidden = false;
+            document.getElementById(`${select_child.options[select_child.selectedIndex].value}`).hidden = false;
 
         });
         $('body').off('click', '#remove_attr_btn');
         $('body').on('click', '#remove_attr_btn', (e) => {
+            e.preventDefault();
             let select_child = document.getElementById('attributes_add');
-            // console.log(select_child);
-            let index_select = select_child.options.selectedIndex
-            // console.log(select_child.options[index_select].value);
-            document.getElementById(`${select_child.options[index_select].value}`).hidden = true;
+            document.getElementById(`${select_child.options[select_child.selectedIndex].value}`).hidden = true;
 
         });
         $('body').off('click', '#category-confirm');
@@ -718,11 +775,11 @@ if ($isExpireTK['value']) {
 
             let category_id_value = '';
             let select_parent = document.getElementById('category_parent');
-            let item_select_parent = select_parent.options[select_parent.options.selectedIndex];
+            let item_select_parent = select_parent.options[select_parent.selectedIndex];
             if (item_select_parent.value != 'none') {
                 category_id_value = item_select_parent.value;
                 let select_child = document.getElementById('category_parent');
-                let item_select_child = select_child.options[select_child.options.selectedIndex];
+                let item_select_child = select_child.options[select_child.selectedIndex];
                 if (item_select_child.value != 'none') {
                     category_id_value = item_select_child.value;
                     let childs_category = document.getElementById('childs_category');
@@ -731,7 +788,7 @@ if ($isExpireTK['value']) {
                         for (let index = 0; index < childs_category.childNodes.length; index++) {
                             // console.log(childs_category.childNodes[index].lastChild);
                             let select_childs = childs_category.childNodes[index].lastChild;
-                            let item_select_childs = select_childs.options[select_childs.options.selectedIndex];
+                            let item_select_childs = select_childs.options[select_childs.selectedIndex];
                             if (item_select_childs.value != 'none') {
                                 category_id_value = item_select_childs.value;
                             } else {
@@ -742,6 +799,12 @@ if ($isExpireTK['value']) {
                 }
             } else {
                 show_error_element('#category_parent', 'Seleccione la categoria del producto', 'border-warning');
+                show_error_element([{
+                    target: "#category_parent",
+                    msg: "Seleccione la categoria del producto",
+                    btstyle: "border-warning",
+                    action: "hidden"
+                }]);
             }
 
             aretha('#collapseOne').removeClass('show');
@@ -758,6 +821,7 @@ if ($isExpireTK['value']) {
             console.log(attributes)
             let attributes_add = document.getElementById('attributes_add');
             let view_attr = document.getElementById('view_attr');
+            view_attr.innerHTML = '';
             for (let index = 0; index < attributes.data.length; index++) {
                 const attr = attributes.data[index];
                 let attr_comp = null;
@@ -1064,11 +1128,12 @@ if ($isExpireTK['value']) {
             console.log(chart_attrs);
 
         });
-        
+
         $('body').off('click', '#get_shipp_mode');
-        $('body').on('click', '#get_shipp_mode',(e) => {
+        $('body').on('click', '#get_shipp_mode', (e) => {
             e.preventDefault();
-            apiML('.apiML-param').jsontargetize();
+            // apiML('.apiML-param').jsontargetize();
+            view_pref_shipp();
 
         });
     </script>

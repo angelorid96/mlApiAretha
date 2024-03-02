@@ -1,19 +1,28 @@
-function format_value(tag_value,value,value_type,type_struct){
-    let value_type;
+function format_value(tag_value, value, value_type, type_struct, value_id = '', id_attr = '') {
+    let value_format;
 
-    if(value_type=='number'){
-        value_type=parseInt(value);
-    }else if(value_type=='boolean'){
-        value_type=(value.toLowerCase()==='true');
-    }else{
-        value_type=`"${value}"`;
+    if (value_type == 'number') {
+        value_format = parseInt(value);
+    } else if (value_type == 'boolean') {
+        value_format = (value.toLowerCase() === 'true');
+    } else {
+        value_format=value;
     }
 
-    if(type_struct=='object'){
-        return   JSON.parse(`{"${tag_value}":${value_type}}`);
+    if (type_struct == 'object') {
+        value_format = `"${value}"`;
+        if (tag_value == 'attr') {
+            if(value==''){
+                return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}"}`);
+            }else if(value_id==''){
+                return JSON.parse(`{"id":"${id_attr}","value_name":${value_format}}`);
+            }
+            return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}","value_name":${value_format}}`);
+        }
+        return JSON.parse(`{"${tag_value}":${value_format}}`);
     }
 
-    return value;
+    return value_format;
 }
 
 const apiML = (target) => ({
@@ -119,10 +128,77 @@ const apiML = (target) => ({
         return data.endpoint_data;
     },
     jsontargetize: () => {
-        let json_endpoints_data = {};
+        let json_endpoints_data = {
+            buying_mode: "buy_it_now",
+        };
         let id_endpoint = '';
+        let type_endpoint = '';
+        let key_value = '';
         let value = '';
+        let type_value = '';
+        let struct_value = '';
+        let id_attr = '';
+        let value_unit='';
+
         let items;
+        let insert_value = (value_name, value_id = '') => {
+            let value_format = format_value(key_value,value_name+value_unit, type_value, struct_value,value_id,id_attr);
+
+            if (type_endpoint == 'list') {
+                if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
+                    json_endpoints_data[id_endpoint] = [];
+                }
+            }
+
+            if (struct_value == 'object') {
+                json_endpoints_data[id_endpoint].push(value_format);
+            } else {
+                if (Array.isArray(json_endpoints_data[id_endpoint])) {
+                    json_endpoints_data[id_endpoint].push(value_format);
+                } else if (typeof json_endpoints_data[id_endpoint] === 'object') {
+                    json_endpoints_data[id_endpoint][key_value] = value_format;
+                } else {
+                    json_endpoints_data[id_endpoint] = value_format;
+                }
+
+            }
+
+        }
+        let define_attr_vars = (item_elm) => {
+            id_endpoint = '';
+            type_endpoint = '';
+            key_value = '';
+            type_value = '';
+            struct_value = '';
+            value_unit='';
+
+            if (item_elm.hasAttribute('id-endpoint')) {
+                id_endpoint = item_elm.getAttribute('id-endpoint');
+            } else if (item_elm.hasAttribute('id')) {
+                id_endpoint = item_elm.getAttribute('id');
+            }
+            if (item_elm.hasAttribute('id-attr')) {
+                id_attr = item_elm.getAttribute('id-attr');
+            } else if (item_elm.hasAttribute('id')) {
+                id_attr = item_elm.getAttribute('id');
+            }
+            if (item_elm.hasAttribute('type-endpoint')) {
+                type_endpoint = item_elm.getAttribute('type-endpoint');
+            }
+            if (item_elm.hasAttribute('value-type')) {
+                type_value = item_elm.getAttribute('value-type');
+            }
+            if (item_elm.hasAttribute('tag-var')) {
+                key_value = item_elm.getAttribute('tag-var');
+            }
+            if (item_elm.hasAttribute('type-struct')) {
+                struct_value = item_elm.getAttribute('type-struct');
+            }
+            if(item_elm.hasAttribute('need-unit')){
+                let item_unit=document.getElementById(`${item_elm.id}_unit`);
+                value_unit=` ${item_unit.options[item_unit.selectedIndex].value}`;
+            }
+        }
 
         el = document.querySelectorAll(target);
 
@@ -136,41 +212,37 @@ const apiML = (target) => ({
         if (el.length >= 1) {
             for (let item of items) {
                 // console.log(item);
+                define_attr_vars(item);
                 switch (item.tagName.toLowerCase()) {
                     case 'input':
                         if (item.type === 'file') {
 
                         } else if (item.type === 'radio') {
-                            
-                                if(json_endpoints_data.hasOwnProperty(item.getAttribute('id-endpoint'))){
-                                    json_endpoints_data[item.getAttribute('id-endpoint')].push(format_value(item.getAttribute('tag-var'),item.value,item.getAttribute('value-type'),item.getAttribute('tag-var'),item.getAttribute('type-struct')));
-                                }else{
-                                    json_endpoints_data[item.getAttribute('id-endpoint')]=[format_value(item.getAttribute('tag-var'),item.value,item.getAttribute('value-type'),item.getAttribute('tag-var'),item.getAttribute('type-struct'))];
-                                }
-                            
-                                json_endpoints_data[item.getAttribute('id-endpoint')] = format_value(item.getAttribute('tag-var'),item.value,item.getAttribute('value-type'),item.getAttribute('tag-var'),item.getAttribute('type-struct'));
-                            
+                            if (item.hasAttribute('value')) {
+                                insert_value(item.value);
+                            } else {
+                                insert_value(item.checked);
+                            }
+
                         } else if (item.type === 'checkbox') {
                             if (item.checked) {
-                                if (item.getAttribute('type-struct') == 'object') {
-                                    if(json_endpoints_data.hasOwnProperty(item.getAttribute('id-endpoint'))){
-                                        json_endpoints_data[item.getAttribute('id-endpoint')].push(JSON.parse(`{"${item.getAttribute('tag-var')}":"${item.value}"}`));
-                                    }else{
-                                        json_endpoints_data[item.getAttribute('id-endpoint')]=[JSON.parse(`{"${item.getAttribute('tag-var')}":"${item.value}"}`)];
-                                    }
-                                } else {
-                                    json_endpoints_data[item.getAttribute('id-endpoint')] = item.value;
-                                }
+                                insert_value(item.value);
                             }
                         } else {
-
+                            insert_value(item.value);
                         }
+                        break;
+                    case 'select':
+                        let val_id=item.options[item.selectedIndex].value;
+                        let val_name=item.options[item.selectedIndex].text;
+                        insert_value(val_name,val_id);
                         break;
                 }
 
             }
 
         }
-        console.log(json_endpoints_data);
+        // console.log(json_endpoints_data);
+        return json_endpoints_data;
     }
 });

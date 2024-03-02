@@ -184,7 +184,10 @@ class mlApi
             }
             $urltmp = $endPoint['url'];
             foreach (array_keys($data_json['body']) as $key) {
-                $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
+                if(!is_array($data_json['body'][$key])){
+                    $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
+                    
+                }                
             }
             // echo '<br>';
             // echo $urltmp; 
@@ -214,7 +217,7 @@ class mlApi
             }
 
             if ($endPoint['method'] != 'GET') {
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $endPoint['body']);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
             }
 
 
