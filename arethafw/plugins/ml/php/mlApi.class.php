@@ -60,6 +60,7 @@ class mlApi
     {
         return substr($haystack, -strlen($needle)) === $needle;
     }
+     
 
 
     //===================================================================================================
@@ -115,7 +116,7 @@ class mlApi
                         $tmpKeys_menu[$key][] = array($item_key, mlApi::$list_endPoints[$key][$item_key]['name']);
                     }
                 }
-                if(key_exists('title',mlApi::$list_endPoints[$key])&& mlApi::$list_endPoints[$key]['title']!='none'){
+                if (key_exists('title', mlApi::$list_endPoints[$key]) && mlApi::$list_endPoints[$key]['title'] != 'none') {
                     // echo '<br>';
                     // echo mlApi::$list_endPoints[$key]['title'];
                     $tmpKeys_menu[$key][] = array('title', mlApi::$list_endPoints[$key]['title']);
@@ -126,11 +127,12 @@ class mlApi
         // var_dump($tmpKeys_menu);
         return $tmpKeys_menu;
     }
-    public static function data_required($endPoint_parent, $endPoint){
-         // echo $endPoint;
-         if (key_exists($endPoint_parent, mlApi::$list_endPoints) && key_exists($endPoint, mlApi::$list_endPoints[$endPoint_parent])) {
-            if(mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required']!='none'){
-                return explode(',',mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required']);
+    public static function data_required($endPoint_parent, $endPoint)
+    {
+        // echo $endPoint;
+        if (key_exists($endPoint_parent, mlApi::$list_endPoints) && key_exists($endPoint, mlApi::$list_endPoints[$endPoint_parent])) {
+            if (mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required'] != 'none') {
+                return explode(',', mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required']);
             }
         }
         return false;
@@ -163,13 +165,25 @@ class mlApi
         // var_dump($endPoint);
 
         if ($endPoint != false) {
+
+            $urltmp = $endPoint['url'];
+            foreach (array_keys($data_json['body']) as $key) {
+                if (!is_array($data_json['body'][$key])!==false) {
+                    if(strpos($urltmp,$key)){
+                        $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);               
+                        unset($data_json['body'][$key]);     
+                    }
+
+                }
+            }
+
             if (array_key_exists('body', $endPoint)) {
                 foreach (array_keys($endPoint['body']) as $key) {
                     if ($key == 'client_id') {
                         $endPoint['body'][$key] = mlApi::getClient_id();
                     } else if ($key == 'client_secret') {
                         $endPoint['body'][$key] = mlApi::getClient_secret();
-                    } 
+                    }
                     // else if (array_key_exists($key, $data_json['body'])) {
                     //     $endPoint['body'][$key] = $data_json['body'][$key];
                     // }
@@ -182,23 +196,9 @@ class mlApi
                     // echo '<br>';
                 }
             }
-            $urltmp = $endPoint['url'];
-            foreach (array_keys($data_json['body']) as $key) {
-                if(!is_array($data_json['body'][$key])){
-                    $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
-                    
-                }                
-            }
-            // echo '<br>';
-            // echo $urltmp; 
-            // echo '<br>';
-            // print_r($endPoint);
-            // echo '<br>';
-            $endPoint['headers'] = explode(',', sprintf($endPoint['headers'], $data_json['access_token']));
-            // print_r($endPoint['headers']);
 
-            // var_dump($endPoint);
-            // echo '<br>';
+
+            $endPoint['headers'][0] = sprintf($endPoint['headers'][0], $data_json['access_token']);
 
 
 
@@ -210,59 +210,58 @@ class mlApi
 
             if ($endPoint['method'] == 'POST') {
                 curl_setopt($curl, CURLOPT_POST, true);
-            }else if ($endPoint['method'] == 'PUT') {
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');           
-            }else if ($endPoint['method'] == 'DELETE') {
+            } else if ($endPoint['method'] == 'PUT') {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+            } else if ($endPoint['method'] == 'DELETE') {
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
             }
 
             if ($endPoint['method'] != 'GET') {
+                // array_push($endPoint['headers'],sprintf('Content-Length:%s',strlen(json_encode($endPoint['body']))));   
                 curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
             }
 
 
             $response = curl_exec($curl);
-            
-            // echo '<br>';
-            // var_dump($response);
-              
-            
+
+           
+
             curl_close($curl);
             preg_match('/(\{.*?)$/', $response, $json_matches);
-            $response_str=$json_matches[0];
+            $response_str = $json_matches[0];
             // echo '<br>';
             // var_dump($response_str);
-            
-            if($response_str[strlen($response_str)-1]==']'){
+
+            if ($response_str[strlen($response_str) - 1] == ']') {
                 // echo '<br>';
                 // $response_str=substr($response_str,0,strlen($response_str)-1);
-                $response_str=sprintf('[%s',$response_str);
+                $response_str = sprintf('[%s', $response_str);
             }
-            $response_str=sprintf('{"data":%s}',$response_str);
+            $response_str = sprintf('{"data":%s}', $response_str);
             // echo '<br>';
             // var_dump($response_str);
             // echo '<br>';
             // var_dump(json_decode($response_str,true));
-              
 
 
-            $response=json_decode($response_str,true);
-            $new_response=null;
 
-            if($data_json['endpointChild']=='required_attributes'){
-                $new_response=array('data'=>array());
-                    // var_dump($response);
-                    // echo '<br>';
+            $response = json_decode($response_str, true);
+            $new_response = null;
+
+            if ($data_json['endpointChild'] == 'required_attributes') {
+                $new_response = array('data' => array());
+                // var_dump($response);
+                // echo '<br>';
                 foreach ($response['data']['groups'] as $key) {
-                    foreach($key['components'] as $key_attri){
-                        array_push($new_response['data'],$key_attri);
+                    foreach ($key['components'] as $key_attri) {
+                        array_push($new_response['data'], $key_attri);
                     }
                 }
-                $response=$new_response;
+                $response = $new_response;
             }
 
-            if(key_exists('name',$endPoint)){
-                $response['nameEndPoint']=$endPoint['name'];
+            if (key_exists('name', $endPoint)) {
+                $response['nameEndPoint'] = $endPoint['name'];
             }
 
             // echo '<br>';
@@ -270,7 +269,8 @@ class mlApi
             return $response;
         }
 
-        return array('reject'=>array(
+        return array(
+            'reject' => array(
                 'status' => 'fail',
                 'error' => sprintf('Invalid:%s  no encontrado en %s', $data_json['endpointChild'], $data_json['endpoint_parent'])
             ),

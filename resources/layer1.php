@@ -33,7 +33,7 @@ Aretha::sessionStart();
 </div>
 <div class="row pt-5">
     <div class="col-md-12">
-        <div class="card" id="body-api" style="visibility:hidden;">
+        <div class="card" id="body-api" hidden>
 
         </div>
     </div>
@@ -94,7 +94,7 @@ Aretha::sessionStart();
                 endpointChild: 'publish',
                },
         },'resources/layer2.php','#body-api',true);
-        document.getElementById('body-api').style.visibility='visible';
+        document.getElementById('body-api').hidden=false;
         // apiML('#body-api').requestEndPoint({
         //     EndPoint: {
         //         endpoint_parent: 'users',
@@ -119,5 +119,6 @@ Aretha::sessionStart();
         //     },
         // });
     });
+    
     
 </script>

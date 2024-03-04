@@ -1130,10 +1130,19 @@ if ($isExpireTK['value']) {
         });
 
         $('body').off('click', '#get_shipp_mode');
-        $('body').on('click', '#get_shipp_mode', (e) => {
+        $('body').on('click', '#get_shipp_mode', async(e) => {
             e.preventDefault();
             // apiML('.apiML-param').jsontargetize();
             view_pref_shipp();
-
+            // let chart_attrs = await apiML().requestEndPoint({
+            //     EndPoint: {
+            //         endpoint_parent: 'products',
+            //         endpointChild: 'required_attributes',
+            //         body: {
+            //             category_id: document.getElementById('category_id').getAttribute('value'),
+            //         }
+            //     },
+            // });
+            // console.log(chart_attrs);
         });
     </script>
