@@ -88,7 +88,7 @@ if ($isExpireTK['value']) {
                                     <div class="input-group ">
                                         <span class="input-group-text">$</span>
                                         <input type="text" class="form-control apiML-param" id="price" value-type="number" aria-label="Amount (to the nearest dollar)">
-                                        <select class="form-select apiML-param" id="current_id" value-type="text" aria-label="Default select example">
+                                        <select class="form-select apiML-param" id="currency_id" value-type="text" aria-label="Default select example">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
                                         </select>
@@ -96,7 +96,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Estado del producto</label>
-                                    <select class="form-select apiML-param" id="ITEM_CONDITION" id-endpoint="attributes" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
+                                    <select class="form-select apiML-param" id="ITEM_CONDITION" id-endpoint="attributes" select-sndata="all" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
                                         <option value="none">...</option>
                                         <option value="2230284">Nuevo</option>
                                         <option value="2230581">Usado</option>
@@ -109,7 +109,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Tipo de publicacion</label>
-                                    <select class="form-select" id="listing_type_id" value-type="string" aria-label="Default select example">
+                                    <select class="form-select apiML-param" id="listing_type_id" select-sndata="value" value-type="string" aria-label="Default select example">
                                         <option value="none">...</option>
                                         <option value="gold_pro">Premium</option>
                                         <option value="gold_special">Clásica</option>
@@ -126,7 +126,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Tipo de garantia</label>
-                                    <select class="form-select apiML-param" id="WARRANTY_TYPE" id-endpoint="sale_terms" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
+                                    <select class="form-select apiML-param" id="WARRANTY_TYPE" id-endpoint="sale_terms" select-sndata="value" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
                                         <option value="none">...</option>
                                         <option value="2230279">Garantia de fabrica</option>
                                         <option value="2230280">Garantia del vendedor</option>
@@ -135,7 +135,7 @@ if ($isExpireTK['value']) {
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="price" class="form-label">Tiempo de garantia</label>
                                     <div class="input-group ">
-                                        <input type="text" class="form-control apiML-param" id="WARRANTY_TIME" need-unit id-endpoint="sale_terms" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Amount (to the nearest dollar)">
+                                        <input type="text" class="form-control apiML-param" id="WARRANTY_TIME" need-unit select-sndata="value" id-endpoint="sale_terms" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Amount (to the nearest dollar)">
                                         <select class="form-select" id="WARRANTY_TIME_unit" aria-label="Default select example">
                                             <option value="none">...</option>
                                             <option value="dias">dias</option>
@@ -147,11 +147,11 @@ if ($isExpireTK['value']) {
                                 <div class="col-md-2 mb-2 ms-5">
                                     <label for="condition" class="form-label">Canal de publicacion</label>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input apiML-param apiML-shipp" type="checkbox" id-endpoint="channels" type-endpoint="list" type-struct="object" value-type="string" tag-var="id" id="marketplace_check" value="marketplace">
+                                        <input class="form-check-input apiML-param" type="checkbox" id-endpoint="channels" type-endpoint="list" value-type="string" id="marketplace_check" value="marketplace">
                                         <label class="form-check-label" for="marketplace_check">Mercado Libre</label>
                                     </div>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input apiML-param apiML-shipp" type="checkbox" id="mshops_check" id-endpoint="channels" tag-var="id" type-endpoint="list" value-type="string" type-struct="object" value="mshops">
+                                        <input class="form-check-input apiML-param" type="checkbox" id="mshops_check" id-endpoint="channels" type-endpoint="list" value-type="string" value="mshops">
                                         <label class="form-check-label" for="mshops_check">Mercado Shop</label>
                                     </div>
                                 </div>
@@ -265,13 +265,13 @@ if ($isExpireTK['value']) {
                         </div>
                         <div class="col-md-2 mb-2 ms-1">
                             <label for="condition" class="form-label">Modalidad de envio</label>
-                            <select class="form-select" id="mode_shipp" aria-label="Default select example">
+                            <select class="form-select apiML-param" id="mode_shipp" id-endpoint="shipping" type-endpoint="object" value-type="string" tag-var="mode|type" multi-val="true">
 
                             </select>
                         </div>
                         <div class="col-md-2 mb-2 ms-5">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="free_ship_check">
+                                <input class="form-check-input apiML-param" type="checkbox" id="free_ship_check" vlaue="true" id-endpoint="shipping" type-endpoint="object" value-type="boolean" tag-var="free_shipping">
                                 <label class="form-check-label" for="free_ship_check">Envio gratis</label>
                             </div>
                         </div>
@@ -325,16 +325,7 @@ if ($isExpireTK['value']) {
         }
         let view_pref_shipp = async () => {
 
-            let body_json=apiML('.apiML-shipp').jsontargetize();
-            console.log(body_json);
-            let pref_ship = await apiML().requestEndPoint({
-                EndPoint: {
-                    endpoint_parent: 'users',
-                    endpointChild: 'shipping_modes',
-                    body:body_json,
-                },
-            });
-            console.log(pref_ship);
+
             // let option_mode_ship = document.createElement('option');
             // option_mode_ship.setAttribute('value', 'none');
             // option_mode_ship.appendChild(document.createTextNode('modos'));
@@ -483,14 +474,10 @@ if ($isExpireTK['value']) {
                 },
             });
 
-
+            console.log(aretha().targetize(e).getAttribute('category_id'));
             // console.log(aretha().targetize(e).getAttribute('category_id'));
             document.getElementById('category_id').setAttribute('value', aretha().targetize(e).getAttribute('category_id'));
             document.getElementById('domain_id').setAttribute('value', aretha().targetize(e).getAttribute('domain_id'));
-
-            // console.log(aretha().targetize(e).getAttribute('category_id'));
-            // aretha('#category_id').attr('value',aretha().targetize(e).getAttribute('category_id'));
-            // aretha('#domain_id').attr('value',aretha().targetize(e).getAttribute('domain_id'));
 
             let max_length_title = category.data.settings.max_title_length;
             let title = document.getElementById('title');
@@ -515,7 +502,7 @@ if ($isExpireTK['value']) {
                         document.getElementById('category_child1').innerHTML = '';
                         let option_cat_item = document.createElement('option');
                         option_cat_item.selected = true;
-                        option_cat_item.setAttribute('value', category.data.path_from_root[0].id);
+                        option_cat_item.setAttribute('value', category.data.path_from_root[index].id);
                         option_cat_item.appendChild(document.createTextNode(category.data.path_from_root[index].name));
                         document.getElementById('category_child1').appendChild(option_cat_item);
                     } else {
@@ -533,7 +520,7 @@ if ($isExpireTK['value']) {
                         // select_childs.setAttribute('id', 'category_childs');
                         let option_cat_item = document.createElement('option');
                         option_cat_item.selected = true;
-                        option_cat_item.setAttribute('value', category.data.path_from_root[0].id);
+                        option_cat_item.setAttribute('value', category.data.path_from_root[index].id);
                         option_cat_item.appendChild(document.createTextNode(category.data.path_from_root[index].name));
                         select_childs.appendChild(option_cat_item);
                         div_col.appendChild(label_childs);
@@ -826,6 +813,7 @@ if ($isExpireTK['value']) {
                 const attr = attributes.data[index];
                 let attr_comp = null;
                 let attr_label = null;
+                let select_attr=null;
                 let div_col = document.createElement('div');
                 div_col.setAttribute('class', 'col-md-2 mb-2 ms-1');
                 // console.log(attr.id);
@@ -835,10 +823,16 @@ if ($isExpireTK['value']) {
                         attr_label.setAttribute('class', 'form-label');
                         attr_label.setAttribute('form', `${attr.id}`);
                         attr_label.appendChild(document.createTextNode(`${attr.name}`));
-                        attr_comp = document.createElement('input');
-                        attr_comp.setAttribute('class', 'form-select');
+                        attr_comp = document.createElement('select');
+                        attr_comp.setAttribute('class', 'form-select  apiML-param');
                         attr_comp.setAttribute('type', 'select');
                         attr_comp.setAttribute('id', `${attr.id}`);
+                        attr_comp.setAttribute('id-endpoint', 'attributes');
+                        attr_comp.setAttribute('type-endpoint', 'list');
+                        attr_comp.setAttribute('type-struct', 'object');
+                        attr_comp.setAttribute('value-type', 'string');
+                        attr_comp.setAttribute('tag-var', 'attr');
+                        attr_comp.setAttribute('select-sndata', 'all');
                         for (let index_val = 0; index_val < attr.values.length; index_val++) {
                             let op_sel = document.createElement('option');
                             op_sel.setAttribute('value', `${attr.values[index_val].id}`);
@@ -853,8 +847,14 @@ if ($isExpireTK['value']) {
                         attr_label.setAttribute('form', `${attr.id}`);
                         attr_label.appendChild(document.createTextNode(`${attr.name}`));
                         attr_comp = document.createElement('select');
-                        attr_comp.setAttribute('class', 'form-select');
+                        attr_comp.setAttribute('class', 'form-select  apiML-param');
                         attr_comp.setAttribute('id', `${attr.id}`);
+                        attr_comp.setAttribute('id-endpoint', 'attributes');
+                        attr_comp.setAttribute('type-endpoint', 'list');
+                        attr_comp.setAttribute('type-struct', 'object');
+                        attr_comp.setAttribute('value-type', 'string');
+                        attr_comp.setAttribute('tag-var', 'attr');
+                        attr_comp.setAttribute('select-sndata', 'all');
                         for (let index_val = 0; index_val < attr.values.length; index_val++) {
                             let op_sel = document.createElement('option');
                             op_sel.setAttribute('value', `${attr.values[index_val].id}`);
@@ -870,15 +870,30 @@ if ($isExpireTK['value']) {
                         attr_label.setAttribute('form', `${attr.id}`);
                         attr_label.appendChild(document.createTextNode(`${attr.name}`));
                         attr_comp = document.createElement('input');
-                        attr_comp.setAttribute('class', 'form-control');
+                        attr_comp.setAttribute('class', 'form-control  apiML-param');
                         attr_comp.setAttribute('type', 'text');
-                        attr_comp.setAttribute('id', `input_${attr.id}`);
+                        attr_comp.setAttribute('id', `${attr.id}`);
+                        attr_comp.setAttribute('id-endpoint', 'attributes');
+                        attr_comp.setAttribute('type-endpoint', 'list');
+                        attr_comp.setAttribute('type-struct', 'object');
+                        attr_comp.setAttribute('value-type', 'string');
+                        attr_comp.setAttribute('tag-var', 'attr');
+                        
+
                         div_col.appendChild(attr_label);
                         if ('values' in attr) {
                             attr_comp.hidden = true;
-                            let select_attr = document.createElement('select');
-                            select_attr.setAttribute('class', 'form-select');
+                            attr_comp.classList.remove('apiML-param');
+                            select_attr = document.createElement('select');
+                            select_attr.setAttribute('class', 'form-select  apiML-param');
                             select_attr.setAttribute('id', 'select_attr_values');
+                            select_attr.setAttribute('id-endpoint', 'attributes');
+                            select_attr.setAttribute('type-endpoint', 'list');
+                            select_attr.setAttribute('type-struct', 'object');
+                            select_attr.setAttribute('value-type', 'string');
+                            select_attr.setAttribute('tag-var', 'attr');
+                            select_attr.setAttribute('select-sndata', 'all');
+                            select_attr.setAttribute('need-unit','y');
                             let op_sel = null;
                             // op_sel.setAttribute('value', `${attr.values[index_val].id}`);
                             // op_sel.appendChild(document.createTextNode());
@@ -887,27 +902,32 @@ if ($isExpireTK['value']) {
                             for (let index_val = 0; index_val < attr.values.length; index_val++) {
                                 op_sel = document.createElement('option');
                                 op_sel.setAttribute('value', `${attr.values[index_val].id}`);
-                                op_sel.setAttribute('input-id', `input_${attr.id}`);
+                                op_sel.setAttribute('input-id', `${attr.id}`);
                                 op_sel.appendChild(document.createTextNode(`${attr.values[index_val].name}`));
                                 select_attr.appendChild(op_sel);
                             }
                             op_sel = document.createElement('option');
                             op_sel.setAttribute('value', 'manual');
-                            op_sel.setAttribute('input-id', `input_${attr.id}`);
+                            op_sel.setAttribute('input-id', `${attr.id}`);
                             op_sel.appendChild(document.createTextNode('otro'));
                             select_attr.appendChild(op_sel);
                             div_col.append(select_attr);
                         }
                         if ('allowed_units' in attr) {
+                            attr_comp.setAttribute('need-unit','y');
+                            
                             group_div.setAttribute('class', 'input-group mb-3');
                             let sl_units = document.createElement('select');
                             sl_units.setAttribute('class', 'form-select');
-                            sl_units.setAttribute('id', `select_attr_${attr.id}_unit`);
+                            sl_units.setAttribute('id', `${attr.id}_unit`);
                             for (let index_val = 0; index_val < attr.allowed_units.length; index_val++) {
                                 let op_units = document.createElement('option');
                                 op_units.setAttribute('value', `${attr.allowed_units[index_val].id}`);
                                 op_units.appendChild(document.createTextNode(`${attr.allowed_units[index_val].name}`));
                                 sl_units.appendChild(op_units);
+                            }
+                            if(select_attr!=null){
+                                select_attr.setAttribute('need-unit','y');
                             }
                             group_div.appendChild(attr_comp);
                             group_div.appendChild(sl_units);
@@ -916,37 +936,41 @@ if ($isExpireTK['value']) {
                             div_col.appendChild(attr_comp);
                         }
                     }
-                }
-                if (!attr.tags.hasOwnProperty('required')) {
-                    if (!attr.tags.hasOwnProperty('catalog_required')) {
-                        if (!attr.tags.hasOwnProperty('catalog_listing_required')) {
-                            div_col.hidden = true;
-                            let op_attr_add = document.createElement('option');
-                            op_attr_add.setAttribute('value', `attr_id_${attr.id}`)
-                            op_attr_add.appendChild(document.createTextNode(attr.name));
-                            attributes_add.appendChild(op_attr_add);
+                    if (!attr.tags.hasOwnProperty('required')) {
+                        if (!attr.tags.hasOwnProperty('catalog_required')) {
+                            if (!attr.tags.hasOwnProperty('catalog_listing_required')) {
+                                div_col.hidden = true;
+                                attr_comp.classList.remove('apiML-param');
+                                let op_attr_add = document.createElement('option');
+                                op_attr_add.setAttribute('value', `attr_id_${attr.id}`)
+                                op_attr_add.appendChild(document.createTextNode(attr.name));
+                                attributes_add.appendChild(op_attr_add);
+                                if(select_attr!=null){
+                                    select_attr.classList.remove('apiML-param');
+                                }
+                            }
                         }
                     }
-                }
-                if (attr.tags.hasOwnProperty('allow_variations')) {
-                    let op_att_var = document.createElement('option');
-                    op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
-                    op_att_var.setAttribute('input-id', `${attr.id}`);
-                    op_att_var.appendChild(document.createTextNode(`${attr.name}`));
-                    document.getElementById('attr_var').appendChild(op_att_var);
-                }
-                // if (attr.tags.hasOwnProperty('variation_attribute')) {
-                //     let op_att_var = document.createElement('option');
-                //     op_att_var.setAttribute('value', `attr_id_${attr.id}`);
-                //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
-                //     select_variation_attr.appendChild(op_att_var);
-                // }
-                if (attr.id == 'GENDER') {
-                    document.getElementById('panel_grid').hidden = false;
-                }
+                    if (attr.tags.hasOwnProperty('allow_variations')) {
+                        let op_att_var = document.createElement('option');
+                        op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
+                        op_att_var.setAttribute('input-id', `${attr.id}`);
+                        op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                        document.getElementById('attr_var').appendChild(op_att_var);
+                    }
+                    // if (attr.tags.hasOwnProperty('variation_attribute')) {
+                    //     let op_att_var = document.createElement('option');
+                    //     op_att_var.setAttribute('value', `attr_id_${attr.id}`);
+                    //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                    //     select_variation_attr.appendChild(op_att_var);
+                    // }
+                    if (attr.id == 'GENDER') {
+                        document.getElementById('panel_grid').hidden = false;
+                    }
 
-                div_col.setAttribute('id', `attr_id_${attr.id}`);
-                view_attr.appendChild(div_col);
+                    div_col.setAttribute('id', `attr_id_${attr.id}`);
+                    view_attr.appendChild(div_col);
+                }
             }
             aretha('#collapseTwo').addClass('show');
         });
@@ -968,9 +992,14 @@ if ($isExpireTK['value']) {
                         label_img_input.setAttribute('form', `img${document.getElementById('img_input').childElementCount+1}`);
                         label_img_input.appendChild(document.createTextNode(`URL imagen ${document.getElementById('img_input').childElementCount+1}`));
                         let input_img = document.createElement('input');
-                        input_img.setAttribute('class', 'form-control');
+                        input_img.setAttribute('class', 'form-control apiML-param');
                         input_img.setAttribute('type', 'text');
                         input_img.setAttribute('id', `img${document.getElementById('img_input').childElementCount+1}`);
+                        input_img.setAttribute('id-endpoint', 'pictures');
+                        input_img.setAttribute('type-endpoint', 'list');
+                        input_img.setAttribute('type-struct', 'object');
+                        input_img.setAttribute('value-type', 'string');
+                        input_img.setAttribute('tag-var', 'source');
                         div_col.appendChild(label_img_input);
                         div_col.appendChild(input_img);
                         document.getElementById('img_input').appendChild(div_col);
@@ -1005,13 +1034,16 @@ if ($isExpireTK['value']) {
             // console.log(e);
             let select_child = aretha().targetize(e);
             // console.log(select_child);
-            let index_select = select_child.options.selectedIndex
-            let item_select = select_child.options[index_select];
+            let item_select = select_child.options[select_child.selectedIndex];
 
             // console.log(item_select);
             if (item_select.value == 'manual') {
+                select_child.classList.remove('apiML-param');
+                document.getElementById(`${item_select.getAttribute('input-id')}`).classList.add('apiML-param');
                 document.getElementById(`${item_select.getAttribute('input-id')}`).hidden = false;
             } else {
+                select_child.classList.add('apiML-param');
+                document.getElementById(`${item_select.getAttribute('input-id')}`).classList.remove('apiML-param');
                 document.getElementById(`${item_select.getAttribute('input-id')}`).hidden = true;
             }
         });
@@ -1130,19 +1162,55 @@ if ($isExpireTK['value']) {
         });
 
         $('body').off('click', '#get_shipp_mode');
-        $('body').on('click', '#get_shipp_mode', async(e) => {
+        $('body').on('click', '#get_shipp_mode', async (e) => {
             e.preventDefault();
-            // apiML('.apiML-param').jsontargetize();
-            view_pref_shipp();
-            // let chart_attrs = await apiML().requestEndPoint({
-            //     EndPoint: {
-            //         endpoint_parent: 'products',
-            //         endpointChild: 'required_attributes',
-            //         body: {
-            //             category_id: document.getElementById('category_id').getAttribute('value'),
-            //         }
-            //     },
-            // });
-            // console.log(chart_attrs);
+            // let body_json=apiML('.apiML-shipp').jsontargetize();
+            // console.log(body_json);
+            const msg_types_me = {
+                'drop_off': 'Mercado Envios',
+                'xd_drop_off': 'Mercado Envios Places',
+                'cross_doking': 'Mercado Envios Coleta',
+                'self_service': 'Mercado Envios Flex',
+                'fulfillment': 'Mercado Envios Full',
+                'not_specified': 'Acordar con vendedor',
+            };
+
+            let pref_ship = await apiML().requestEndPoint({
+                EndPoint: {
+                    endpoint_parent: 'users',
+                    endpointChild: 'shipping_preferences',
+                },
+            });
+            // console.log(pref_ship);
+            let select_shipp = document.getElementById('mode_shipp');
+            select_shipp.innerHTML = '';
+            pref_ship.data.logistics.forEach((item_log) => {
+                item_log.types.forEach((type_mode) => {
+                    let option_log = document.createElement('option');
+                    option_log.setAttribute('value', `${item_log.mode}|${type_mode.type}`);
+                    if (type_mode.type in msg_types_me) {
+                        option_log.appendChild(document.createTextNode(`${msg_types_me[type_mode.type]}`));
+                    } else {
+                        option_log.appendChild(document.createTextNode(`${type_mode.type}`));
+                    }
+                    select_shipp.appendChild(option_log);
+                });
+            });
+
+        });
+        $('body').off('click', '#val_publishe');
+        $('body').on('click', '#val_publish', async (e) => {
+            e.preventDefault();
+            let body_json = apiML('.apiML-param').jsontargetize();
+            console.log(body_json);
+            let val_publish = await apiML().requestEndPoint({
+                EndPoint: {
+                    endpoint_parent: 'products',
+                    endpointChild: 'validate',
+                    body:body_json,
+                },
+            });
+            console.log(val_publish);
+
         });
     </script>

@@ -6,15 +6,16 @@ function format_value(tag_value, value, value_type, type_struct, value_id = '', 
     } else if (value_type == 'boolean') {
         value_format = (value.toLowerCase() === 'true');
     } else {
-        value_format=value;
+        value_format = value;
     }
 
     if (type_struct == 'object') {
         value_format = `"${value}"`;
+        console.log(value_format);
         if (tag_value == 'attr') {
-            if(value==''){
+            if (value == '') {
                 return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}"}`);
-            }else if(value_id==''){
+            } else if (value_id == '') {
                 return JSON.parse(`{"id":"${id_attr}","value_name":${value_format}}`);
             }
             return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}","value_name":${value_format}}`);
@@ -24,7 +25,15 @@ function format_value(tag_value, value, value_type, type_struct, value_id = '', 
 
     return value_format;
 }
+function verifity_error_request_server(json_data){
+    // if(json_data.hasOwnProperty('error')){
+    //     if(json_data.error='validation_error'){
+    //         json.data.cause
+    //     }else{
 
+    //     }
+    // }
+}
 const apiML = (target) => ({
 
     //isAuth proporciona un menu Nav utilizando bootstrap con los endpoints que quiera mostrar
@@ -138,15 +147,22 @@ const apiML = (target) => ({
         let type_value = '';
         let struct_value = '';
         let id_attr = '';
-        let value_unit='';
+        let value_unit = '';
+        let mulit_val = '';
+        let select_sndata='';
 
         let items;
         let insert_value = (value_name, value_id = '') => {
-            let value_format = format_value(key_value,value_name+value_unit, type_value, struct_value,value_id,id_attr);
+
+            let value_format = format_value(key_value, value_name + value_unit, type_value, struct_value, value_id, id_attr);
 
             if (type_endpoint == 'list') {
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = [];
+                }
+            } else if (type_endpoint == 'object') {
+                if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
+                    json_endpoints_data[id_endpoint] = {};
                 }
             }
 
@@ -164,13 +180,23 @@ const apiML = (target) => ({
             }
 
         }
+        let mulit_values_insert = (value_id) => {
+            let key_multi_vals = key_value.split('|');
+            let values_id = value_id.split('|');
+            for (let index = 0; index < values_id.length; index++) {
+                key_value=key_multi_vals[index];
+                insert_value(values_id[index]);
+            }
+        }
         let define_attr_vars = (item_elm) => {
             id_endpoint = '';
             type_endpoint = '';
             key_value = '';
             type_value = '';
             struct_value = '';
-            value_unit='';
+            value_unit = '';
+            select_sndata='value';
+            mulit_val =false;
 
             if (item_elm.hasAttribute('id-endpoint')) {
                 id_endpoint = item_elm.getAttribute('id-endpoint');
@@ -194,9 +220,18 @@ const apiML = (target) => ({
             if (item_elm.hasAttribute('type-struct')) {
                 struct_value = item_elm.getAttribute('type-struct');
             }
-            if(item_elm.hasAttribute('need-unit')){
-                let item_unit=document.getElementById(`${item_elm.id}_unit`);
-                value_unit=` ${item_unit.options[item_unit.selectedIndex].value}`;
+            if (item_elm.hasAttribute('need-unit')) {
+                let item_unit = document.getElementById(`${item_elm.id}_unit`);
+                value_unit = ` ${item_unit.options[item_unit.selectedIndex].value}`;
+                if(value_unit==' "'){
+                    value_unit=' \"';
+                }
+            }
+            if (item_elm.hasAttribute('multi-val')) {
+                mulit_val = (item_elm.getAttribute('multi-val') == 'true');
+            }
+            if (item_elm.hasAttribute('select-sndata')) {
+                select_sndata = item_elm.getAttribute('select-sndata');
             }
         }
 
@@ -218,24 +253,45 @@ const apiML = (target) => ({
                         if (item.type === 'file') {
 
                         } else if (item.type === 'radio') {
-                            if (item.hasAttribute('value')) {
-                                insert_value(item.value);
-                            } else {
-                                insert_value(item.checked);
+                            if (item.checked) {
+                                if (item.hasAttribute('value')) {
+                                    insert_value(item.value);
+                                } else {
+                                    insert_value(item.checked);
+                                }
                             }
 
                         } else if (item.type === 'checkbox') {
                             if (item.checked) {
-                                insert_value(item.value);
+                                if (item.hasAttribute('value')) {
+                                    insert_value(item.value);
+                                } else {
+                                    insert_value(item.checked);
+                                }
                             }
                         } else {
                             insert_value(item.value);
                         }
                         break;
                     case 'select':
-                        let val_id=item.options[item.selectedIndex].value;
-                        let val_name=item.options[item.selectedIndex].text;
-                        insert_value(val_name,val_id);
+                        let val_id = item.options[item.selectedIndex].value;
+                        let val_name = item.options[item.selectedIndex].text;
+                        if(item.options[item.selectedIndex].hasAttribute('input-id')){
+                            id_attr=item.options[item.selectedIndex].getAttribute('input-id');
+                        }
+
+                        // console.log(`multi-val:${mulit_val}`);
+                        if (mulit_val) {
+                            mulit_values_insert(val_id);                         
+                        } else {
+                            if(select_sndata=='value'){
+                                insert_value(val_id);
+                            }else if(select_sndata=='text'){
+                                insert_value(val_name);
+                            }else if(select_sndata=='all'){
+                                insert_value(val_name,val_id);
+                            }  
+                        }
                         break;
                 }
 

@@ -168,6 +168,14 @@
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": "none"
+        },
+        "validate": {
+            "name": "Validador de publicaciones",
+            "url": "https://api.mercadolibre.com/items/validate",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body": {},
+            "required": "none"
         }
     },
     "items": {
