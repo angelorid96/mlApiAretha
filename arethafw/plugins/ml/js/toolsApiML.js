@@ -11,7 +11,7 @@ function format_value(tag_value, value, value_type, type_struct, value_id = '', 
 
     if (type_struct == 'object') {
         value_format = `"${value}"`;
-        console.log(value_format);
+        // console.log(value_format);
         if (tag_value == 'attr') {
             if (value == '') {
                 return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}"}`);
@@ -25,7 +25,7 @@ function format_value(tag_value, value, value_type, type_struct, value_id = '', 
 
     return value_format;
 }
-function verifity_error_request_server(json_data){
+function verifity_error_request_server(json_data) {
     // if(json_data.hasOwnProperty('error')){
     //     if(json_data.error='validation_error'){
     //         json.data.cause
@@ -117,18 +117,18 @@ const apiML = (target) => ({
         if (data.status == 'warning') {
             aretha('#error-title').html('Error al obtener informacion!');
             aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.message}</p>`);
-            document.getElementById('card-error').style.visibility = 'visible';
+            document.getElementById('card-error').hidden = false;
 
 
             setTimeout(() => {
-                document.getElementById('card-error').style.visibility = 'hidden';
+                document.getElementById('card-error').hidden = true;
             }, 9000);
         } else {
             if (typeof document.getElementById(target) === 'object') {
                 if (json_data.urlPage) {
                     if (data.status == 'success') {
                         aretha(target).html(data.html);
-                        document.getElementById(target.replace('#', '')).style.visibility = 'visible';
+                        document.getElementById(target.replace('#', '')).hidden = false;
                     }
                 }
             }
@@ -138,7 +138,7 @@ const apiML = (target) => ({
     },
     jsontargetize: () => {
         let json_endpoints_data = {
-            buying_mode: "buy_it_now",
+            
         };
         let id_endpoint = '';
         let type_endpoint = '';
@@ -149,7 +149,7 @@ const apiML = (target) => ({
         let id_attr = '';
         let value_unit = '';
         let mulit_val = '';
-        let select_sndata='';
+        let select_sndata = '';
 
         let items;
         let insert_value = (value_name, value_id = '') => {
@@ -184,7 +184,7 @@ const apiML = (target) => ({
             let key_multi_vals = key_value.split('|');
             let values_id = value_id.split('|');
             for (let index = 0; index < values_id.length; index++) {
-                key_value=key_multi_vals[index];
+                key_value = key_multi_vals[index];
                 insert_value(values_id[index]);
             }
         }
@@ -195,8 +195,8 @@ const apiML = (target) => ({
             type_value = '';
             struct_value = '';
             value_unit = '';
-            select_sndata='value';
-            mulit_val =false;
+            select_sndata = 'value';
+            mulit_val = false;
 
             if (item_elm.hasAttribute('id-endpoint')) {
                 id_endpoint = item_elm.getAttribute('id-endpoint');
@@ -222,9 +222,11 @@ const apiML = (target) => ({
             }
             if (item_elm.hasAttribute('need-unit')) {
                 let item_unit = document.getElementById(`${item_elm.id}_unit`);
-                value_unit = ` ${item_unit.options[item_unit.selectedIndex].value}`;
-                if(value_unit==' "'){
-                    value_unit=' \"';
+                let value_unit_tmp = item_unit.options[item_unit.selectedIndex].value;
+                if (value_unit_tmp.match(RegExp('[\"\']'))) {
+                    value_unit = value_unit = ` \\${value_unit_tmp}`;
+                } else {
+                    value_unit = ` ${value_unit_tmp}`;
                 }
             }
             if (item_elm.hasAttribute('multi-val')) {
@@ -276,22 +278,30 @@ const apiML = (target) => ({
                     case 'select':
                         let val_id = item.options[item.selectedIndex].value;
                         let val_name = item.options[item.selectedIndex].text;
-                        if(item.options[item.selectedIndex].hasAttribute('input-id')){
-                            id_attr=item.options[item.selectedIndex].getAttribute('input-id');
+                        if (item.options[item.selectedIndex].hasAttribute('input-id')) {
+                            id_attr = item.options[item.selectedIndex].getAttribute('input-id');
                         }
 
                         // console.log(`multi-val:${mulit_val}`);
                         if (mulit_val) {
-                            mulit_values_insert(val_id);                         
+                            mulit_values_insert(val_id);
                         } else {
-                            if(select_sndata=='value'){
-                                insert_value(val_id);
-                            }else if(select_sndata=='text'){
+                            if (select_sndata == 'value') {
+                                // console.log(val_id.match(RegExp('^[0-9]+$')));
+                                if (val_id.match(RegExp('^[0-9]+$'))) {
+                                    insert_value('', val_id);
+                                } else {
+                                    insert_value(val_id);
+                                }
+                            } else if (select_sndata == 'text') {
                                 insert_value(val_name);
-                            }else if(select_sndata=='all'){
-                                insert_value(val_name,val_id);
-                            }  
+                            } else if (select_sndata == 'all') {
+                                insert_value(val_name, val_id);
+                            }
                         }
+                        break;
+                    case 'textarea':
+                        insert_value(item.value);
                         break;
                 }
 

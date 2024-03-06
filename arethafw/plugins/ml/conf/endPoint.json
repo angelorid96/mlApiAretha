@@ -78,6 +78,13 @@
             "method": "GET",
             "required": "site_user"
         },
+        "predict": {
+            "name": "Predecier categoria",
+            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&q=q_char",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": "site_user"
+        },
         "listing_types": {
             "name": "Tipos de publicacion por sitio",
             "url": "https://api.mercadolibre.com/sites/site_user/listing_types",
@@ -118,22 +125,8 @@
             "required": "site_user"
         }
     },
-    "products": {
-        "title": "Publicar prodcuto",
-        "publish": {
-            "name": "Publicar producto",
-            "url": "https://api.mercadolibre.com/items",
-            "headers": ["Authorization: Bearer %s"],
-            "method": "POST",
-            "required": "none"
-        },
-        "predict": {
-            "name": "Predecier categoria",
-            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&q=q_char",
-            "headers": ["Authorization: Bearer %s"],
-            "method": "GET",
-            "required": "site_user"
-        },
+    "categories": {
+        "title": "Informacion de categorias",    
         "categories": {
             "name": "Categorias disponibles en el sitio",
             "url": "https://api.mercadolibre.com/sites/site_user/categories",
@@ -168,18 +161,18 @@
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": "none"
-        },
-        "validate": {
-            "name": "Validador de publicaciones",
-            "url": "https://api.mercadolibre.com/items/validate",
-            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
-            "method": "POST",
-            "body": {},
-            "required": "none"
         }
     },
     "items": {
         "title": "Publicaciones",
+        "publish": {
+            "name": "Publicar producto",
+            "url": "https://api.mercadolibre.com/items",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body": {},
+            "required": "none"
+        },
         "view": {
             "name": "Ver producto",
             "url": "https://api.mercadolibre.com/items/item_id",
@@ -192,6 +185,36 @@
             "url": "https://api.mercadolibre.com/pictures/items/upload",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
+            "required": "none"
+        },
+        "searchAll": {
+            "name": "Listar productos",
+            "url": "https://api.mercadolibre.com/users/user_id/items/search",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": "user_id"
+        },
+        "descritionAdd": {
+            "name": "Crear descripcion de producto",
+            "url": "https://api.mercadolibre.com/items/item_id/description",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body": {},
+            "required": "item_id"
+        }, 
+        "descritionMod": {
+            "name": "Modificar descripcion de producto",
+            "url": "https://api.mercadolibre.com/items/item_id/description?api_version=2",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "PUT",
+            "body": {},
+            "required": "item_id"
+        }, "validate": {
+            "name": "Validador de publicaciones",
+            "url": "https://api.mercadolibre.com/items/validate",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body": {},
             "required": "none"
         }
     }
