@@ -107,24 +107,16 @@ class mlApi
         $tmpKeys_menu = array();
         foreach ($keys_endpoints as $key) {
             if (mlApi::exist_endPoint($key)) {
-                // var_dump(mlApi::$list_endPoints['users']);
-                // echo '<br>';
                 foreach (array_keys(mlApi::$list_endPoints[$key]) as $item_key) {
                     if (is_array(mlApi::$list_endPoints[$key][$item_key])) {
-                        // var_dump(mlApi::$list_endPoints[$key][$item_key]['name']);
-                        // echo '<br>';
                         $tmpKeys_menu[$key][] = array($item_key, mlApi::$list_endPoints[$key][$item_key]['name']);
                     }
                 }
                 if (key_exists('title', mlApi::$list_endPoints[$key]) && mlApi::$list_endPoints[$key]['title'] != 'none') {
-                    // echo '<br>';
-                    // echo mlApi::$list_endPoints[$key]['title'];
                     $tmpKeys_menu[$key][] = array('title', mlApi::$list_endPoints[$key]['title']);
-                    // echo '<br>';
                 }
             }
         }
-        // var_dump($tmpKeys_menu);
         return $tmpKeys_menu;
     }
     public static function data_required($endPoint_parent, $endPoint)
@@ -143,26 +135,15 @@ class mlApi
     // ===================================================================================================
     // ===================================================================================================
     // $data_json={
-    //     'endpoint_parent'=> 'name endPoint request',
+    //     'endpoint_parent'=> 'key endPoint request',
     //     'endpointChild'=> 'name endPoint request',
     //     'body'=>  'array(key=>parm1,key=>parm2,....)', array asociativo de parametros a remplazar en la url o enviar por body al endpoit
-    //     'method'=>  'get', metodo para realizar solicitud al endpoint
     //     'access_token'=> 'token', token del cliente si es requerido. si no es requeerido dejar un cadena vacia 
     // }
     public static function request_endPoint($data_json)
     {
-        // $list_required_response=null;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
 
-        // if($endPoint['required']!='none'){
-        //     $list_required_response=array();
-        //     $endPoint['reqired']=explode(',',$endPoint['required']);
-        //     foreach($endPoint['required'] as $key){
-        //         $list_required_response[$key]=mlApi::request_endPoint(array('endpoint' => $key, 'body' => array('refresh_token' => $oApiTokenTmp->getRefresh_token()), 'method' => 'post', 'access_token' => ''));
-        //     }
-        // }
-
-        // var_dump($endPoint);
 
         if ($endPoint != false) {
 
@@ -184,16 +165,13 @@ class mlApi
                     } else if ($key == 'client_secret') {
                         $endPoint['body'][$key] = mlApi::getClient_secret();
                     }
-                    // else if (array_key_exists($key, $data_json['body'])) {
-                    //     $endPoint['body'][$key] = $data_json['body'][$key];
-                    // }
+                   
                 }
                 if (array_key_exists('body', $data_json)) {
                     foreach (array_keys($data_json['body']) as $key) {
                         $endPoint['body'][$key] = $data_json['body'][$key];
                     }
-                    // var_dump($endPoint);
-                    // echo '<br>';
+              
                 }
             }
 
@@ -217,55 +195,35 @@ class mlApi
             }
 
             if ($endPoint['method'] != 'GET') {
-                // array_push($endPoint['headers'],sprintf('Content-Length:%s',strlen(json_encode($endPoint['body']))));   
+      
                 curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
             }
 
 
             $response = curl_exec($curl);
-
-           
-
+            $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
             curl_close($curl);
-            preg_match('/(\{.*?)$/', $response, $json_matches);
-            $response_str = $json_matches[0];
-            // echo '<br>';
-            // var_dump($response_str);
 
-            if ($response_str[strlen($response_str) - 1] == ']') {
-                // echo '<br>';
-                // $response_str=substr($response_str,0,strlen($response_str)-1);
-                $response_str = sprintf('[%s', $response_str);
-            }
-            $response_str = sprintf('{"data":%s}', $response_str);
-            // echo '<br>';
-            // var_dump($response_str);
-            // echo '<br>';
-            // var_dump(json_decode($response_str,true));
-
-
-
-            $response = json_decode($response_str, true);
-            $new_response = null;
-
-            if ($data_json['endpointChild'] == 'required_attributes') {
-                $new_response = array('data' => array());
-                // var_dump($response);
-                // echo '<br>';
-                foreach ($response['data']['groups'] as $key) {
-                    foreach ($key['components'] as $key_attri) {
-                        array_push($new_response['data'], $key_attri);
-                    }
-                }
-                $response = $new_response;
-            }
-
-            if (key_exists('name', $endPoint)) {
-                $response['nameEndPoint'] = $endPoint['name'];
-            }
-
-            // echo '<br>';
+            $response = json_decode(substr($response,$header_size),true);
+        
             // var_dump($response);
+            
+            if(key_exists('error',$response)){
+                return array(
+                    'reject' => array(
+                        'status' => 'fail',
+                        'error' => $response['message'],
+                        'cause'=>$response['cause']
+                    ),
+                );
+            }else{
+                $response = array('data'=>$response);
+                if (key_exists('name', $endPoint)) {
+                    $response['nameEndPoint'] = $endPoint['name'];
+                }
+            }
+          
+            
             return $response;
         }
 

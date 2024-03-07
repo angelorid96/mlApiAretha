@@ -18,7 +18,7 @@ Aretha::sessionStart();
                                 <li class="nav-item">
                                     <div class="dropdown" id="products"><button class="btn btn-secondary dropdown-toggle" type="button" id="dropdown_products" data-bs-toggle="dropdown" aria-expanded="false">Productos</button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdown_products">
-                                            <li><a class="dropdown-item" id="list_products" class-endpoint="list_products">Listar productos</a></li>
+                                            <!-- <li><a class="dropdown-item" id="list_products" class-endpoint="list_products">Listar productos</a></li> -->
                                             <li><a class="dropdown-item" id="publish" class-endpoint="products">Publicar producto</a></li>
                                         </ul>
                                     </div>
@@ -35,16 +35,6 @@ Aretha::sessionStart();
     <div class="col-md-12">
         <div class="card" id="body-api" hidden>
 
-        </div>
-    </div>
-</div>
-<div class="row p-3">
-    <div class="col-md-12">
-        <div class="card border-warning" id="card-error" hidden>
-            <div class="card-header text-center h5" id="error-title">Error al llamar recuerso</div>
-            <div class="card-body text-warning" id="error-body">
-                <!-- <p class="card-text"></p> -->
-            </div>
         </div>
     </div>
 </div>
@@ -113,6 +103,13 @@ Aretha::sessionStart();
         //         },
         //     },
         // });
+    });  
+    $('body').off('click', '#listItems');
+    $('body').on('click', '#listItems', (e) => {
+        e.preventDefault();
+        apiML().post({},'resources/layer3.php','#body-api',true);
+        document.getElementById('body-api').hidden=false;
+       
     });
     
     

@@ -333,7 +333,7 @@ if ($isExpireTK['value']) {
     let view_categories = async () => {
         let categories = await apiML().requestEndPoint({
             EndPoint: {
-                endpoint_parent: 'categories',
+                endpoint_parent: 'site',
                 endpointChild: 'categories',
             },
         });
@@ -774,7 +774,7 @@ if ($isExpireTK['value']) {
     $('body').on('click', '#add_attr_btn', (e) => {
         e.preventDefault();
         let select_child = document.getElementById('attributes_add');
-        let id_elem=select_child.options[select_child.selectedIndex].value;
+        let id_elem = select_child.options[select_child.selectedIndex].value;
         document.getElementById(`${id_elem}`).hidden = false;
         document.getElementById(`${id_elem}`).classList.add('apiML-param');
 
@@ -783,7 +783,7 @@ if ($isExpireTK['value']) {
     $('body').on('click', '#remove_attr_btn', (e) => {
         e.preventDefault();
         let select_child = document.getElementById('attributes_add');
-        let id_elem=select_child.options[select_child.selectedIndex].value;
+        let id_elem = select_child.options[select_child.selectedIndex].value;
         document.getElementById(`${id_elem}`).hidden = true;
         document.getElementById(`${id_elem}`).classList.add('apiML-param');
 
@@ -986,22 +986,22 @@ if ($isExpireTK['value']) {
                         }
                     }
                 }
-                if (attr.tags.hasOwnProperty('allow_variations')) {
-                    let op_att_var = document.createElement('option');
-                    op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
-                    op_att_var.setAttribute('input-id', `${attr.id}`);
-                    op_att_var.appendChild(document.createTextNode(`${attr.name}`));
-                    document.getElementById('attr_var').appendChild(op_att_var);
-                }
+                // if (attr.tags.hasOwnProperty('allow_variations')) {
+                //     let op_att_var = document.createElement('option');
+                //     op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
+                //     op_att_var.setAttribute('input-id', `${attr.id}`);
+                //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                //     document.getElementById('attr_var').appendChild(op_att_var);
+                // }
                 // if (attr.tags.hasOwnProperty('variation_attribute')) {
                 //     let op_att_var = document.createElement('option');
                 //     op_att_var.setAttribute('value', `attr_id_${attr.id}`);
                 //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
                 //     select_variation_attr.appendChild(op_att_var);
                 // }
-                if (attr.id == 'GENDER') {
-                    document.getElementById('panel_grid').hidden = false;
-                }
+                // if (attr.id == 'GENDER') {
+                //     document.getElementById('panel_grid').hidden = false;
+                // }
 
                 div_col.setAttribute('id', `attr_id_${attr.id}`);
                 view_attr.appendChild(div_col);
@@ -1052,7 +1052,7 @@ if ($isExpireTK['value']) {
     $('body').on('click', '#upload_img_btn', async (e) => {
         let files = document.getElementById('formFileMultiple').files;
         let index_files = 0;
-        console.log(files.length);
+        console.log(files);
         console.log(count_images_add);
         if ((files.length != 0)) {
             if ((count_images_add + files.length) > max_nuber_images) {
@@ -1062,6 +1062,16 @@ if ($isExpireTK['value']) {
                 alert(`numero de images permitido rebasado`);
             }
         }
+        let u_images = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'pictures',
+                endpointChild: 'upload',
+                body: {
+                    file:files,
+                }
+            },
+        });
+        console.log(attributes)
     });
     $('body').off('change', '#select_attr_values');
     $('body').on('change', '#select_attr_values', (e) => {
@@ -1091,6 +1101,7 @@ if ($isExpireTK['value']) {
         let index_select = select_child.options.selectedIndex
         // select_child.options[index_select]    <div class="col-md-2 mb-2 ms-1">
         let id = select_child.options[index_select].getAttribute('input-id');
+        let name = select_child.options[index_select].innerHTML;
         let row_root = document.getElementById('panel_grip_view');
         let count_elemts = document.getElementById('panel_grip_view').childElementCount;
 
@@ -1100,16 +1111,26 @@ if ($isExpireTK['value']) {
 
         let row_title_var = document.createElement('div');
         row_title_var.setAttribute('class', 'row');
-        row_title_var.innerHTML = `<p class="h6 text-center">Variacion de ${id} <button type="button" class="btn-close" id-item="${`col_item_var_${id}${count_elemts}`}" id="remove_item_attr" aria-label="Close"></button></p> `;
+        row_title_var.innerHTML = `<p class="h6 text-center">Variacion de ${name} <button type="button" class="btn-close" id-item="${`col_item_var_${id}${count_elemts}`}" id="remove_item_attr" aria-label="Close"></button></p> `;
 
         new_col_item_var.appendChild(row_title_var);
 
         // console.log(`attr_id_${id}`);
 
+        // document.getElementById(`attr_id_${id}`).classList.remove('apiML-param');
+
         let clone_elem_attr = document.getElementById(`attr_id_${id}`).cloneNode(true);
         clone_elem_attr.setAttribute('id', '');
         clone_elem_attr.setAttribute('class', 'col');
         clone_elem_attr.hidden = false;
+
+        // clone_elem_attr.setAttribute('id-endpoint', 'attribute_combinations');
+        // clone_elem_attr.setAttribute('type-endpoint', 'list');
+        // clone_elem_attr.setAttribute('type-struct', 'object');
+        // clone_elem_attr.setAttribute('value-type', 'string');
+        // clone_elem_attr.setAttribute('tag-var', 'attr');
+        // clone_elem_attr.setAttribute('select-sndata', 'all');
+
         new_col_item_var.appendChild(clone_elem_attr);
 
 
@@ -1136,8 +1157,8 @@ if ($isExpireTK['value']) {
         col_div_cont.setAttribute('class', 'col');
         label_av_qt = document.createElement('label');
 
-        // let group=document.createElement('div');
-        // group.setAttribute('class','input-group mb-3');
+        let group = document.createElement('div');
+        group.setAttribute('class', 'input-group mb-3');
 
         // let btn_add_attr=document.createElement('button');
         // btn_add_attr.setAttribute('class','btn btn-outline-secondary');
@@ -1151,16 +1172,16 @@ if ($isExpireTK['value']) {
         // btn_rm_attr.setAttribute('id','rm_attr_var_item');
         // btn_rm_attr.appendChild(document.createTextNode('eliminar'));
 
-        // label_av_qt.setAttribute('for', 'select_var_attr');
-        // label_av_qt.appendChild(document.createTextNode('agregar atributos a variacion'));
-        // let selet_var_attr=select_variation_attr.cloneNode(true);
-        // select_variation_attr.setAttribute('id-item',`col_item_var_${id}${count_elemts}`);
-        // col_div_cont.appendChild(label_av_qt);
+        label_av_qt.setAttribute('for', 'select_var_attr');
+        label_av_qt.appendChild(document.createTextNode('agregar atributos a variacion'));
+        let selet_var_attr = select_variation_attr.cloneNode(true);
+        select_variation_attr.setAttribute('id-item', `col_item_var_${id}${count_elemts}`);
+        col_div_cont.appendChild(label_av_qt);
 
-        // group.appendChild(select_variation_attr);
+        group.appendChild(select_variation_attr);
         // group.appendChild(btn_add_attr);
         // group.appendChild(btn_rm_attr);
-        // col_div_cont.appendChild(group);
+        col_div_cont.appendChild(group);
 
         row_attr_var = document.createElement('div');
         row_attr_var.setAttribute('class', 'row');
@@ -1238,14 +1259,14 @@ if ($isExpireTK['value']) {
         e.preventDefault();
         let body_json = apiML('.apiML-param').jsontargetize();
         console.log(body_json);
-        let val_publish = await apiML().requestEndPoint({
-            EndPoint: {
-                endpoint_parent: 'items',
-                endpointChild: 'validate',
-                body: body_json,
-            },
-        });
-        console.log(val_publish);
+        // let val_publish = await apiML().requestEndPoint({
+        //     EndPoint: {
+        //         endpoint_parent: 'items',
+        //         endpointChild: 'validate',
+        //         body: body_json,
+        //     },
+        // });
+        // console.log(val_publish);
 
     });
     $('body').off('click', '#publish_send');
@@ -1268,7 +1289,7 @@ if ($isExpireTK['value']) {
         console.log(val_publish);
         if (!val_publish.hasOwnProperty('error')) {
             aretha('#collapseThree').addClass('border-success');
-            document.getElementById('item_id').setAttribute('value',`${val_publish.data.id}`);
+            document.getElementById('item_id').setAttribute('value', `${val_publish.data.id}`);
             setInterval(() => {
                 aretha('#collapseThree').removeClass('show');
                 aretha('#collapseThree').removeClass('border-success');
@@ -1286,11 +1307,11 @@ if ($isExpireTK['value']) {
     $('body').off('click', '#description_add');
     $('body').on('click', '#description_add', async (e) => {
         e.preventDefault();
-        let item_id =  document.getElementById('item_id').getAttribute('value');
+        let item_id = document.getElementById('item_id').getAttribute('value');
         console.log(item_id);
         if ((item_id != '') && (item_id != null)) {
             let body_json = apiML('.apiML-dp').jsontargetize();
-            body_json['item_id']=item_id;
+            body_json['item_id'] = item_id;
             console.log(body_json);
             let add_dp = await apiML().requestEndPoint({
                 EndPoint: {

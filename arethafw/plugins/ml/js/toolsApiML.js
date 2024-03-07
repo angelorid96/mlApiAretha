@@ -1,3 +1,14 @@
+/* 
+    format_value retorna el valor agregar establecindo el tipo de valor y formato correspodiente 
+    que se establesca mediante los valores obtenidos de los atributos
+    tag_value : key del valor si la type_struct es un objecto
+    value : valor a ingresar
+    value_type: tipo de dato al que se debe convrtir value
+    type_struc: si el formato del value debe ser un objecto o valor plano
+    value_id: id del value si al atributo lo  pose. 
+    id_attr: id del atributo que se agreara
+    
+*/
 function format_value(tag_value, value, value_type, type_struct, value_id = '', id_attr = '') {
     let value_format;
 
@@ -43,7 +54,13 @@ const apiML = (target) => ({
     // orientation: orientacion del menu si existe scope
     // En caso de no pasar ninguna de las llaves solo se generara el identificador del usurio con una serie de opciones realcionadas a este
     // defaultMenu valor booleano si decea un menu por default. si no establece orientation sera horizontal
-    // Si no se incluye un identficaro de elemento ID o CLASS. no se mostrara nada.   
+    // Si no se incluye un identficaro de elemento ID o CLASS. no se mostrara nada.
+    /*
+        si aun no se ha autenticado la funcion regresar un boton para mandarlo a el autenticador de ML
+        aparte de un codigo de error (string) cque puede tomar los siguentes estados
+            valid_user_authenticatio
+            required_authenticatio
+    */
     isAuth: async (confDomJson) => {
         const response = await fetch('arethafw/plugins/ml/php/isAuthToken.php', {
             method: 'POST',
@@ -68,6 +85,12 @@ const apiML = (target) => ({
             return data.isAuth;
         }
     },
+    /*
+        funcion que rediriegue a la autenticacion y autroizacion del usuario en la app
+        este paso solo debe relizarce 1 vez o cuando el refresh_token expiro.
+        isExpireToken.php se encarga de validar si tanto el token como refresh_token ya no son validos
+
+    */
     redirecAuth: () => {
         aretha().get({
             "url": "arethafw/plugins/ml/php/isAuthToken.php",
@@ -96,28 +119,25 @@ const apiML = (target) => ({
             body: JSON.stringify(json_data),
         });
         const data = await response.text();
-        // console.log(data);
         if (innet_id) {
-            // console.log(typeof target_op!=="undefined");
             if (typeof target !== 'undefined') {
                 aretha(target).html(data);
             } else if (typeof target_op !== 'undefined') {
                 aretha(target_op).html(data);
             }
         } else {
-
-
             return JSON.parse(data);
         }
     },
     requestEndPoint: async (json_data) => {
         let data = await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php');
-        // console.log(data);
+        console.log(data);
 
         if (data.status == 'warning') {
             aretha('#error-title').html('Error al obtener informacion!');
-            aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.message}</p>`);
+            aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.reject.error}</p>`);
             document.getElementById('card-error').hidden = false;
+            // document.getElementById('card-error').focus();
 
 
             setTimeout(() => {

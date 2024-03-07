@@ -73,7 +73,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                 $response['status'] = 'success';
                 $response['code'] = '000';
                 $response['message'] = 'autenticacion correcta';
-                $response['isAuth']['not menu']=$notMenu;
+                $response['isAuth']['not-menu']=$notMenu;
                 $response['isAuth']['code']='valid_user_authentication';
             } else {
                 if ($defaultMenu) {
@@ -156,7 +156,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                 $response['status'] = 'success';
                 $response['code'] = '000';
                 $response['message'] = 'autenticacion correcta';
-                $response['isAuth']['not menu']=$notMenu;
+                $response['isAuth']['not-menu']=$notMenu;
                 $response['isAuth']['code']='valid_user_authentication';
                 $response['isAuth']['html'] = $docHtml->saveHTML($docHtml->getElementById('menu'));
             }

@@ -30,6 +30,12 @@ if (isset($_REQUEST['code']) && $_REQUEST['code'] != '') {
 
     $existUser = $oApiToken->existId();
     if ($existUser) {
+        if($oApiToken->update()){
+            // echo 'debug';
+            $_SESSION['nickname']=$oApiToken->getPO()->getNickname();
+            $_SESSION['user_id']=$oApiToken->getPO()->getUser_id();
+            // header('Location:../');
+        }
         header('Location:../');
     }
     // echo $oApiToken->insert();

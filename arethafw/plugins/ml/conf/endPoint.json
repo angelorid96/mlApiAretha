@@ -60,6 +60,13 @@
                 "channels": ""
             },
             "required": "user_id"
+        }, 
+        "listItems": {
+            "name": "Listar Items del vendedor",
+            "url": "https://api.mercadolibre.com/users/user_id/items/search",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": "user_id"
         }
     },
     "site": {
@@ -126,14 +133,7 @@
         }
     },
     "categories": {
-        "title": "Informacion de categorias",    
-        "categories": {
-            "name": "Categorias disponibles en el sitio",
-            "url": "https://api.mercadolibre.com/sites/site_user/categories",
-            "headers": ["Authorization: Bearer %s"],
-            "method": "GET",
-            "required": "site_user"
-        },
+        "title": "Informacion de categorias",   
         "category": {
             "name": "Informacion de un categoria",
             "url": "https://api.mercadolibre.com/categories/category_id",
@@ -178,7 +178,7 @@
             "url": "https://api.mercadolibre.com/items/item_id",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "required": "item_id"
+            "required": "none"
         },
         "upload": {
             "name": "Subir una imagen",
@@ -215,6 +215,16 @@
             "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
             "method": "POST",
             "body": {},
+            "required": "none"
+        }
+    },
+    "pictures": {
+        "title": "Imagenes",
+        "upload": {
+            "name": "Subir imagen",
+            "url": "https://api.mercadolibre.com/pictures/items/upload",
+            "headers": ["Authorization: Bearer %s","content-type: multipart/form-datan"],
+            "method": "POST",
             "required": "none"
         }
     }
