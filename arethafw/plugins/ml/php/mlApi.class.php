@@ -60,7 +60,7 @@ class mlApi
     {
         return substr($haystack, -strlen($needle)) === $needle;
     }
-     
+
 
 
     //===================================================================================================
@@ -142,19 +142,27 @@ class mlApi
     // }
     public static function request_endPoint($data_json)
     {
+        $isFile=false;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
-
+        if (key_exists('file', $data_json['body'])) {
+            // var_dump($data_json['body']['file']);
+            // echo '<br>';
+            $cfile = new CURLFile($data_json['body']['file']['tmp_name'], $data_json['body']['file']['type'], $data_json['body']['file']['name']);
+            $data_json['body']['file'] = $cfile;
+            // var_dump($cfile);
+            // echo '<br>';
+            $isFile=true;
+        }
 
         if ($endPoint != false) {
 
             $urltmp = $endPoint['url'];
             foreach (array_keys($data_json['body']) as $key) {
-                if (!is_array($data_json['body'][$key])!==false) {
-                    if(strpos($urltmp,$key)){
-                        $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);               
-                        unset($data_json['body'][$key]);     
+                if (!is_array($data_json['body'][$key]) !== false) {
+                    if (strpos($urltmp, $key)) {
+                        $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
+                        unset($data_json['body'][$key]);
                     }
-
                 }
             }
 
@@ -165,13 +173,11 @@ class mlApi
                     } else if ($key == 'client_secret') {
                         $endPoint['body'][$key] = mlApi::getClient_secret();
                     }
-                   
                 }
                 if (array_key_exists('body', $data_json)) {
                     foreach (array_keys($data_json['body']) as $key) {
                         $endPoint['body'][$key] = $data_json['body'][$key];
                     }
-              
                 }
             }
 
@@ -195,35 +201,40 @@ class mlApi
             }
 
             if ($endPoint['method'] != 'GET') {
-      
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
+                
+                if($isFile){
+                    curl_setopt($curl, CURLOPT_POSTFIELDS,$endPoint['body']);
+                }else{
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
+                }
+                
             }
-
-
             $response = curl_exec($curl);
             $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
             curl_close($curl);
 
-            $response = json_decode(substr($response,$header_size),true);
-        
+
             // var_dump($response);
-            
-            if(key_exists('error',$response)){
+            $response = json_decode(substr($response, $header_size), true);
+
+            // var_dump($response);
+
+            if (key_exists('error', $response)) {
                 return array(
                     'reject' => array(
                         'status' => 'fail',
                         'error' => $response['message'],
-                        'cause'=>$response['cause']
+                        'cause' => $response['cause']
                     ),
                 );
-            }else{
-                $response = array('data'=>$response);
+            } else {
+                $response = array('data' => $response);
                 if (key_exists('name', $endPoint)) {
                     $response['nameEndPoint'] = $endPoint['name'];
                 }
             }
-          
-            
+
+
             return $response;
         }
 

@@ -223,8 +223,9 @@
         "upload": {
             "name": "Subir imagen",
             "url": "https://api.mercadolibre.com/pictures/items/upload",
-            "headers": ["Authorization: Bearer %s","content-type: multipart/form-datan"],
+            "headers": ["Authorization: Bearer %s"],
             "method": "POST",
+            "body": {},
             "required": "none"
         }
     }

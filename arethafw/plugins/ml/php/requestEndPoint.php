@@ -38,12 +38,34 @@ function array_is_list($array)
     return array_keys($array) === range(0, count($array) - 1);
 }
 $docHtml = new DOMDocument();
+$files_length = 0;
+$files = array();
 $tmp_json = json_decode(file_get_contents('php://input'), true);
 
+if (isset($_REQUEST['filesLength']) && $_REQUEST['filesLength'] != '') {
+    $files_length = intval($_REQUEST['filesLength']);
+}
+if ($tmp_json == null) {
+    if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
+        $tmp_json = json_decode($_REQUEST['data'], true);
+    }
+}
+// var_dump($tmp_json);
+// echo '<br>';
+// var_dump($files);
+// echo '<br>';
+
+for ($i = 0; $i < $files_length; $i++) {
+    // var_dump($_FILES['file'.$i]); 
+    $files[] = $_FILES['file' . $i];
+}
+
+// var_dump($files);
 
 
 if ($tmp_json != null) {
     $isExpireTK = isExpiredAccessToken();
+    $response_endpoint = null;
     if ($isExpireTK['value']) {
         $oApiToken = new \mod_apitoken\entities\apiToken();
         $oApiToken->getPO()->setNickname($_SESSION['nickname']);
@@ -66,7 +88,31 @@ if ($tmp_json != null) {
                 }
             }
 
-            $response_endpoint = mlApi::request_endPoint($tmp_json['EndPoint']);
+            if (count($files) > 0) {
+                $response_endpoint['data'] = array();
+                $opImgApi = new \mod_apitoken\entities\imgApi();
+                $tmp_response = null;
+                for ($i = 0; $i < $files_length; $i++) {
+                    $tmp_json['EndPoint']['body']['file'] = $files[$i]; 
+                    $tmp_response=mlApi::request_endPoint($tmp_json['EndPoint']);
+                    if (!key_exists('reject', $tmp_response)) {
+                        $response_endpoint['data'][]= $tmp_response['data']['id'];
+                        $opImgApi->getPO()->setId($tmp_response['data']['id']);
+                        $opImgApi->insert();
+                    }
+                    // $tmp_response = array('data' => array('id' => '748085-MLM74866745172_032024'.$i), 'nameEndPoint' => 'Subir imagen');
+                    // if (!key_exists('reject', $tmp_response)) {
+                    //     $response_endpoint['data'][] = $tmp_response['data']['id'];
+                    //     $opImgApi->getPO()->setId($tmp_response['data']['id']);
+                    //     $opImgApi->insert();
+                    // }
+                    // $response_endpoint['data'][] = $tmp_response['data'];
+                }
+                $response_endpoint['nameEndPoint'] = $tmp_response['nameEndPoint'];
+            } else {
+                $response_endpoint = mlApi::request_endPoint($tmp_json['EndPoint']);
+            }
+
 
 
             if (key_exists('reject', $response_endpoint)) {
@@ -80,17 +126,17 @@ if ($tmp_json != null) {
                     foreach (array_keys($tmp_json['listIdPage']) as $key_id) {
                         $elementID = $docHtml->getElementById($key_id);
                         if (is_array($tmp_json['listIdPage'][$key_id])) {
-                           
+
                             if (array_is_list($tmp_json['listIdPage'][$key_id])) {
                                 $tmp_list = array();
                                 foreach ($tmp_json['listIdPage'][$key_id] as $val) {
                                     array_push($tmp_list, $response_endpoint['data'][$val]);
                                 }
-                              
+
                                 $elementID->appendChild($docHtml->createTextNode(con_value_endpoint($tmp_list, ' ')));
                             } else {
                                 foreach (array_keys($tmp_json['listIdPage'][$key_id]) as $key_Child_id) {
-                                  
+
                                     if (is_array($tmp_json['listIdPage'][$key_id][$key_Child_id])) {
                                         $tmp_list = array();
                                         foreach ($tmp_json['listIdPage'][$key_id][$key_Child_id] as $val) {
@@ -103,7 +149,7 @@ if ($tmp_json != null) {
                                 }
                             }
                         } else {
-                        
+
                             $elementID->appendChild($docHtml->createTextNode($response_endpoint['data'][$tmp_json['listIdPage'][$key_id]]));
                         }
                     }
@@ -122,5 +168,3 @@ if ($tmp_json != null) {
 
 
 echo json_encode($response);
-
-?>

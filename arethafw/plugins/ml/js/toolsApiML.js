@@ -111,6 +111,7 @@ const apiML = (target) => ({
         });
     },
     post: async (json_data, url, target_op, innet_id = false) => {
+        
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -130,8 +131,8 @@ const apiML = (target) => ({
         }
     },
     requestEndPoint: async (json_data) => {
-        let data = await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php');
-        console.log(data);
+        let data=await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php');
+        // console.log(data);
 
         if (data.status == 'warning') {
             aretha('#error-title').html('Error al obtener informacion!');
@@ -146,6 +147,35 @@ const apiML = (target) => ({
         } else {
             if (typeof document.getElementById(target) === 'object') {
                 if (json_data.urlPage) {
+                    if (data.status == 'success') {
+                        aretha(target).html(data.html);
+                        document.getElementById(target.replace('#', '')).hidden = false;
+                    }
+                }
+            }
+        }
+
+        return data.endpoint_data;
+    },
+    uploadImage: async (dataform_sn) => {
+        const response = await fetch('arethafw/plugins/ml/php/requestEndPoint.php', {
+            method: 'POST',
+            body:dataform_sn,
+        });
+        const data = await response.json();
+        
+        if (data.status == 'warning') {
+            aretha('#error-title').html('Error al obtener informacion!');
+            aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.reject.error}</p>`);
+            document.getElementById('card-error').hidden = false;
+            // document.getElementById('card-error').focus();
+
+            setTimeout(() => {
+                document.getElementById('card-error').hidden = true;
+            }, 9000);
+        } else {
+            if (typeof document.getElementById(target) === 'object') {
+                if (dataform_sn.urlPage) {
                     if (data.status == 'success') {
                         aretha(target).html(data.html);
                         document.getElementById(target.replace('#', '')).hidden = false;

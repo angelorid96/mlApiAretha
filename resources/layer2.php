@@ -986,19 +986,19 @@ if ($isExpireTK['value']) {
                         }
                     }
                 }
-                // if (attr.tags.hasOwnProperty('allow_variations')) {
-                //     let op_att_var = document.createElement('option');
-                //     op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
-                //     op_att_var.setAttribute('input-id', `${attr.id}`);
-                //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
-                //     document.getElementById('attr_var').appendChild(op_att_var);
-                // }
-                // if (attr.tags.hasOwnProperty('variation_attribute')) {
-                //     let op_att_var = document.createElement('option');
-                //     op_att_var.setAttribute('value', `attr_id_${attr.id}`);
-                //     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
-                //     select_variation_attr.appendChild(op_att_var);
-                // }
+                if (attr.tags.hasOwnProperty('allow_variations')) {
+                    let op_att_var = document.createElement('option');
+                    op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
+                    op_att_var.setAttribute('input-id', `${attr.id}`);
+                    op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                    document.getElementById('attr_var').appendChild(op_att_var);
+                }
+                if (attr.tags.hasOwnProperty('variation_attribute')) {
+                    let op_att_var = document.createElement('option');
+                    op_att_var.setAttribute('value', `attr_id_${attr.id}`);
+                    op_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                    select_variation_attr.appendChild(op_att_var);
+                }
                 // if (attr.id == 'GENDER') {
                 //     document.getElementById('panel_grid').hidden = false;
                 // }
@@ -1015,7 +1015,7 @@ if ($isExpireTK['value']) {
         // console.log(select_child.options);
         let index_select = select_child.options.selectedIndex
         let row_images = document.getElementById('images_upload');
-        console.log(select_child.options[index_select].value);
+        // console.log(select_child.options[index_select].value);Va
         if (count_images_add <= max_nuber_images) {
             switch (select_child.options[index_select].value) {
                 case 'url':
@@ -1052,8 +1052,9 @@ if ($isExpireTK['value']) {
     $('body').on('click', '#upload_img_btn', async (e) => {
         let files = document.getElementById('formFileMultiple').files;
         let index_files = 0;
-        console.log(files);
-        console.log(count_images_add);
+        const formData_img = new FormData()
+        // console.log(files);
+        // console.log(count_images_add);
         if ((files.length != 0)) {
             if ((count_images_add + files.length) > max_nuber_images) {
                 index_files = max_nuber_images - count_images_add;
@@ -1061,17 +1062,46 @@ if ($isExpireTK['value']) {
             } else if (files.length > max_nuber_images) {
                 alert(`numero de images permitido rebasado`);
             }
-        }
-        let u_images = await apiML().requestEndPoint({
+        };
+        formData_img.append('filesLength', files.length);
+        formData_img.append('data', JSON.stringify({
             EndPoint: {
                 endpoint_parent: 'pictures',
                 endpointChild: 'upload',
-                body: {
-                    file:files,
-                }
             },
-        });
-        console.log(attributes)
+        }));
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            formData_img.append(`file${i}`, file);
+        }
+        let imgs_details = await apiML().uploadImage(formData_img);
+        // console.log(imgs_details);
+        let row_images = document.getElementById('images_upload');
+        for (let index = 0; index < imgs_details.data.length; index++) {
+            console.log(imgs_details.data[index]);
+            let div_col = document.createElement('div');
+            div_col.setAttribute('class', 'col-md-4 mb-2');
+            let label_img_input = document.createElement('label');
+            label_img_input.setAttribute('class', 'form-label');
+            label_img_input.setAttribute('form', `img${document.getElementById('img_input').childElementCount+1}`);
+            label_img_input.appendChild(document.createTextNode(`Imagen subida ${document.getElementById('img_input').childElementCount+1}`));
+            let input_img = document.createElement('input');
+            input_img.setAttribute('class', 'form-control apiML-param');
+            input_img.setAttribute('type', 'input');
+            input_img.setAttribute('value',`${imgs_details.data[index]}`);
+            input_img.setAttribute('id', `img${document.getElementById('img_input').childElementCount+1}`);
+            input_img.setAttribute('id-endpoint', 'pictures');
+            input_img.setAttribute('type-endpoint', 'list');
+            input_img.setAttribute('type-struct', 'object');
+            input_img.setAttribute('value-type', 'string');
+            input_img.setAttribute('tag-var', 'id');
+            input_img.readOnly=true;
+            div_col.appendChild(label_img_input);
+            div_col.appendChild(input_img);
+            document.getElementById('img_input').appendChild(div_col);
+            count_images_add++;
+        }
+
     });
     $('body').off('change', '#select_attr_values');
     $('body').on('change', '#select_attr_values', (e) => {
@@ -1098,7 +1128,7 @@ if ($isExpireTK['value']) {
         let row_attr_var = null;
 
         let select_child = document.getElementById('attr_var');
-        let index_select = select_child.options.selectedIndex
+        let index_select = select_child.selectedIndex;
         // select_child.options[index_select]    <div class="col-md-2 mb-2 ms-1">
         let id = select_child.options[index_select].getAttribute('input-id');
         let name = select_child.options[index_select].innerHTML;
@@ -1106,7 +1136,7 @@ if ($isExpireTK['value']) {
         let count_elemts = document.getElementById('panel_grip_view').childElementCount;
 
         new_col_item_var = document.createElement('div');
-        new_col_item_var.setAttribute('class', 'col-md-4');
+        new_col_item_var.setAttribute('class', 'col-md-6');
         new_col_item_var.setAttribute('id', `col_item_var_${id}${count_elemts}`);
 
         let row_title_var = document.createElement('div');
