@@ -193,7 +193,7 @@ const apiML = (target) => ({
         let id_endpoint = '';
         let type_endpoint = '';
         let key_value = '';
-        let value = '';
+        let id_value = '';
         let type_value = '';
         let struct_value = '';
         let id_attr = '';

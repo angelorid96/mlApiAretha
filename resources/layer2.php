@@ -324,11 +324,15 @@ if ($isExpireTK['value']) {
     const max_nuber_images_var = 10;
     const max_description_length = 50000;
     let count_images_add = 0;
+    let count_variations_add = 0;
     let domain_id_value = '';
+    let tmp_prev_elem = null;
+
 
     let select_variation_attr = document.createElement('select');
     select_variation_attr.setAttribute('class', 'form-select');
     select_variation_attr.setAttribute('id', 'select_var_attr_item');
+
 
     let view_categories = async () => {
         let categories = await apiML().requestEndPoint({
@@ -858,7 +862,8 @@ if ($isExpireTK['value']) {
                     attr_comp = document.createElement('select');
                     attr_comp.setAttribute('class', 'form-select  apiML-param');
                     attr_comp.setAttribute('type', 'select');
-                    attr_comp.setAttribute('id', `${attr.id}`);
+                    attr_comp.setAttribute('id', 'input-attr');
+                    attr_comp.setAttribute('id-attr', `${attr.id}`);
                     attr_comp.setAttribute('id-endpoint', 'attributes');
                     attr_comp.setAttribute('type-endpoint', 'list');
                     attr_comp.setAttribute('type-struct', 'object');
@@ -880,7 +885,8 @@ if ($isExpireTK['value']) {
                     attr_label.appendChild(document.createTextNode(`${attr.name}`));
                     attr_comp = document.createElement('select');
                     attr_comp.setAttribute('class', 'form-select  apiML-param');
-                    attr_comp.setAttribute('id', `${attr.id}`);
+                    attr_comp.setAttribute('id', 'input-attr');
+                    attr_comp.setAttribute('id-attr', `${attr.id}`);
                     attr_comp.setAttribute('id-endpoint', 'attributes');
                     attr_comp.setAttribute('type-endpoint', 'list');
                     attr_comp.setAttribute('type-struct', 'object');
@@ -904,33 +910,23 @@ if ($isExpireTK['value']) {
                     attr_comp = document.createElement('input');
                     attr_comp.setAttribute('class', 'form-control  apiML-param');
                     attr_comp.setAttribute('type', 'text');
-                    attr_comp.setAttribute('id', `${attr.id}`);
+                    attr_comp.setAttribute('id', 'input-attr');
+                    attr_comp.setAttribute('id-attr', `${attr.id}`);
                     attr_comp.setAttribute('id-endpoint', 'attributes');
                     attr_comp.setAttribute('type-endpoint', 'list');
                     attr_comp.setAttribute('type-struct', 'object');
                     attr_comp.setAttribute('value-type', 'string');
                     attr_comp.setAttribute('tag-var', 'attr');
 
-
                     div_col.appendChild(attr_label);
                     if ('values' in attr) {
-                        attr_comp.hidden = true;
-                        attr_comp.classList.remove('apiML-param');
+
                         select_attr = document.createElement('select');
-                        select_attr.setAttribute('class', 'form-select  apiML-param');
-                        select_attr.setAttribute('id', 'select_attr_values');
-                        select_attr.setAttribute('id-endpoint', 'attributes');
-                        select_attr.setAttribute('type-endpoint', 'list');
-                        select_attr.setAttribute('type-struct', 'object');
-                        select_attr.setAttribute('value-type', 'string');
-                        select_attr.setAttribute('tag-var', 'attr');
-                        select_attr.setAttribute('select-sndata', 'all');
-                        // select_attr.setAttribute('need-unit', 'y');
+                        select_attr.setAttribute('class', 'form-select  z-2 ');
+                        select_attr.setAttribute('id', `select_attr_${attr.id}`);
+
                         let op_sel = null;
-                        // op_sel.setAttribute('value', `${attr.values[index_val].id}`);
-                        // op_sel.appendChild(document.createTextNode());
-                        // op_sel.selected=true;
-                        // select_attr.appendChild(op_sel);
+
                         for (let index_val = 0; index_val < attr.values.length; index_val++) {
                             op_sel = document.createElement('option');
                             op_sel.setAttribute('value', `${attr.values[index_val].id}`);
@@ -938,12 +934,9 @@ if ($isExpireTK['value']) {
                             op_sel.appendChild(document.createTextNode(`${attr.values[index_val].name}`));
                             select_attr.appendChild(op_sel);
                         }
-                        op_sel = document.createElement('option');
-                        op_sel.setAttribute('value', 'manual');
-                        op_sel.setAttribute('input-id', `${attr.id}`);
-                        op_sel.appendChild(document.createTextNode('otro'));
+
                         select_attr.appendChild(op_sel);
-                        div_col.append(select_attr);
+                        select_attr.hidden = true;
                     }
                     if ('allowed_units' in attr) {
                         attr_comp.setAttribute('need-unit', 'y');
@@ -958,14 +951,18 @@ if ($isExpireTK['value']) {
                             op_units.appendChild(document.createTextNode(`${attr.allowed_units[index_val].name}`));
                             sl_units.appendChild(op_units);
                         }
-                        if (select_attr != null) {
-                            select_attr.setAttribute('need-unit', 'y');
-                        }
                         group_div.appendChild(attr_comp);
+                        if (select_attr != null) {
+                            group_div.append(select_attr);
+                        }
                         group_div.appendChild(sl_units);
                         div_col.appendChild(group_div);
                     } else {
                         div_col.appendChild(attr_comp);
+                        if (select_attr != null) {
+                            div_col.append(select_attr);
+                        }
+
                     }
                 }
                 if (!attr.tags.hasOwnProperty('required')) {
@@ -978,9 +975,6 @@ if ($isExpireTK['value']) {
                                 op_attr_add.setAttribute('value', `attr_id_${attr.id}`)
                                 op_attr_add.appendChild(document.createTextNode(attr.name));
                                 attributes_add.appendChild(op_attr_add);
-                                if (select_attr != null) {
-                                    select_attr.classList.remove('apiML-param');
-                                }
                             }
 
                         }
@@ -1088,14 +1082,14 @@ if ($isExpireTK['value']) {
             let input_img = document.createElement('input');
             input_img.setAttribute('class', 'form-control apiML-param');
             input_img.setAttribute('type', 'input');
-            input_img.setAttribute('value',`${imgs_details.data[index]}`);
+            input_img.setAttribute('value', `${imgs_details.data[index]}`);
             input_img.setAttribute('id', `img${document.getElementById('img_input').childElementCount+1}`);
             input_img.setAttribute('id-endpoint', 'pictures');
             input_img.setAttribute('type-endpoint', 'list');
             input_img.setAttribute('type-struct', 'object');
             input_img.setAttribute('value-type', 'string');
             input_img.setAttribute('tag-var', 'id');
-            input_img.readOnly=true;
+            input_img.readOnly = true;
             div_col.appendChild(label_img_input);
             div_col.appendChild(input_img);
             document.getElementById('img_input').appendChild(div_col);
@@ -1103,123 +1097,154 @@ if ($isExpireTK['value']) {
         }
 
     });
-    $('body').off('change', '#select_attr_values');
-    $('body').on('change', '#select_attr_values', (e) => {
+    $('body').off('focusin', '#input-attr');
+    $('body').on('focusin', '#input-attr', (e) => {
         e.preventDefault();
         // console.log(e);
-        let select_child = aretha().targetize(e);
-        // console.log(select_child);
-        let item_select = select_child.options[select_child.selectedIndex];
+        if (tmp_prev_elem != null) {
+            tmp_prev_elem.hidden = true;
+        }
+        tmp_prev_elem = document.getElementById(`select_attr_${e.target.getAttribute('id-attr')}`);
 
-        // console.log(item_select);
-        if (item_select.value == 'manual') {
-            select_child.classList.remove('apiML-param');
-            document.getElementById(`${item_select.getAttribute('input-id')}`).classList.add('apiML-param');
-            document.getElementById(`${item_select.getAttribute('input-id')}`).hidden = false;
-        } else {
-            select_child.classList.add('apiML-param');
-            document.getElementById(`${item_select.getAttribute('input-id')}`).classList.remove('apiML-param');
-            document.getElementById(`${item_select.getAttribute('input-id')}`).hidden = true;
+        if (tmp_prev_elem != null) {
+            tmp_prev_elem.hidden = false;
+            // select_child.previousElementSibling.value=select_child.options[select_child.selectedIndex].innerHTML;
+            // // select_child.previousElementSibling.setAttribute('')
+            // select_child.hidden=true;      
+            tmp_prev_elem.addEventListener('change', (e) => {
+                e.preventDefault();
+
+                let select_child = aretha().targetize(e);
+                select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                // select_child.previousElementSibling.setAttribute('')
+                select_child.hidden = true;
+
+            });
+            tmp_prev_elem.addEventListener('focusout', (e) => {
+                e.preventDefault();
+
+                let select_child = aretha().targetize(e);
+                // select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                // select_child.previousElementSibling.setAttribute('')
+                select_child.hidden = true;
+
+            });
+            tmp_prev_elem.addEventListener('blur', (e) => {
+                e.preventDefault();
+
+                let select_child = aretha().targetize(e);
+                // select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                // select_child.previousElementSibling.setAttribute('')
+                select_child.hidden = true;
+
+            });
         }
     });
+    // $('body').off('blur', '#input-attr');
+    // $('body').on('blur', '#input-attr', (e) => {
+    //     e.preventDefault();
+    //     // console.log(e);
+    //     if (tmp_prev_elem != null) {
+    //         tmp_prev_elem.hidden = true;
+    //     }
+
+    // });
     $('body').off('click', '#add_attr_var_btn');
     $('body').on('click', '#add_attr_var_btn', (e) => {
-        let new_col_item_var = null;
-        let row_attr_var = null;
+        count_variations_add += 1;
 
-        let select_child = document.getElementById('attr_var');
-        let index_select = select_child.selectedIndex;
-        // select_child.options[index_select]    <div class="col-md-2 mb-2 ms-1">
-        let id = select_child.options[index_select].getAttribute('input-id');
-        let name = select_child.options[index_select].innerHTML;
-        let row_root = document.getElementById('panel_grip_view');
-        let count_elemts = document.getElementById('panel_grip_view').childElementCount;
+        let card_var_col = document.createElement('div');
+        card_var_col.setAttribute('class', 'card col-md-6')
+        card_var_col.setAttribute('id', `card-var-${count_variations_add}`)
 
-        new_col_item_var = document.createElement('div');
-        new_col_item_var.setAttribute('class', 'col-md-6');
-        new_col_item_var.setAttribute('id', `col_item_var_${id}${count_elemts}`);
+        card_var_col.innerHTML =
+            '<div class="card-header text-center row">' +
+            `<div class="col-md-11">Variacion ${count_variations_add} </div>  <div class="col align-self-end"><button type="button" class="btn-close" id="btn-close-var"  id-card="card-var-${count_variations_add}" aria-label="Close"></button> </div>` +
+            '</div>' +
+            `<div class="card-body" id="body-var-${count_variations_add}">` +
+            `<div claas="row" id="body-var${count_variations_add}_p1" >` +
+            '<div class="col-md-4">' +
+            '<label for="condition" class="form-label">Cantidad disponible</label>' +
+            `<input type="text" class="form-control apiML-param-var${count_variations_add}" id="available_quantity" value-type="number" aria-label="catidad disponible"> ` +
+            '</div>' +
+            '</div>' +
+            `<div class="row pt-3">` +
+            '<div class="col-md-12">' +
+            '<p class="h3 text-center">Atributos</p>' +
+            '</div>' +
+            '<div class="col-md-12  align-self-start">' +
+            '<div class="input-group">' +
+            `<select class="form-select" id="attributes_add_var" id-var="${count_variations_add}" aria-label="Default select example">` +
+            '<option value="none" selected>atributos</option>' +
+            '</select>' +
+            '<button class="btn btn-outline-secondary" type="button" id="add_attr_btn">Agregar</button>' +
+            '<button class="btn btn-outline-secondary" type="button" id="remove_attr_btn">Eliminar</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            `<div class="row " id="view_attr_var${count_variations_add}">` +
+            '</div>' +
+            '<div class="row justify-content-md-center">' +
+            '<div class="col-md-12">' +
+            '<p class="h3 text-center">Imagenes</p>' +
+            '</div>' +
+            '<div class="col-md-6 ">' +
+            '<label for="formFileMultiple" class="form-label">Seleccione fuente imagen</label>' +
+            '<div class="input-group mb-3">' +
+            `<select class="form-select" id="img_add_var"  id-var="${count_variations_add}"  aria-label="Default select example">` +
+            '<option value="url">url</option>' +
+            '<option value="none" disabled>id mercado libre</option>' +
+            '</select>' +
+            `<button class="btn btn-outline-secondary" type="button" id="add_img_btn"  id-var="${count_variations_add}" >Agregar</button>` +
+            '</div>' +
+            '</div>' +
+            '<div class="col-md-6">' +
+            '<label for="formFileMultiple" class="form-label">Seleccione archivos</label>' +
+            '<div class="input-group mb-3">' +
+            '<input class="form-control" type="file" id="formFileMultiple" multiple>' +
+            `<button class="btn btn-outline-secondary" type="button" id="upload_img_btn  id-var="${count_variations_add}" ">subir</button>` +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            `<div class="row" id="img_input_var${count_variations_add}">` +
+            '</div>' +
+            '</div>';
 
-        let row_title_var = document.createElement('div');
-        row_title_var.setAttribute('class', 'row');
-        row_title_var.innerHTML = `<p class="h6 text-center">Variacion de ${name} <button type="button" class="btn-close" id-item="${`col_item_var_${id}${count_elemts}`}" id="remove_item_attr" aria-label="Close"></button></p> `;
+        // console.log(card_var_col.childNodes[1].childNodes[1]);
+        let card_body = card_var_col.childNodes[1].childNodes[0];
+        // console.log(card_var_col.childNodes);
+        let attr_var = document.getElementById(`${select_variation_attr.options[select_variation_attr.selectedIndex].value}`).cloneNode(true);
+        attr_var.hidden = false;
+        attr_var.setAttribute('class', 'col-md-4');
+        attr_var.childNodes.forEach
+        card_body.appendChild(attr_var);
 
-        new_col_item_var.appendChild(row_title_var);
-
-        // console.log(`attr_id_${id}`);
-
-        // document.getElementById(`attr_id_${id}`).classList.remove('apiML-param');
-
-        let clone_elem_attr = document.getElementById(`attr_id_${id}`).cloneNode(true);
-        clone_elem_attr.setAttribute('id', '');
-        clone_elem_attr.setAttribute('class', 'col');
-        clone_elem_attr.hidden = false;
-
-        // clone_elem_attr.setAttribute('id-endpoint', 'attribute_combinations');
-        // clone_elem_attr.setAttribute('type-endpoint', 'list');
-        // clone_elem_attr.setAttribute('type-struct', 'object');
-        // clone_elem_attr.setAttribute('value-type', 'string');
-        // clone_elem_attr.setAttribute('tag-var', 'attr');
-        // clone_elem_attr.setAttribute('select-sndata', 'all');
-
-        new_col_item_var.appendChild(clone_elem_attr);
-
-
-        let col_div_cont = document.createElement('div');
-        col_div_cont.setAttribute('class', 'col');
-        let label_av_qt = document.createElement('label');
-        label_av_qt.setAttribute('for', `comp_var_attr_${id}`);
-        label_av_qt.appendChild(document.createTextNode('cantidad'));
-        let comp_av_ql = document.createElement('input');
-        comp_av_ql.setAttribute('class', 'form-control');
-        comp_av_ql.setAttribute('type', 'text');
-        comp_av_ql.setAttribute('id', `av_var_attr_${id}`);
-        col_div_cont.appendChild(label_av_qt);
-        col_div_cont.appendChild(comp_av_ql);
-
-        row_attr_var = document.createElement('div');
-        row_attr_var.setAttribute('class', 'row');
-        row_attr_var.appendChild(col_div_cont);
-
-        new_col_item_var.appendChild(row_attr_var);
-
-
-        col_div_cont = document.createElement('div');
-        col_div_cont.setAttribute('class', 'col');
-        label_av_qt = document.createElement('label');
-
-        let group = document.createElement('div');
-        group.setAttribute('class', 'input-group mb-3');
-
-        // let btn_add_attr=document.createElement('button');
-        // btn_add_attr.setAttribute('class','btn btn-outline-secondary');
-        // btn_add_attr.setAttribute('type','button');
-        // btn_add_attr.setAttribute('id','add_attr_var_item');
-        // btn_add_attr.appendChild(document.createTextNode('añadir'));
-
-        // let btn_rm_attr=document.createElement('button');
-        // btn_rm_attr.setAttribute('class','btn btn-outline-secondary');
-        // btn_rm_attr.setAttribute('type','button');
-        // btn_rm_attr.setAttribute('id','rm_attr_var_item');
-        // btn_rm_attr.appendChild(document.createTextNode('eliminar'));
-
-        label_av_qt.setAttribute('for', 'select_var_attr');
-        label_av_qt.appendChild(document.createTextNode('agregar atributos a variacion'));
-        let selet_var_attr = select_variation_attr.cloneNode(true);
-        select_variation_attr.setAttribute('id-item', `col_item_var_${id}${count_elemts}`);
-        col_div_cont.appendChild(label_av_qt);
-
-        group.appendChild(select_variation_attr);
-        // group.appendChild(btn_add_attr);
-        // group.appendChild(btn_rm_attr);
-        col_div_cont.appendChild(group);
-
-        row_attr_var = document.createElement('div');
-        row_attr_var.setAttribute('class', 'row');
-        row_attr_var.appendChild(col_div_cont);
-
-        new_col_item_var.appendChild(row_attr_var);
-
-        row_root.appendChild(new_col_item_var);
+        for (let i = 0; i < attr_var.childNodes.length; i++) {
+            let child = attr_var.childNodes[i];
+            if (child.classList.contains('apiML-param')) {
+                child.classList.replace('apiML-param', `apiML-param-var${count_variations_add}`);
+                // child.classList.append(`apiML-param-var${count_variations_add}`);
+            } else {
+                switch (child.tagName.toLowerCase()) {
+                    case 'input':
+                        if (child.type != 'file') {
+                            child.classList.add(`apiML-param-var${count_variations_add}`);
+                        }
+                        break;
+                    case 'select':
+                        child.classList.add(`apiML-param-var${count_variations_add}`);
+                        break;
+                    case 'textarea':
+                        child.classList.add(`apiML-param-var${count_variations_add}`);
+                        break;
+                }
+            }
+            if (child.hasAttribute('id-endpoint')) {
+                child.setAttribute('id-endpoint', 'attribute_combinations');
+            }
+            // console.log(child);
+        }
+        document.getElementById('attr_var_view').appendChild(card_var_col);
 
 
     });
@@ -1287,8 +1312,13 @@ if ($isExpireTK['value']) {
     $('body').off('click', '#val_publishe');
     $('body').on('click', '#val_publish', async (e) => {
         e.preventDefault();
+        for (let index = 1; index <= count_variations_add; index++) {
+            let body_json = apiML(`.apiML-param-var${index}`).jsontargetize();
+            console.log(body_json);
+        }
         let body_json = apiML('.apiML-param').jsontargetize();
         console.log(body_json);
+
         // let val_publish = await apiML().requestEndPoint({
         //     EndPoint: {
         //         endpoint_parent: 'items',
