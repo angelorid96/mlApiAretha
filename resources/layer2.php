@@ -218,13 +218,17 @@ if ($isExpireTK['value']) {
                         <div class="col-md-12 mb-2 ms-1">
                             <p class="h3 text-center">Variaciones</p>
                         </div>
-                        <div class="col-md-4">
-                            <label for="formFileMultiple" class="form-label">seleccione atributo que tendra variaciones</label>
-                            <div class="input-group mb-3">
-                                <select class="form-select" id="attr_var" aria-label="Default select example">
-                                    <option value="none">atributos</option>
-                                </select>
-                                <button class="btn btn-outline-secondary" type="button" id="add_attr_var_btn">Agregar</button>
+                        <div class="card col-md-12">
+                            <div class="card-header text-center col-md-12">
+                                <div class="row justify-content-md-center">
+                                    <div class="col-md-8 text-center"><span class="h4">Marque atributos que tendran variacion </span></div>
+                                    <div class="col-md-2 align-self-end"> <button class="btn btn-outline-secondary" type="button" id="add_attr_var_btn">agregar variacion</button></div>
+                                </div>
+                            </div>
+                            <div class="card-body text-center col-md-12">
+                                <div class="row g-3 mt-3" id="attr_var">
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -325,9 +329,11 @@ if ($isExpireTK['value']) {
     const max_description_length = 50000;
     let count_images_add = 0;
     let count_variations_add = 0;
+    let imgs_vars = {};
     let domain_id_value = '';
     let tmp_prev_elem = null;
 
+    let list_attr_vars = [];
 
     let select_variation_attr = document.createElement('select');
     select_variation_attr.setAttribute('class', 'form-select');
@@ -789,7 +795,7 @@ if ($isExpireTK['value']) {
         let select_child = document.getElementById('attributes_add');
         let id_elem = select_child.options[select_child.selectedIndex].value;
         document.getElementById(`${id_elem}`).hidden = true;
-        document.getElementById(`${id_elem}`).classList.add('apiML-param');
+        document.getElementById(`${id_elem}`).classList.remove('apiML-param');
 
     });
     $('body').off('click', '#category-confirm');
@@ -841,7 +847,7 @@ if ($isExpireTK['value']) {
                 }
             },
         });
-        console.log(attributes)
+        // console.log(attributes)
         let attributes_add = document.getElementById('attributes_add');
         let view_attr = document.getElementById('view_attr');
         view_attr.innerHTML = '';
@@ -920,7 +926,7 @@ if ($isExpireTK['value']) {
 
                     div_col.appendChild(attr_label);
                     if ('values' in attr) {
-
+                        attr_comp.setAttribute('value-id', '');
                         select_attr = document.createElement('select');
                         select_attr.setAttribute('class', 'form-select  z-2 ');
                         select_attr.setAttribute('id', `select_attr_${attr.id}`);
@@ -981,11 +987,17 @@ if ($isExpireTK['value']) {
                     }
                 }
                 if (attr.tags.hasOwnProperty('allow_variations')) {
-                    let op_att_var = document.createElement('option');
-                    op_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
-                    op_att_var.setAttribute('input-id', `${attr.id}`);
-                    op_att_var.appendChild(document.createTextNode(`${attr.name}`));
-                    document.getElementById('attr_var').appendChild(op_att_var);
+                    let col_att_var = document.createElement('div');
+                    col_att_var.setAttribute('class', 'col-md-6');
+                    col_att_var.innerHTML = `<input class="form-check-input" type="checkbox" value="attr_id_${attr.id}" input-id="${attr.id}" id="check_attr_var">` +
+                        '<label class="form-check-label">' +
+                        `  ${attr.name}` +
+                        '</label>';
+                    // ch_att_var.setAttribute('value', `item_var_attr_${attr.id}`);
+                    // ch_att_var.setAttribute('input-id', `${attr.id}`);
+                    // ch_att_var.appendChild(document.createTextNode(`${attr.name}`));
+                    // document.getElementById('attr_var').appendChild(op_att_var);
+                    document.getElementById('attr_var').appendChild(col_att_var);
                 }
                 if (attr.tags.hasOwnProperty('variation_attribute')) {
                     let op_att_var = document.createElement('option');
@@ -1002,6 +1014,14 @@ if ($isExpireTK['value']) {
             }
         }
         aretha('#collapseTwo').addClass('show');
+    });
+    $('body').off('click', '#check_attr_var');
+    $('body').on('click', '#check_attr_var', (e) => {
+        if (e.target.checked) {
+            list_attr_vars.push(e.target.value);
+        } else {
+            delete list_attr_vars[list_attr_vars.indexOf(e.target.value)];
+        }
     });
     $('body').off('click', '#add_img_btn');
     $('body').on('click', '#add_img_btn', (e) => {
@@ -1116,6 +1136,7 @@ if ($isExpireTK['value']) {
 
                 let select_child = aretha().targetize(e);
                 select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                select_child.previousElementSibling.setAttribute('value-id', `${select_child.options[select_child.selectedIndex].value}`);
                 // select_child.previousElementSibling.setAttribute('')
                 select_child.hidden = true;
 
@@ -1140,17 +1161,22 @@ if ($isExpireTK['value']) {
             });
         }
     });
-    // $('body').off('blur', '#input-attr');
-    // $('body').on('blur', '#input-attr', (e) => {
-    //     e.preventDefault();
-    //     // console.log(e);
-    //     if (tmp_prev_elem != null) {
-    //         tmp_prev_elem.hidden = true;
-    //     }
+    $('body').off('input', '#input-attr');
+    $('body').on('input', '#input-attr', (e) => {
+        e.preventDefault();
+        // console.log(e);
+        e.target.removeAttribute('value-id');
 
-    // });
+    });
     $('body').off('click', '#add_attr_var_btn');
     $('body').on('click', '#add_attr_var_btn', (e) => {
+
+        // console.log(list_attr_vars);
+        let nodes_check_attr_var = document.querySelectorAll('input[id="check_attr_var"]');
+        nodes_check_attr_var.forEach((element) => {
+            element.disabled = true;
+        });
+
         count_variations_add += 1;
 
         let card_var_col = document.createElement('div');
@@ -1158,12 +1184,14 @@ if ($isExpireTK['value']) {
         card_var_col.setAttribute('id', `card-var-${count_variations_add}`)
 
         card_var_col.innerHTML =
-            '<div class="card-header text-center row">' +
+            '<div class="card-header text-center col-md-12">' +
+            '<div class="row">' +
             `<div class="col-md-11">Variacion ${count_variations_add} </div>  <div class="col align-self-end"><button type="button" class="btn-close" id="btn-close-var"  id-card="card-var-${count_variations_add}" aria-label="Close"></button> </div>` +
             '</div>' +
-            `<div class="card-body" id="body-var-${count_variations_add}">` +
-            `<div claas="row" id="body-var${count_variations_add}_p1" >` +
-            '<div class="col-md-4">' +
+            '</div>' +
+            `<div class="card-body col-md-12" id="body-var-${count_variations_add}">` +
+            `<div class="row" id="body-var${count_variations_add}-p1" >` +
+            '<div class="col-md-5">' +
             '<label for="condition" class="form-label">Cantidad disponible</label>' +
             `<input type="text" class="form-control apiML-param-var${count_variations_add}" id="available_quantity" value-type="number" aria-label="catidad disponible"> ` +
             '</div>' +
@@ -1174,35 +1202,35 @@ if ($isExpireTK['value']) {
             '</div>' +
             '<div class="col-md-12  align-self-start">' +
             '<div class="input-group">' +
-            `<select class="form-select" id="attributes_add_var" id-var="${count_variations_add}" aria-label="Default select example">` +
-            '<option value="none" selected>atributos</option>' +
-            '</select>' +
-            '<button class="btn btn-outline-secondary" type="button" id="add_attr_btn">Agregar</button>' +
-            '<button class="btn btn-outline-secondary" type="button" id="remove_attr_btn">Eliminar</button>' +
+            // `<select class="form-select" id="attributes_add_var" id-var="${count_variations_add}" aria-label="Default select example">` +
+            // '<option value="none" selected>atributos</option>' +
+            // '</select>' +
+            `<button class="btn btn-outline-secondary" type="button" id-var="${count_variations_add}" id="add_attr_btn_var">Agregar</button>` +
+            `<button class="btn btn-outline-secondary" type="button" id-var="${count_variations_add}"  id="remove_attr_btn_var">Eliminar</button>` +
             '</div>' +
             '</div>' +
             '</div>' +
             `<div class="row " id="view_attr_var${count_variations_add}">` +
             '</div>' +
-            '<div class="row justify-content-md-center">' +
+            '<div class="row justify-content-md-center pt-3">' +
             '<div class="col-md-12">' +
             '<p class="h3 text-center">Imagenes</p>' +
             '</div>' +
             '<div class="col-md-6 ">' +
             '<label for="formFileMultiple" class="form-label">Seleccione fuente imagen</label>' +
             '<div class="input-group mb-3">' +
-            `<select class="form-select" id="img_add_var"  id-var="${count_variations_add}"  aria-label="Default select example">` +
+            `<select class="form-select" id="img_add_var${count_variations_add}"  id-var="${count_variations_add}"  aria-label="Default select example">` +
             '<option value="url">url</option>' +
             '<option value="none" disabled>id mercado libre</option>' +
             '</select>' +
-            `<button class="btn btn-outline-secondary" type="button" id="add_img_btn"  id-var="${count_variations_add}" >Agregar</button>` +
+            `<button class="btn btn-outline-secondary" type="button" id="add_img_btn_vars"  id-var="${count_variations_add}" >Agregar</button>` +
             '</div>' +
             '</div>' +
             '<div class="col-md-6">' +
-            '<label for="formFileMultiple" class="form-label">Seleccione archivos</label>' +
+            `<label for="file_multi_var${count_variations_add}" class="form-label">Seleccione archivos</label>` +
             '<div class="input-group mb-3">' +
-            '<input class="form-control" type="file" id="formFileMultiple" multiple>' +
-            `<button class="btn btn-outline-secondary" type="button" id="upload_img_btn  id-var="${count_variations_add}" ">subir</button>` +
+            `<input class="form-control" type="file" id="file_multi_var${count_variations_add}" multiple>` +
+            `<button class="btn btn-outline-secondary" type="button" id="upload_img_btn_vars"  id-var="${count_variations_add}" ">subir</button>` +
             '</div>' +
             '</div>' +
             '</div>' +
@@ -1210,55 +1238,355 @@ if ($isExpireTK['value']) {
             '</div>' +
             '</div>';
 
-        // console.log(card_var_col.childNodes[1].childNodes[1]);
-        let card_body = card_var_col.childNodes[1].childNodes[0];
-        // console.log(card_var_col.childNodes);
-        let attr_var = document.getElementById(`${select_variation_attr.options[select_variation_attr.selectedIndex].value}`).cloneNode(true);
-        attr_var.hidden = false;
-        attr_var.setAttribute('class', 'col-md-4');
-        attr_var.childNodes.forEach
-        card_body.appendChild(attr_var);
 
-        for (let i = 0; i < attr_var.childNodes.length; i++) {
-            let child = attr_var.childNodes[i];
-            if (child.classList.contains('apiML-param')) {
-                child.classList.replace('apiML-param', `apiML-param-var${count_variations_add}`);
-                // child.classList.append(`apiML-param-var${count_variations_add}`);
-            } else {
-                switch (child.tagName.toLowerCase()) {
-                    case 'input':
-                        if (child.type != 'file') {
-                            child.classList.add(`apiML-param-var${count_variations_add}`);
+        let card_body = card_var_col.childNodes[1].childNodes[0];
+        list_attr_vars.forEach((id_attr) => {
+            let attr_var = document.getElementById(`${id_attr}`).cloneNode(true);
+            attr_var.hidden = false;
+            attr_var.setAttribute('class', 'col-md-5');
+            for (let i = 0; i < attr_var.childNodes.length; i++) {
+                let child = attr_var.childNodes[i];
+
+                if (child.getAttribute('id') == 'select_attr_COLOR') {
+                    child.setAttribute('id', `${child.getAttribute('id')}_var`)
+                } else {
+                    if (child.classList.contains('apiML-param')) {
+                        child.classList.replace('apiML-param', `apiML-param-var${count_variations_add}`);
+                        child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                    } else {
+                        switch (child.tagName.toLowerCase()) {
+                            case 'input':
+                                if (child.type != 'file') {
+                                    child.classList.add(`apiML-param-var${count_variations_add}`);
+                                    child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                                }
+                                break;
+                            case 'select':
+                                child.classList.add(`apiML-param-var${count_variations_add}`);
+                                child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                                break;
+                            case 'textarea':
+                                child.classList.add(`apiML-param-var${count_variations_add}`);
+                                child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                                break;
                         }
-                        break;
-                    case 'select':
-                        child.classList.add(`apiML-param-var${count_variations_add}`);
-                        break;
-                    case 'textarea':
-                        child.classList.add(`apiML-param-var${count_variations_add}`);
-                        break;
+                    }
+                    if (child.hasAttribute('id-endpoint')) {
+                        child.setAttribute('id-endpoint', 'attribute_combinations');
+                    }
                 }
             }
-            if (child.hasAttribute('id-endpoint')) {
-                child.setAttribute('id-endpoint', 'attribute_combinations');
-            }
-            // console.log(child);
-        }
+            card_body.appendChild(attr_var);
+        });
+
+
+
+        let select_vars_attrs = select_variation_attr.cloneNode(true);
+        select_variation_attr.setAttribute('id', `select_attr_var${count_variations_add}`);
+        // let attr_var = document.getElementById(`${select_variation_attr.options[select_variation_attr.selectedIndex].value}`).cloneNode(true);
+        // attr_var.hidden = false;
+        // attr_var.setAttribute('class', 'col-md-5');
+        // card_body.appendChild(attr_var);
+
+        // for (let i = 0; i < attr_var.childNodes.length; i++) {
+        //     let child = attr_var.childNodes[i];
+        //     if (child.classList.contains('apiML-param')) {
+        //         child.classList.replace('apiML-param', `apiML-param-var${count_variations_add}`);
+        //         // child.classList.append(`apiML-param-var${count_variations_add}`);
+        //     } else {
+        //         switch (child.tagName.toLowerCase()) {
+        //             case 'input':
+        //                 if (child.type != 'file') {
+        //                     child.classList.add(`apiML-param-var${count_variations_add}`);
+        //                 }
+        //                 break;
+        //             case 'select':
+        //                 child.classList.add(`apiML-param-var${count_variations_add}`);
+        //                 break;
+        //             case 'textarea':
+        //                 child.classList.add(`apiML-param-var${count_variations_add}`);
+        //                 break;
+        //         }
+        //     }
+        //     if (child.hasAttribute('id-endpoint')) {
+        //         child.setAttribute('id-endpoint', 'attribute_combinations');
+        //     }
+        //     // console.log(child);
+        // }
+        // // console.log(card_var_col.childNodes[1].childNodes[1].childNodes[1].firstChild);
+        card_var_col.childNodes[1].childNodes[1].childNodes[1].firstChild.insertAdjacentElement('afterbegin', select_variation_attr);
         document.getElementById('attr_var_view').appendChild(card_var_col);
 
-
     });
-    $('body').off('click', '#remove_item_attr');
-    $('body').on('click', '#remove_item_attr', (e) => {
+    $('body').off('click', '#btn-close-var');
+    $('body').on('click', '#btn-close-var', (e) => {
         e.preventDefault();
-        document.getElementById(aretha().targetize(e).getAttribute('id-item')).remove();
+        if (count_variations_add > 0) {
+            document.getElementById(aretha().targetize(e).getAttribute('id-card')).remove();
+            count_variations_add--;
+        }
+
+        if (count_variations_add == 0) {
+            let nodes_check_attr_var = document.querySelectorAll('input[id="check_attr_var"]');
+            nodes_check_attr_var.forEach((element) => {
+                element.disabled = false;
+            });
+        }
 
     });
+    $('body').off('click', '#add_attr_btn_var');
+    $('body').on('click', '#add_attr_btn_var', (e) => {
+        e.preventDefault();
+        let id_var = aretha().targetize(e).getAttribute('id-var');
+        let select_child = document.getElementById(`select_attr_var${id_var}`);
+        let item_select = select_child.options[select_child.selectedIndex];
+
+        if (document.getElementById(`${item_select.value}_var${id_var}`) != null) {
+            let tmp_exits_var = document.getElementById(`${item_select.value}_var${id_var}`);
+            tmp_exits_var.hidden = false;
+            for (let i = 0; i < tmp_exits_var.childNodes.length; i++) {
+                let child = tmp_exits_var.childNodes[i];
+                if (child.classList.contains(`apiML-param-var${id_var}`)) {
+                    child.classList.remove(`apiML-param-var${id_var}`);
+                    // child.classList.append(`apiML-param-var${count_variations_add}`);
+                }
+            }
+        } else {
+            let tmp_attr_var = document.getElementById(item_select.value).cloneNode(true);
+            tmp_attr_var.setAttribute('id', `${tmp_attr_var.getAttribute('id')}_var${id_var}`);
+            tmp_attr_var.setAttribute('class', 'col-md-3 mb-2 mt-2');
+            for (let i = 0; i < tmp_attr_var.childNodes.length; i++) {
+                let child = tmp_attr_var.childNodes[i];
+                if (child.classList.contains('apiML-param')) {
+                    child.classList.replace('apiML-param', `apiML-param-var${id_var}`);
+                    // child.classList.append(`apiML-param-var${count_variations_add}`);
+                } else {
+                    switch (child.tagName.toLowerCase()) {
+                        case 'input':
+                            if (child.type != 'file') {
+                                child.classList.add(`apiML-param-var${id_var}`);
+                            }
+                            break;
+                        case 'select':
+                            child.classList.add(`apiML-param-var${id_var}`);
+                            break;
+                        case 'textarea':
+                            child.classList.add(`apiML-param-var${id_var}`);
+                            break;
+                    }
+                }
+                // if (child.hasAttribute('id-endpoint')) {
+                //     child.setAttribute('id-endpoint', 'attribute_combinations');
+                // }
+                // console.log(child);
+            }
+            tmp_attr_var.hidden = false;
+            document.getElementById(`view_attr_var${id_var}`).appendChild(tmp_attr_var);
+        }
+
+
+        // console.log(tmp_attr_var);
+
+    });
+    $('body').off('focusin', '#input-attr-var');
+    $('body').on('focusin', '#input-attr-var', (e) => {
+        e.preventDefault();
+        // console.log(e);
+        if (tmp_prev_elem != null) {
+            tmp_prev_elem.hidden = true;
+        }
+        tmp_prev_elem = document.getElementById(`select_attr_${e.target.getAttribute('id-attr')}_var`);
+
+        if (tmp_prev_elem != null) {
+            tmp_prev_elem.hidden = false;
+            // select_child.previousElementSibling.value=select_child.options[select_child.selectedIndex].innerHTML;
+            // // select_child.previousElementSibling.setAttribute('')
+            // select_child.hidden=true;      
+            tmp_prev_elem.addEventListener('change', (e) => {
+                e.preventDefault();
+
+                let select_child = aretha().targetize(e);
+                select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                select_child.previousElementSibling.setAttribute('value-id', `${select_child.options[select_child.selectedIndex].value}`);
+                // select_child.previousElementSibling.setAttribute('')
+                select_child.hidden = true;
+
+            });
+            tmp_prev_elem.addEventListener('focusout', (e) => {
+                e.preventDefault();
+
+                let select_child = aretha().targetize(e);
+                // select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                // select_child.previousElementSibling.setAttribute('')
+                select_child.hidden = true;
+
+            });
+            tmp_prev_elem.addEventListener('blur', (e) => {
+                e.preventDefault();
+
+                let select_child = aretha().targetize(e);
+                // select_child.previousElementSibling.value = select_child.options[select_child.selectedIndex].innerHTML;
+                // select_child.previousElementSibling.setAttribute('')
+                select_child.hidden = true;
+
+            });
+        }
+    });
+    $('body').off('input', '#input-attr-var');
+    $('body').on('input', '#input-attr-var', (e) => {
+        e.preventDefault();
+        // console.log(e);
+        e.target.removeAttribute('value-id');
+
+    });
+    $('body').off('click', '#remove_attr_btn_var');
+    $('body').on('click', '#remove_attr_btn_var', (e) => {
+        e.preventDefault();
+        let id_var = aretha().targetize(e).getAttribute('id-var');
+        let select_child = document.getElementById(`select_attr_var${id_var}`);
+        let item_select = select_child.options[select_child.selectedIndex];
+        let tmp_attr_var = document.getElementById(`${item_select.value}_var${id_var}`);
+        if (tmp_attr_var != null) {
+            tmp_attr_var.hidden = true;
+            for (let i = 0; i < tmp_attr_var.childNodes.length; i++) {
+                let child = tmp_attr_var.childNodes[i];
+                if (child.classList.contains(`apiML-param-var${id_var}`)) {
+                    child.classList.remove(`apiML-param-var${id_var}`);
+                    // child.classList.append(`apiML-param-var${count_variations_add}`);
+                }
+            }
+        }
+
+    });
+    $('body').off('click', '#add_img_btn_vars');
+    $('body').on('click', '#add_img_btn_vars', (e) => {
+        e.preventDefault();
+        let id_var = aretha().targetize(e).getAttribute('id-var');
+        let select_child = document.getElementById(`img_add_var${id_var}`);
+        let index_select = select_child.options.selectedIndex
+        let count_imgs_var = 0;
+        if (imgs_vars.hasOwnProperty(`var_${id_var}`)) {
+            count_imgs_var = imgs_vars[`var_${id_var}`].count_imgs_add;
+        } else {
+            imgs_vars[`var_${id_var}`] = {};
+            imgs_vars[`var_${id_var}`]['count_imgs_add'] = 0;
+        }
+        if (count_images_add <= max_nuber_images) {
+            switch (select_child.options[index_select].value) {
+                case 'url':
+                    // console.log(document.getElementById('img_input').childElementCount);
+                    let index_child_img = document.getElementById(`img_input_var${id_var}`).childElementCount + 1;
+                    let div_col = document.createElement('div');
+                    div_col.setAttribute('class', 'col-md-4 mb-2');
+                    let label_img_input = document.createElement('label');
+                    label_img_input.setAttribute('class', 'form-label');
+                    label_img_input.setAttribute('form', `img${index_child_img}_var${id_var}`);
+                    label_img_input.appendChild(document.createTextNode(`URL imagen ${index_child_img}`));
+                    let input_img = document.createElement('input');
+                    input_img.setAttribute('class', `form-control apiML-param-var${id_var}`);
+                    input_img.setAttribute('type', 'text');
+                    input_img.setAttribute('id', `img${index_child_img}_var${id_var}`);
+                    input_img.setAttribute('id-endpoint', 'picture_ids');
+                    input_img.setAttribute('type-endpoint', 'list');
+                    // input_img.setAttribute('type-struct', 'object');
+                    input_img.setAttribute('value-type', 'string');
+                    // input_img.setAttribute('tag-var', 'source');
+                    div_col.appendChild(label_img_input);
+                    div_col.appendChild(input_img);
+                    document.getElementById(`img_input_var${id_var}`).appendChild(div_col);
+                    count_imgs_var++;
+                    break;
+                case 'id':
+                    break;
+            }
+            imgs_vars[`var_${id_var}`]['count_imgs_add'] = count_imgs_var;
+        } else {
+            alert(`Solo se permite agregar hasta ${max_nuber_images} imagenes`);
+        }
+
+    });
+    $('body').off('click', '#upload_img_btn_vars');
+    $('body').on('click', '#upload_img_btn_vars', async (e) => {
+        e.preventDefault();
+        let id_var = aretha().targetize(e).getAttribute('id-var');
+        let count_imgs_var = 0;
+        if (imgs_vars.hasOwnProperty(`var_${id_var}`)) {
+            count_imgs_var = imgs_vars[`var_${id_var}`].count_imgs_add;
+        } else {
+            imgs_vars[`var_${id_var}`] = {};
+            imgs_vars[`var_${id_var}`]['count_imgs_add'] = 0;
+        }
+        let files = document.getElementById(`file_multi_var${id_var}`).files;
+        let index_files = 0;
+        const formData_img = new FormData()
+        // console.log(files);
+        // console.log(count_images_add);
+        if ((files.length != 0)) {
+            if ((count_imgs_var + files.length) > max_nuber_images_var) {
+                index_files = max_nuber_images_var - count_imgs_var;
+                alert(`se agregaran solo ${index_files} imagenes de las seleccionadas. rebasa el limite permitido`)
+            } else if (files.length > max_nuber_images_var) {
+                alert(`numero de images permitido rebasado`);
+            }
+        };
+        formData_img.append('filesLength', files.length);
+        formData_img.append('data', JSON.stringify({
+            EndPoint: {
+                endpoint_parent: 'pictures',
+                endpointChild: 'upload',
+            },
+        }));
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            formData_img.append(`file${i}`, file);
+        }
+        let imgs_details = await apiML().uploadImage(formData_img);
+        console.log(imgs_details);
+        // let row_images = document.getElementById(`img_input_var${id_var}`);
+        for (let index = 0; index < imgs_details.data.length; index++) {
+            let index_child_img = document.getElementById(`img_input_var${id_var}`).childElementCount + 1;
+            console.log(imgs_details.data[index]);
+            let div_col = document.createElement('div');
+            div_col.setAttribute('class', 'col-md-4 mb-2');
+            let label_img_input = document.createElement('label');
+            label_img_input.setAttribute('class', 'form-label');
+            label_img_input.setAttribute('form', `img${index_child_img}_var${id_var}`);
+            label_img_input.appendChild(document.createTextNode(`Imagen subida ${index_child_img}`));
+            let input_img = document.createElement('input');
+            input_img.setAttribute('class', `form-control apiML-param-var${id_var}`);
+            input_img.setAttribute('type', 'input');
+            input_img.setAttribute('value', `${imgs_details.data[index]}`);
+            input_img.setAttribute('id', `img${index_child_img}_var${id_var}`);
+            input_img.setAttribute('id-endpoint', 'picture_ids');
+            input_img.setAttribute('type-endpoint', 'list');
+            // input_img.setAttribute('type-struct', 'object');
+            input_img.setAttribute('value-type', 'string');
+            // input_img.setAttribute('tag-var', 'id');
+            input_img.readOnly = true;
+            div_col.appendChild(label_img_input);
+            div_col.appendChild(input_img);
+            document.getElementById(`img_input_var${id_var}`).appendChild(div_col);
+            count_imgs_var++;
+        }
+        imgs_vars[`var_${id_var}`]['count_imgs_add'] = count_imgs_var;
+    });
+    // $('body').off('change', '#select_var_attr_item');
+    // $('body').on('change', '#select_var_attr_item', async (e) => {
+    //     e.preventDefault();
+    //     let select_child = aretha().targetize(e);
+    //     let item_select = select_child.options[select_child.selectedIndex];
+    //     let tmp_attr_var=document.getElementById(item_select.value).cloneNode(true);
+    //     tmp_attr_var.setAttribute('id',`${tmp_attr_var.getAttribute('id')}_var${select_child.getAttribute('id-var')}`)
+    //     console.log(tmp_attr_var);
+
+
+    // });
+
     $('body').off('click', '#get_attr_grid_layout');
     $('body').on('click', '#get_attr_grid_layout', async (e) => {
         e.preventDefault();
 
-        console.log(domain_id_value);
+        // console.log(domain_id_value);
         let chart_attrs = await apiML().requestEndPoint({
             EndPoint: {
                 endpoint_parent: 'site',

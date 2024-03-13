@@ -322,7 +322,11 @@ const apiML = (target) => ({
                                 }
                             }
                         } else {
-                            insert_value(item.value);
+                            if(item.hasAttribute('value-id')){
+                                insert_value(item.value,item.getAttribute('value-id'));
+                            }else{
+                                insert_value(item.value);
+                            }
                         }
                         break;
                     case 'select':
