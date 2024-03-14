@@ -98,6 +98,13 @@ class mlApi
     {
         return key_exists($key_endPoint, mlApi::$list_endPoints);
     }
+    public static function exist_endPoint_Child($endPoint_parent, $endPoint)
+    {
+        if(key_exists($endPoint_parent, mlApi::$list_endPoints)){
+            return key_exists($endPoint,mlApi::$list_endPoints[$endPoint_parent]);
+        }
+        return false;
+    }
     public static function getUrlAuth($endPoint)
     {
         return sprintf(mlApi::getEndPointChild('auth', $endPoint), mlApi::getClient_id(), mlApi::getUrl_redirect());

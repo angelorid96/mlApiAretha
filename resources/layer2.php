@@ -83,7 +83,7 @@ if ($isExpireTK['value']) {
                                     <input type="text" class="form-control apiML-param apiML-shipp" id="category_id" value-type="text" hidden>
                                     <input type="text" class="form-control" id="domain_id" value-type="text" hidden>
                                 </div>
-                                <div class="col-md-3 mb-2 ms-1">
+                                <div class="col-md-3 mb-2 ms-1" id>
                                     <label for="price" class="form-label">Precio</label>
                                     <div class="input-group ">
                                         <span class="input-group-text">$</span>
@@ -785,8 +785,11 @@ if ($isExpireTK['value']) {
         e.preventDefault();
         let select_child = document.getElementById('attributes_add');
         let id_elem = select_child.options[select_child.selectedIndex].value;
-        document.getElementById(`${id_elem}`).hidden = false;
-        document.getElementById(`${id_elem}`).classList.add('apiML-param');
+        let div_col = document.getElementById(`${id_elem}`);
+        div_col.hidden = false;
+        let item = div_col.querySelector('[id="input-attr"]');
+        item.classList.add('apiML-param');
+
 
     });
     $('body').off('click', '#remove_attr_btn');
@@ -794,8 +797,11 @@ if ($isExpireTK['value']) {
         e.preventDefault();
         let select_child = document.getElementById('attributes_add');
         let id_elem = select_child.options[select_child.selectedIndex].value;
-        document.getElementById(`${id_elem}`).hidden = true;
-        document.getElementById(`${id_elem}`).classList.remove('apiML-param');
+        let div_col = document.getElementById(`${id_elem}`);
+        div_col.hidden = true;
+        let item = div_col.querySelector('[id="input-attr"]');
+        item.classList.remove('apiML-param');
+
 
     });
     $('body').off('click', '#category-confirm');
@@ -928,11 +934,15 @@ if ($isExpireTK['value']) {
                     if ('values' in attr) {
                         attr_comp.setAttribute('value-id', '');
                         select_attr = document.createElement('select');
-                        select_attr.setAttribute('class', 'form-select  z-2 ');
+                        select_attr.setAttribute('class', 'form-select  z-2');
                         select_attr.setAttribute('id', `select_attr_${attr.id}`);
 
                         let op_sel = null;
-
+                        op_sel = document.createElement('option');
+                        op_sel.setAttribute('value', 'none');
+                        op_sel.setAttribute('input-id', 'none');
+                        op_sel.appendChild(document.createTextNode(`...`));
+                        select_attr.appendChild(op_sel);
                         for (let index_val = 0; index_val < attr.values.length; index_val++) {
                             op_sel = document.createElement('option');
                             op_sel.setAttribute('value', `${attr.values[index_val].id}`);
@@ -1195,6 +1205,13 @@ if ($isExpireTK['value']) {
             '<label for="condition" class="form-label">Cantidad disponible</label>' +
             `<input type="text" class="form-control apiML-param-var${count_variations_add}" id="available_quantity" value-type="number" aria-label="catidad disponible"> ` +
             '</div>' +
+            '<div class="col-md-5" >' +
+            `<label for="price_var${count_variations_add}" class="form-label">Precio</label>` +
+            '<div class="input-group ">' +
+            '<span class="input-group-text">$</span>' +
+            `<input type="text" class="form-control apiML-param-var${count_variations_add}" value="${document.getElementById('price').value}" id-endpoint="price" value-type="number" aria-label="Amount (to the nearest dollar)" readonly>` +
+            '</div>' +
+            '</div>' +
             '</div>' +
             `<div class="row pt-3">` +
             '<div class="col-md-12">' +
@@ -1241,33 +1258,39 @@ if ($isExpireTK['value']) {
 
         let card_body = card_var_col.childNodes[1].childNodes[0];
         list_attr_vars.forEach((id_attr) => {
-            let attr_var = document.getElementById(`${id_attr}`).cloneNode(true);
+            let ori_attr = document.getElementById(`${id_attr}`);
+
+            let attr_var = ori_attr.cloneNode(true);
             attr_var.hidden = false;
             attr_var.setAttribute('class', 'col-md-5');
             for (let i = 0; i < attr_var.childNodes.length; i++) {
                 let child = attr_var.childNodes[i];
 
                 if (child.getAttribute('id') == 'select_attr_COLOR') {
-                    child.setAttribute('id', `${child.getAttribute('id')}_var`)
+                    child.setAttribute('id', `${child.getAttribute('id')}_var${count_variations_add}`)
                 } else {
                     if (child.classList.contains('apiML-param')) {
                         child.classList.replace('apiML-param', `apiML-param-var${count_variations_add}`);
                         child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                        child.setAttribute('id-var', `${count_variations_add}`);
                     } else {
                         switch (child.tagName.toLowerCase()) {
                             case 'input':
                                 if (child.type != 'file') {
                                     child.classList.add(`apiML-param-var${count_variations_add}`);
                                     child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                                    child.setAttribute('id-var', `${count_variations_add}`);
                                 }
                                 break;
                             case 'select':
                                 child.classList.add(`apiML-param-var${count_variations_add}`);
                                 child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                                child.setAttribute('id-var', `${count_variations_add}`);
                                 break;
                             case 'textarea':
                                 child.classList.add(`apiML-param-var${count_variations_add}`);
                                 child.setAttribute('id', `${child.getAttribute('id')}-var`)
+                                child.setAttribute('id-var', `${count_variations_add}`);
                                 break;
                         }
                     }
@@ -1277,12 +1300,18 @@ if ($isExpireTK['value']) {
                 }
             }
             card_body.appendChild(attr_var);
+
+            if (!ori_attr.hidden) {
+                ori_attr.hidden = true;
+                let item = ori_attr.querySelector('[id="input-attr"]');
+                item.classList.remove('apiML-param');
+            }
         });
 
 
 
         let select_vars_attrs = select_variation_attr.cloneNode(true);
-        select_variation_attr.setAttribute('id', `select_attr_var${count_variations_add}`);
+        select_vars_attrs.setAttribute('id', `select_attr_var${count_variations_add}`);
         // let attr_var = document.getElementById(`${select_variation_attr.options[select_variation_attr.selectedIndex].value}`).cloneNode(true);
         // attr_var.hidden = false;
         // attr_var.setAttribute('class', 'col-md-5');
@@ -1314,16 +1343,20 @@ if ($isExpireTK['value']) {
         //     // console.log(child);
         // }
         // // console.log(card_var_col.childNodes[1].childNodes[1].childNodes[1].firstChild);
-        card_var_col.childNodes[1].childNodes[1].childNodes[1].firstChild.insertAdjacentElement('afterbegin', select_variation_attr);
+        card_var_col.childNodes[1].childNodes[1].childNodes[1].firstChild.insertAdjacentElement('afterbegin', select_vars_attrs);
         document.getElementById('attr_var_view').appendChild(card_var_col);
 
     });
     $('body').off('click', '#btn-close-var');
     $('body').on('click', '#btn-close-var', (e) => {
         e.preventDefault();
+        let id_var = aretha().targetize(e).getAttribute('id-card');
         if (count_variations_add > 0) {
-            document.getElementById(aretha().targetize(e).getAttribute('id-card')).remove();
+            document.getElementById(id_var).remove();
             count_variations_add--;
+            if (imgs_vars.hasOwnProperty(`var_${id_var}`)) {
+                delete imgs_vars[`var_${id_var}`]
+            }
         }
 
         if (count_variations_add == 0) {
@@ -1331,6 +1364,7 @@ if ($isExpireTK['value']) {
             nodes_check_attr_var.forEach((element) => {
                 element.disabled = false;
             });
+            imgs_vars = {};
         }
 
     });
@@ -1395,7 +1429,8 @@ if ($isExpireTK['value']) {
         if (tmp_prev_elem != null) {
             tmp_prev_elem.hidden = true;
         }
-        tmp_prev_elem = document.getElementById(`select_attr_${e.target.getAttribute('id-attr')}_var`);
+        let id_var = e.target.getAttribute('id-var');
+        tmp_prev_elem = document.getElementById(`select_attr_${e.target.getAttribute('id-attr')}_var${id_var}`);
 
         if (tmp_prev_elem != null) {
             tmp_prev_elem.hidden = false;
@@ -1640,29 +1675,55 @@ if ($isExpireTK['value']) {
     $('body').off('click', '#val_publishe');
     $('body').on('click', '#val_publish', async (e) => {
         e.preventDefault();
-        for (let index = 1; index <= count_variations_add; index++) {
-            let body_json = apiML(`.apiML-param-var${index}`).jsontargetize();
-            console.log(body_json);
-        }
+
         let body_json = apiML('.apiML-param').jsontargetize();
+        body_json['buying_mode'] = "buy_it_now";
+        if (count_variations_add > 0) {
+            body_json['variations'] = [];
+            for (let index = 1; index <= count_variations_add; index++) {
+                let vars = apiML(`.apiML-param-var${index}`).jsontargetize();
+                // console.log(vars);
+                body_json['variations'].push(vars);
+            }
+        }
         console.log(body_json);
 
-        // let val_publish = await apiML().requestEndPoint({
-        //     EndPoint: {
-        //         endpoint_parent: 'items',
-        //         endpointChild: 'validate',
-        //         body: body_json,
-        //     },
-        // });
-        // console.log(val_publish);
+        let val_publish = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'items',
+                endpointChild: 'validate',
+                body: body_json,
+            },
+        });
+        console.log(val_publish);
+        if (!val_publish.hasOwnProperty('reject')) {
+            aretha('#collapseThree').addClass('border-success');
+            // document.getElementById('item_id').setAttribute('value', `${val_publish.data.id}`);
+            setInterval(() => {
+                aretha('#collapseThree').removeClass('show');
+                aretha('#collapseThree').removeClass('border-success');
+                aretha('#collapseFour').addClass('show');
+            }, 1000);
+        } else {
+            aretha(e).addClass('border-danger');
+        }
 
     });
     $('body').off('click', '#publish_send');
     $('body').on('click', '#publish_send', async (e) => {
         e.preventDefault();
         let body_json = apiML('.apiML-param').jsontargetize();
-        console.log(body_json);
         body_json['buying_mode'] = "buy_it_now";
+        body_json['buying_mode'] = "buy_it_now";
+        if (count_variations_add > 0) {
+            body_json['variations'] = [];
+            for (let index = 1; index <= count_variations_add; index++) {
+                let vars = apiML(`.apiML-param-var${index}`).jsontargetize();
+                // console.log(vars);
+                body_json['variations'].push(vars);
+            }
+        }
+        console.log(body_json);
         let val_publish = await apiML().requestEndPoint({
             EndPoint: {
                 endpoint_parent: 'items',
@@ -1670,12 +1731,9 @@ if ($isExpireTK['value']) {
                 body: body_json,
             },
         });
-        // console.log(val_publish);
-        // let val_publish={
-        //     id:'MLM2030067131',
-        // };
+
         console.log(val_publish);
-        if (!val_publish.hasOwnProperty('error')) {
+        if (!val_publish.hasOwnProperty('reject')) {
             aretha('#collapseThree').addClass('border-success');
             document.getElementById('item_id').setAttribute('value', `${val_publish.data.id}`);
             setInterval(() => {

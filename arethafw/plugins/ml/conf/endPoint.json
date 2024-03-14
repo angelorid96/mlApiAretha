@@ -228,5 +228,15 @@
             "body": {},
             "required": "none"
         }
+    },
+    "moderations": {
+        "title": "infractions",
+        "upload": {
+            "name": "Ver infreacciones de una publiacion",
+            "url": "https://api.mercadolibre.com/moderations/infractions/user_id?related_item_id=item:id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": "user_id"
+        }
     }
 }

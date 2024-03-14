@@ -271,10 +271,10 @@ const apiML = (target) => ({
                 struct_value = item_elm.getAttribute('type-struct');
             }
             if (item_elm.hasAttribute('need-unit')) {
-                let item_unit = document.getElementById(`${item_elm.id}_unit`);
+                let item_unit = item_elm.nextElementSibling;
                 let value_unit_tmp = item_unit.options[item_unit.selectedIndex].value;
                 if (value_unit_tmp.match(RegExp('[\"\']'))) {
-                    value_unit = value_unit = ` \\${value_unit_tmp}`;
+                    value_unit = value_unit = `\\${value_unit_tmp}`;
                 } else {
                     value_unit = ` ${value_unit_tmp}`;
                 }
@@ -299,6 +299,7 @@ const apiML = (target) => ({
         if (el.length >= 1) {
             for (let item of items) {
                 // console.log(item);
+                
                 define_attr_vars(item);
                 switch (item.tagName.toLowerCase()) {
                     case 'input':
