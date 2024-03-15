@@ -160,6 +160,15 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                 $response['isAuth']['code']='valid_user_authentication';
                 $response['isAuth']['html'] = $docHtml->saveHTML($docHtml->getElementById('menu'));
             }
+        }else{
+            $response['isAuth'] = array(
+                'status' => 'fail',
+                'html' => '<h5>Bienvenido: necesita autenticarse</h5>' .
+                    '<button class="btn btn-primary btn-sm" type="button" id="authML" value="authfirs">' .
+                    'Ir a ML' .
+                    '</button>',
+                'code'=>'required_authentication',
+            );
         }
     } else {
         $response['isAuth'] = array(

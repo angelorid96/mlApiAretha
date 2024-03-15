@@ -100,8 +100,8 @@ class mlApi
     }
     public static function exist_endPoint_Child($endPoint_parent, $endPoint)
     {
-        if(key_exists($endPoint_parent, mlApi::$list_endPoints)){
-            return key_exists($endPoint,mlApi::$list_endPoints[$endPoint_parent]);
+        if (key_exists($endPoint_parent, mlApi::$list_endPoints)) {
+            return key_exists($endPoint, mlApi::$list_endPoints[$endPoint_parent]);
         }
         return false;
     }
@@ -149,7 +149,7 @@ class mlApi
     // }
     public static function request_endPoint($data_json)
     {
-        $isFile=false;
+        $isFile = false;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
         if (key_exists('file', $data_json['body'])) {
             // var_dump($data_json['body']['file']);
@@ -158,8 +158,10 @@ class mlApi
             $data_json['body']['file'] = $cfile;
             // var_dump($cfile);
             // echo '<br>';
-            $isFile=true;
+            $isFile = true;
         }
+
+
 
         if ($endPoint != false) {
 
@@ -172,6 +174,18 @@ class mlApi
                     }
                 }
             }
+            if (array_key_exists('paging', $endPoint)) {
+                if ($endPoint['paging'] && array_key_exists('paging', $data_json)) {
+                    if (strpos($urltmp, '?') !== false) {
+                        $urltmp = sprintf('%s&ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                    } else {
+                        $urltmp = sprintf('%s?ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                    }
+                }
+            }
+            // var_dump($endPoint);
+            // echo $urltmp;
+            // echo '<br>';
 
             if (array_key_exists('body', $endPoint)) {
                 foreach (array_keys($endPoint['body']) as $key) {
@@ -208,13 +222,12 @@ class mlApi
             }
 
             if ($endPoint['method'] != 'GET') {
-                
-                if($isFile){
-                    curl_setopt($curl, CURLOPT_POSTFIELDS,$endPoint['body']);
-                }else{
+
+                if ($isFile) {
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $endPoint['body']);
+                } else {
                     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
                 }
-                
             }
             $response = curl_exec($curl);
             $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);

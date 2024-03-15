@@ -53,7 +53,6 @@ if ($isExpireTK['value']) {
 
     let define_dataTables = () => {
 
-
         var schema_conf_dt = "";
         schema_conf_dt += "<'row' ";
         schema_conf_dt += "<'col-12 col-md-6 mb-3'B >"; //	columns
@@ -77,6 +76,10 @@ if ($isExpireTK['value']) {
                     EndPoint: {
                         endpoint_parent: 'users',
                         endpointChild: 'listItems',
+                        paging:{
+                            offset:0,
+                            limit:0,
+                        },
                         childData: {
                             endpoint_parent: 'items',
                             endpointChild: 'view',
@@ -166,7 +169,19 @@ if ($isExpireTK['value']) {
                 "caseInsensitive": true
             }
         });
+        
     }
-
     define_dataTables();
+    tables.on('xhr.dt', function (e, settings, json, xhr) {
+        console.log(json);
+        if (json.status == 'warning') {
+            aretha('#error-title').html('Error al obtener informacion!');
+            aretha('#error-body').html(`<p class="card-text">${json.endpoint_data.reject.error}</p>`);
+            document.getElementById('card-error').hidden = false;
+
+            setTimeout(() => {
+                document.getElementById('card-error').hidden = true;
+            }, 9000);
+        }
+    });
 </script>

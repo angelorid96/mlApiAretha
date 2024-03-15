@@ -66,6 +66,7 @@
             "url": "https://api.mercadolibre.com/users/user_id/items/search",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
+            "paging":true,
             "required": "user_id"
         }
     },
@@ -115,10 +116,49 @@
     "q&a": {
         "title": "Preuntas y Respuestas",
         "questions": {
-            "name": "Ver preguntas",
+            "name": "Ver todas las preguntas",
             "url": "https://api.mercadolibre.com/my/received_questions/search",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
+            "paging":true,
+            "required": "none"
+        },
+        "queItem": {
+            "name": "Ver preguntas de un Item",
+            "url": "https://api.mercadolibre.com/questions/search?item=item_id&api_version=4",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "paging":true,
+            "required": "none"
+        },
+        "queId": {
+            "name": "Ver pregunta",
+            "url": "https://api.mercadolibre.com/questions/question_id?api_version=4",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": "none"
+        },
+        "question": {
+            "name": "Realizar pregunta",
+            "url": "https://api.mercadolibre.com/questions",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body":{},
+            "required": "none"
+        },
+        "anwers": {
+            "name": "Responder pregunta",
+            "url": "https://api.mercadolibre.com/answers",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body":{},
+            "required": "none"
+        },
+        "queDel": {
+            "name": "Elimnar pregunta",
+            "url": "https://api.mercadolibre.com/questions/question_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "DELETE",
             "required": "none"
         }
     },
@@ -128,6 +168,13 @@
             "name": "Ver metodos de envio",
             "url": "https://api.mercadolibre.com/sites/site_user/shipping_methods",
             "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": "site_user"
+        },
+        "shipementId": {
+            "name": "Informacion de envio de una orden",
+            "url": "https://api.mercadolibre.com/shipments/shipment_id",
+            "headers": ["Authorization: Bearer %s","x-format-new: true"],
             "method": "GET",
             "required": "site_user"
         }
@@ -187,13 +234,6 @@
             "method": "GET",
             "required": "none"
         },
-        "searchAll": {
-            "name": "Listar productos",
-            "url": "https://api.mercadolibre.com/users/user_id/items/search",
-            "headers": ["Authorization: Bearer %s"],
-            "method": "GET",
-            "required": "user_id"
-        },
         "descritionAdd": {
             "name": "Crear descripcion de producto",
             "url": "https://api.mercadolibre.com/items/item_id/description",
@@ -237,6 +277,16 @@
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": "user_id"
+        }
+    },
+    "orders": {
+        "title": "Órdenes",
+        "orderId": {
+            "name": "Ver informaicon de la órden",
+            "url": " https://api.mercadolibre.com/orders/order_id",
+            "headers": ["Authorization: Bearer %s","x-format-new: true"],
+            "method": "GET",
+            "required": "none"
         }
     }
 }

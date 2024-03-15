@@ -4,7 +4,15 @@
         "email": "test_user_2037808951@testuser.com",
         "nickname": "TESTUSER2037808951",
         "site_status": "active",
-        "password": "5As3rJ3AlL"
+        "password": "5As3rJ3AlL",
+        "type":"seller"
+    },
+    {
+        "id": 1726421559,
+        "email": "test_user_471227539@testuser.com",
+        "nickname": "TESTUSER471227539",
+        "site_status": "active",
+        "password": "vVFC24LLhg"
     }
     
 ]

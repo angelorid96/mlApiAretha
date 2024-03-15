@@ -74,6 +74,7 @@ Aretha::sessionStart();
                 },
             },
         });
+        document.getElementById('body-api').hidden=false;
     });
     $('body').off('click', '#publish');
     $('body').on('click', '#publish', (e) => {
