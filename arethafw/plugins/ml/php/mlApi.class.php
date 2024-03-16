@@ -131,7 +131,7 @@ class mlApi
         // echo $endPoint;
         if (key_exists($endPoint_parent, mlApi::$list_endPoints) && key_exists($endPoint, mlApi::$list_endPoints[$endPoint_parent])) {
             if (mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required'] != 'none') {
-                return explode(',', mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required']);
+                return mlApi::$list_endPoints[$endPoint_parent][$endPoint]['required'];
             }
         }
         return false;
@@ -155,7 +155,11 @@ class mlApi
             // var_dump($data_json['body']['file']);
             // echo '<br>';
             $cfile = new CURLFile($data_json['body']['file']['tmp_name'], $data_json['body']['file']['type'], $data_json['body']['file']['name']);
-            $data_json['body']['file'] = $cfile;
+            if ($data_json['endpoint_parent'] == 'packs') {
+                $data_json['body']['fiscal_document'] = $cfile;
+            } else {
+                $data_json['body']['file'] = $cfile;
+            }
             // var_dump($cfile);
             // echo '<br>';
             $isFile = true;
@@ -177,9 +181,17 @@ class mlApi
             if (array_key_exists('paging', $endPoint)) {
                 if ($endPoint['paging'] && array_key_exists('paging', $data_json)) {
                     if (strpos($urltmp, '?') !== false) {
-                        $urltmp = sprintf('%s&ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                        if (key_exists('searchAfter', $data_json['paging'])) {
+                            $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
+                        } else {
+                            $urltmp = sprintf('%s&ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                        }
                     } else {
-                        $urltmp = sprintf('%s?ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                        if (key_exists('searchAfter', $data_json['paging'])) {
+                            $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
+                        } else {
+                            $urltmp = sprintf('%s?ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                        }
                     }
                 }
             }
