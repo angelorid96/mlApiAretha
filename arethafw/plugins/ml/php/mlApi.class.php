@@ -150,124 +150,129 @@ class mlApi
     public static function request_endPoint($data_json)
     {
         $isFile = false;
+        $file_pass = true;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
         if (key_exists('file', $data_json['body'])) {
             // var_dump($data_json['body']['file']);
             // echo '<br>';
             $cfile = new CURLFile($data_json['body']['file']['tmp_name'], $data_json['body']['file']['type'], $data_json['body']['file']['name']);
-            if ($data_json['endpoint_parent'] == 'packs') {
-                $data_json['body']['fiscal_document'] = $cfile;
-            } else {
-                $data_json['body']['file'] = $cfile;
+            if (in_array($cfile['type'], $endPoint['allowed_files'])) {
+                $file_pass = false;
+                if ($data_json['endpoint_parent'] == 'packs') {
+                    $data_json['body']['fiscal_document'] = $cfile;
+                } else {
+                    $data_json['body']['file'] = $cfile;
+                }
+                $isFile = true;
             }
-            // var_dump($cfile);
-            // echo '<br>';
-            $isFile = true;
         }
 
+        if ($file_pass) {
+            if ($endPoint != false) {
 
-
-        if ($endPoint != false) {
-
-            $urltmp = $endPoint['url'];
-            foreach (array_keys($data_json['body']) as $key) {
-                if (!is_array($data_json['body'][$key]) !== false) {
-                    if (strpos($urltmp, $key)) {
-                        $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
-                        unset($data_json['body'][$key]);
+                $urltmp = $endPoint['url'];
+                foreach (array_keys($data_json['body']) as $key) {
+                    if (!is_array($data_json['body'][$key])) {
+                        if (strpos($urltmp, $key)) {
+                            $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
+                            unset($data_json['body'][$key]);
+                        }
                     }
                 }
-            }
-            if (array_key_exists('paging', $endPoint)) {
-                if ($endPoint['paging'] && array_key_exists('paging', $data_json)) {
-                    if (strpos($urltmp, '?') !== false) {
-                        if (key_exists('searchAfter', $data_json['paging'])) {
-                            $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
+
+                // echo $urltmp;
+                // echo '<br>';
+                if (array_key_exists('paging', $endPoint)) {
+                    if ($endPoint['paging'] && array_key_exists('paging', $data_json)) {
+                        if (strpos($urltmp, '?') !== false) {
+                            if (key_exists('searchAfter', $data_json['paging'])) {
+                                $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
+                            } else {
+                                $urltmp = sprintf('%s&ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                            }
                         } else {
-                            $urltmp = sprintf('%s&ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                            if (key_exists('searchAfter', $data_json['paging'])) {
+                                $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
+                            } else {
+                                $urltmp = sprintf('%s?ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
+                            }
                         }
+                    }
+                }
+                // var_dump($endPoint);
+                // echo $urltmp;
+                // echo '<br>';
+
+                if (array_key_exists('body', $endPoint)) {
+                    foreach (array_keys($endPoint['body']) as $key) {
+                        if ($key == 'client_id') {
+                            $endPoint['body'][$key] = mlApi::getClient_id();
+                        } else if ($key == 'client_secret') {
+                            $endPoint['body'][$key] = mlApi::getClient_secret();
+                        }
+                    }
+                    if (array_key_exists('body', $data_json)) {
+                        foreach (array_keys($data_json['body']) as $key) {
+                            $endPoint['body'][$key] = $data_json['body'][$key];
+                        }
+                    }
+                }
+
+
+                $endPoint['headers'][0] = sprintf($endPoint['headers'][0], $data_json['access_token']);
+
+
+
+                $curl = curl_init($urltmp);
+                curl_setopt($curl, CURLOPT_URL, $urltmp);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, $endPoint['headers']);
+                curl_setopt($curl, CURLOPT_HEADER, true);
+
+                if ($endPoint['method'] == 'POST') {
+                    curl_setopt($curl, CURLOPT_POST, true);
+                } else if ($endPoint['method'] == 'PUT') {
+                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+                } else if ($endPoint['method'] == 'DELETE') {
+                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                }
+
+                if ($endPoint['method'] != 'GET') {
+
+                    if ($isFile) {
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $endPoint['body']);
                     } else {
-                        if (key_exists('searchAfter', $data_json['paging'])) {
-                            $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
-                        } else {
-                            $urltmp = sprintf('%s?ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
-                        }
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
                     }
                 }
-            }
-            // var_dump($endPoint);
-            // echo $urltmp;
-            // echo '<br>';
-
-            if (array_key_exists('body', $endPoint)) {
-                foreach (array_keys($endPoint['body']) as $key) {
-                    if ($key == 'client_id') {
-                        $endPoint['body'][$key] = mlApi::getClient_id();
-                    } else if ($key == 'client_secret') {
-                        $endPoint['body'][$key] = mlApi::getClient_secret();
-                    }
-                }
-                if (array_key_exists('body', $data_json)) {
-                    foreach (array_keys($data_json['body']) as $key) {
-                        $endPoint['body'][$key] = $data_json['body'][$key];
-                    }
-                }
-            }
+                $response = curl_exec($curl);
+                $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+                curl_close($curl);
 
 
-            $endPoint['headers'][0] = sprintf($endPoint['headers'][0], $data_json['access_token']);
+                // var_dump($response);
+                $response = json_decode(substr($response, $header_size), true);
 
+                // var_dump($response);
 
-
-            $curl = curl_init($urltmp);
-            curl_setopt($curl, CURLOPT_URL, $urltmp);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $endPoint['headers']);
-            curl_setopt($curl, CURLOPT_HEADER, true);
-
-            if ($endPoint['method'] == 'POST') {
-                curl_setopt($curl, CURLOPT_POST, true);
-            } else if ($endPoint['method'] == 'PUT') {
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-            } else if ($endPoint['method'] == 'DELETE') {
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-            }
-
-            if ($endPoint['method'] != 'GET') {
-
-                if ($isFile) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $endPoint['body']);
+                if (key_exists('error', $response)) {
+                    return array(
+                        'reject' => array(
+                            'status' => 'fail',
+                            'error' => $response['message'],
+                            'cause' => $response['cause']
+                        ),
+                    );
                 } else {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($endPoint['body']));
+                    $response = array('data' => $response);
+                    if (key_exists('name', $endPoint)) {
+                        $response['nameEndPoint'] = $endPoint['name'];
+                    }
                 }
+
+
+                return $response;
             }
-            $response = curl_exec($curl);
-            $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-            curl_close($curl);
-
-
-            // var_dump($response);
-            $response = json_decode(substr($response, $header_size), true);
-
-            // var_dump($response);
-
-            if (key_exists('error', $response)) {
-                return array(
-                    'reject' => array(
-                        'status' => 'fail',
-                        'error' => $response['message'],
-                        'cause' => $response['cause']
-                    ),
-                );
-            } else {
-                $response = array('data' => $response);
-                if (key_exists('name', $endPoint)) {
-                    $response['nameEndPoint'] = $endPoint['name'];
-                }
-            }
-
-
-            return $response;
         }
 
         return array(

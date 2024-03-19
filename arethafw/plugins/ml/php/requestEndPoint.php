@@ -76,6 +76,16 @@ if ($tmp_json != null) {
                 $oApiToken = $existUser[0];
                 $tmp_json['EndPoint']['access_token'] = $oApiToken->getAcces_token();
 
+                // if (array_key_exists('paging', $tmp_json['EndPoint']['childData'])) {
+                //     $tmp_json['EndPoint']['paging']['childData']['offset'] = $tmp_json['start'];
+                //     $tmp_json['EndPoint']['paging']['childData']['limit'] = $tmp_json['length'];
+                // }
+
+                if (array_key_exists('paging', $tmp_json['EndPoint'])) {
+                    $tmp_json['EndPoint']['paging']['offset'] = $tmp_json['start'];
+                    $tmp_json['EndPoint']['paging']['limit'] = $tmp_json['length'];
+                }
+
                 $list_required_endpoint = mlApi::data_required($tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild']);
 
                 if (is_array($list_required_endpoint)) {
@@ -86,6 +96,8 @@ if ($tmp_json != null) {
                             $tmp_json['EndPoint']['body']['seller_id'] = $oApiToken->getUser_id();
                         } else if ($key_required == 'site_user') {
                             $tmp_json['EndPoint']['body']['site_user'] = $oApiToken->getSite_userId();
+                        } else if ($key_required == 'site_id') {
+                            $tmp_json['EndPoint']['body']['site_id'] = $oApiToken->getSite_userId();
                         }
                     }
                 }
@@ -165,15 +177,15 @@ if ($tmp_json != null) {
                     $response['message'] = $response_endpoint['nameEndPoint'];
                 }
             }
-        }else{
+        } else {
             $response['status'] = 'warning';
             $response['code'] = '400';
             $response['message'] = 'EndPoint response with error';
-            $response['endpoint_data']=array(
+            $response['endpoint_data'] = array(
                 'reject' => array(
                     'status' => 'fail',
-                    'error' => sprintf('Not exits Endpoint parent %s or Endpoint child %s',$tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild']),
-                    'cause' => sprintf('Invalid name  Endpoint parent %s or Endpoint child %s',$tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild'])
+                    'error' => sprintf('Not exits Endpoint parent %s or Endpoint child %s', $tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild']),
+                    'cause' => sprintf('Invalid name  Endpoint parent %s or Endpoint child %s', $tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild'])
                 ),
             );
         }

@@ -112,6 +112,19 @@ Aretha::sessionStart();
         document.getElementById('body-api').hidden=false;
        
     });
-    
+    $('body').off('click', '#orderBlackList');
+    $('body').on('click', '#orderBlackList', (e) => {
+        e.preventDefault();
+        console.log('debug');
+        apiML('#body-api').requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'messages',
+                endpointChild: 'attachments',
+                body:{},
+            },
+        });
+        document.getElementById('body-api').hidden=false;
+       
+    });
     
 </script>

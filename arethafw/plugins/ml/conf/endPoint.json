@@ -118,7 +118,7 @@
                 "seller_id": ""
             },
             "method": "POST",
-            "required":[ "site_user","seller_id"]
+            "required":[ "site_id","seller_id"]
         }
     },
     "q&a": {
@@ -313,6 +313,7 @@
             "headers": ["Authorization: Bearer %s"],
             "method": "POST",
             "body": {},
+            "allowed_files":["image/jpeg","image/png"],
             "required": ["none"]
         }
     },
@@ -366,6 +367,7 @@
             "url": " https://api.mercadolibre.com/packs/pack_id/fiscal_documents",
             "headers": ["Authorization: Bearer %s"],
             "method": "POST",
+            "allowed_files":["application/pdf","application/xml"],
             "required": ["none"]
         },
         "fiscalDocsId": {
@@ -504,11 +506,172 @@
         }, 
          "attachments": {
             "name": "Subir Archivos adjuntos",
-            "url": "https://api.mercadolibre.com/messages/attachments?tag=post_sale&site_id=side_id",
+            "url": "https://api.mercadolibre.com/messages/attachments/attachment_id?tag=post_sale&site_id=site_user",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "POST",
+            "body":{},
+            "allowed_files":["image/jpeg","image/png","application/pdf","text/plain"],
+            "required":["site_user"]
+        },
+        "attachmentsGet": {
+            "name": "Obtener  Archivos adjuntos",
+            "url": "https://api.mercadolibre.com/messages/attachments?tag=post_sale&site_id=site_user",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",        
+            "required":["site_user"]
+        },
+        "unreadList": {
+            "name": "Obtener todas las ordenes con mensajes pendientes de leer",
+            "url": "https://api.mercadolibre.com/messages/unread?role=seller&tag=post_sale",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",        
+            "required":["none"]
+        }
+    }, 
+    "claims": {
+        "title": "Gestionar reclamos",
+        "listClaims": {
+            "name": "Listar reclamos del vendedor",
+            "url": "https://api.mercadolibre.com/v1/claims/search?stage=dispute",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
+            "paging":true,        
+            "required":["none"]
+        }, 
+        "viewClaim": {
+            "name": "Ver detalles de un reclamo",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "paging":true,        
+            "required":["none"]
+        }, 
+        "getClaimMsg": {
+            "name": "Obtener todos los mensajes de un reclamo",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/messages",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        },
+         "Attachment": {
+            "name": "Subir Archivo adjunto",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/attachments",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "POST",
             "body":{},
-            "required":["site_id"]
+            "allowed_files":["image/jpeg","image/png","application/pdf"],
+            "required":["none"]
+        }, 
+        "messageAtt": {
+            "name": "Responder reclamo con archivo adjunto anterior",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/actions/message?access_token=token_user&application_id=client_id",
+            "headers": ["Content-Type: application/json"],
+            "method": "POST",
+            "body":{
+                "receiver_role": "complainant"
+            },
+            "required":["token_user","client_id"]
+        },
+        "message": {
+            "name": "Responder reclamo sin adjuntos",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/message",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body":{
+                "receiver_role": "complainant"
+            },
+            "required":["none"]
+        },
+        "mediator": {
+            "name": "Solicitar mediacion",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body":{
+                "stage": "dispute"
+            },
+            "required":["none"]
+        },
+        "expected_resolutions":{
+            "name": "Ver resoluciones esperadas",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/expected_resolutions",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        }, 
+        "available-offers":{
+            "name": "Porcentajes de devolucion parcial disponibles",
+            "url": "https://api.mercadolibre.com/post-purchase/v1/claims/claims_id/partial-refund/available-offers",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        }, 
+        "expectedResol_send": {
+            "name": "Enviar Resolucion de devolucion parcial",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/expected_resolutions",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "body":{},
+            "required":["none"]
+        },
+        "expectedResol_full": {
+            "name": "Enviar Resolucion de devolucion total",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/expected_resolutions/refund",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "POST",
+            "required":["none"]
+        },
+        "expectedResol_accepted": {
+            "name": "Aceptar resolucion del player",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/expected_resolutions",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "PUT",
+            "body":{
+                "status": "accepted"
+            },
+            "required":["none"]
+        }, "evideces":{
+            "name": "Obtener evidendencia del reclamo",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/evidences",
+            "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
+            "method": "GET",
+            "required":["none"]
+        },  
+        "evideces_send":{
+            "name": "Caragr evidendencia del reclamo",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/actions/evidences?access_token=token_user",
+            "headers": ["Content-Type: application/json"],
+            "method": "POST",
+            "body":{},
+            "required":["none"]
+        },
+        "status_history":{
+            "name": "Historial de estados y acciones del reclamo",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/status_history",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        },
+        "reasons":{
+            "name": "Obtener detalles del reclamo",
+            "url": "https://api.mercadolibre.com/post-purchase/sites/site_user/v2/reasons/reason_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["site_user"]
+        },
+        "affects-reputation":{
+            "name": "Identificar si un reclamo afecta la reputacion",
+            "url": "https://api.mercadolibre.com/post-purchase/v1/claims/claims_id/affects-reputation",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        },  
+        "returns":{
+            "name": "Identificar si un reclamo afecta la reputacion",
+            "url": "https://api.mercadolibre.com/v2/claims/claims_id/returns",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
         }
     }
 }
