@@ -79,6 +79,11 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="toast-container position-static" id="container-toast">
+            
+            </div>
+        </div>
     </div>
 
     <!-- Sweet Alert  -->

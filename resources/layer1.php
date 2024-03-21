@@ -113,16 +113,36 @@ Aretha::sessionStart();
        
     });
     $('body').off('click', '#orderBlackList');
-    $('body').on('click', '#orderBlackList', (e) => {
+    $('body').on('click', '#orderBlackList', async(e) => {
         e.preventDefault();
         console.log('debug');
-        apiML('#body-api').requestEndPoint({
+        // apiML('#body-api').requestEndPoint({
+        //     EndPoint: {
+        //         endpoint_parent: 'items',
+        //         endpointChild: 'health_actions',
+        //         body:{
+        //             item_id:'MLM2939710174'
+        //         }
+        //     },
+        // });
+        let response=apiML('#body-api').requestEndPoint({
             EndPoint: {
-                endpoint_parent: 'messages',
-                endpointChild: 'attachments',
-                body:{},
+                endpoint_parent: 'notify',
+                endpointChild: 'missed',
+                // endpointChild: 'queId',
+                // endpointChild: 'anwers',
+                // body:{
+                //     // item_id:'MLM2939710174'
+                //     // question_id:'13008271704',
+                //     // text:'debug test respuesta pregunta'
+                // },
+                // paging:{
+                //     offset:0,
+                //     limit:10
+                // }
             },
         });
+        console.log(response);
         document.getElementById('body-api').hidden=false;
        
     });

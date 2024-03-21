@@ -102,7 +102,7 @@ const apiML = (target) => ({
                 // console.log(response);
                 if (response.urlAuth.status == 'success') {
                     // console.log(response.url);
-                    window.open(response.urlAuth.url, '_self');
+                    window.open(response.urlAuth.url,'_self');
                 }
             },
             notfound: function (xhr) {
@@ -111,7 +111,7 @@ const apiML = (target) => ({
         });
     },
     post: async (json_data, url, target_op, innet_id = false) => {
-        
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -129,9 +129,34 @@ const apiML = (target) => ({
         } else {
             return JSON.parse(data);
         }
+    }, get: async (params_url, url, target_op, innet_id = false) => {
+        const queryString = new URLSearchParams(params_url).toString();
+        const fullUrl = `${url}?${queryString}`;
+
+        const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        const data = await response.text();
+        if (innet_id) {
+            if (typeof target !== 'undefined') {
+                aretha(target).html(data);
+            } else if (typeof target_op !== 'undefined') {
+                aretha(target_op).html(data);
+            }
+        } else {
+            console.log(data);
+            if(data.length!==0){
+                return JSON.parse(data);
+            }else{
+                return Array();
+            }
+        }
     },
     requestEndPoint: async (json_data) => {
-        let data=await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php');
+        let data = await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php');
         // console.log(data);
 
         if (data.status == 'warning') {
@@ -160,10 +185,10 @@ const apiML = (target) => ({
     uploadImage: async (dataform_sn) => {
         const response = await fetch('arethafw/plugins/ml/php/requestEndPoint.php', {
             method: 'POST',
-            body:dataform_sn,
+            body: dataform_sn,
         });
         const data = await response.json();
-        
+
         if (data.status == 'warning') {
             aretha('#error-title').html('Error al obtener informacion!');
             aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.reject.error}</p>`);
@@ -188,7 +213,7 @@ const apiML = (target) => ({
     },
     jsontargetize: () => {
         let json_endpoints_data = {
-            
+
         };
         let id_endpoint = '';
         let type_endpoint = '';
@@ -299,7 +324,7 @@ const apiML = (target) => ({
         if (el.length >= 1) {
             for (let item of items) {
                 // console.log(item);
-                
+
                 define_attr_vars(item);
                 switch (item.tagName.toLowerCase()) {
                     case 'input':
@@ -323,9 +348,9 @@ const apiML = (target) => ({
                                 }
                             }
                         } else {
-                            if(item.hasAttribute('value-id')){
-                                insert_value(item.value,item.getAttribute('value-id'));
-                            }else{
+                            if (item.hasAttribute('value-id')) {
+                                insert_value(item.value, item.getAttribute('value-id'));
+                            } else {
                                 insert_value(item.value);
                             }
                         }
@@ -365,5 +390,42 @@ const apiML = (target) => ({
         }
         // console.log(json_endpoints_data);
         return json_endpoints_data;
+    },
+    verifyNotify: async () => {
+        let data = await apiML().get({}, 'resources/verifyLogNotify.php');
+        // console.log(data);
+        if (typeof target !== 'undefined') {
+            if (data.length != 0) {
+                let container_toast=document.getElementById(target);
+                let toast=null;
+                data.forEach((item) => {
+                    console.log(item);
+                    toast=document.createElement('div');
+                    toast.setAttribute('class','toast');
+                    toast.setAttribute( 'role','alert');
+                    toast.setAttribute('aria-live','assertive');
+                    toast.setAttribute('aria-atomic','true');
+                    let toast_innerHtml ='<div class="toast-header">' +
+                        `<strong class="me-auto">Notifiacion ML ${item.topic}</strong>` +
+                        '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>' +
+                        '</div>' +
+                        '<div class="toast-body">' +
+                        `<a class="btn btn-primary" role="button" resource="${data.resource}" id="btnActionToast">Ver contendo</a>`+
+                        '</div>' ;
+                    toast.innerHTML=toast_innerHtml;
+                    container_toast.appendChild(toast);
+                    const new_toats=bootstrap.Toast.getOrCreateInstance(toast);
+                    new_toats.show();
+                });
+            }
+        }
     }
 });
+function loopNotiFy(){
+    setInterval(() => {
+        apiML('container-toast').verifyNotify();
+    }, 60000);
+}
+
+apiML('container-toast').verifyNotify();
+loopNotiFy();

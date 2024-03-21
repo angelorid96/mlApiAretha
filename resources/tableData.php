@@ -98,6 +98,7 @@ if ($tmp_json != null) {
                             $response['draw']    = $tmp_json['draw'];
                             $response['recordsTotal']    = $response_endpoint['data']['paging']['total'];
                             $response['recordsFiltered'] = $response_endpoint['data']['paging']['limit'];
+                            $response['paging'] = $response_endpoint['data']['paging'];
                             foreach ($response_endpoint['data']['results'] as $item_id) {
                                 $tmp_json['EndPoint']['childData']['body']['item_id'] = $item_id;
                                 $item_ml = mlApi::request_endPoint($tmp_json['EndPoint']['childData']);

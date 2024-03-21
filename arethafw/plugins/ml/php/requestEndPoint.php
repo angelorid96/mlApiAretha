@@ -81,11 +81,6 @@ if ($tmp_json != null) {
                 //     $tmp_json['EndPoint']['paging']['childData']['limit'] = $tmp_json['length'];
                 // }
 
-                if (array_key_exists('paging', $tmp_json['EndPoint'])) {
-                    $tmp_json['EndPoint']['paging']['offset'] = $tmp_json['start'];
-                    $tmp_json['EndPoint']['paging']['limit'] = $tmp_json['length'];
-                }
-
                 $list_required_endpoint = mlApi::data_required($tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild']);
 
                 if (is_array($list_required_endpoint)) {

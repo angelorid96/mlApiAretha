@@ -152,34 +152,36 @@ class mlApi
         $isFile = false;
         $file_pass = true;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
-        if (key_exists('file', $data_json['body'])) {
-            // var_dump($data_json['body']['file']);
-            // echo '<br>';
-            $cfile = new CURLFile($data_json['body']['file']['tmp_name'], $data_json['body']['file']['type'], $data_json['body']['file']['name']);
-            if (in_array($cfile['type'], $endPoint['allowed_files'])) {
-                $file_pass = false;
-                if ($data_json['endpoint_parent'] == 'packs') {
-                    $data_json['body']['fiscal_document'] = $cfile;
-                } else {
-                    $data_json['body']['file'] = $cfile;
+        if (key_exists('body', $data_json)) {
+            if (key_exists('file', $data_json['body'])) {
+                // var_dump($data_json['body']['file']);
+                // echo '<br>';
+                $cfile = new CURLFile($data_json['body']['file']['tmp_name'], $data_json['body']['file']['type'], $data_json['body']['file']['name']);
+                if (in_array($cfile['type'], $endPoint['allowed_files'])) {
+                    $file_pass = false;
+                    if ($data_json['endpoint_parent'] == 'packs') {
+                        $data_json['body']['fiscal_document'] = $cfile;
+                    } else {
+                        $data_json['body']['file'] = $cfile;
+                    }
+                    $isFile = true;
                 }
-                $isFile = true;
             }
         }
-
         if ($file_pass) {
             if ($endPoint != false) {
 
                 $urltmp = $endPoint['url'];
-                foreach (array_keys($data_json['body']) as $key) {
-                    if (!is_array($data_json['body'][$key])) {
-                        if (strpos($urltmp, $key)) {
-                            $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
-                            unset($data_json['body'][$key]);
+                if (key_exists('body', $data_json)) {
+                    foreach (array_keys($data_json['body']) as $key) {
+                        if (!is_array($data_json['body'][$key])) {
+                            if (strpos($urltmp, $key)) {
+                                $urltmp = str_replace($key, $data_json['body'][$key], $urltmp);
+                                unset($data_json['body'][$key]);
+                            }
                         }
                     }
                 }
-
                 // echo $urltmp;
                 // echo '<br>';
                 if (array_key_exists('paging', $endPoint)) {
@@ -203,20 +205,53 @@ class mlApi
                 // echo $urltmp;
                 // echo '<br>';
 
-                if (array_key_exists('body', $endPoint)) {
-                    foreach (array_keys($endPoint['body']) as $key) {
-                        if ($key == 'client_id') {
-                            $endPoint['body'][$key] = mlApi::getClient_id();
-                        } else if ($key == 'client_secret') {
-                            $endPoint['body'][$key] = mlApi::getClient_secret();
+                if ($endPoint['required'][0] != 'none') {
+                    foreach ($endPoint['required'] as $item) {
+                        if ($item == 'client_id') {
+                            if (array_key_exists('body', $endPoint)) {
+                                if (key_exists($item, $endPoint['body'])) {
+                                    $endPoint['body'][$item] = mlApi::getClient_id();
+                                } else {
+                                    if (strpos($urltmp, $item)) {
+                                        $urltmp = str_replace($item, mlApi::getClient_id(), $urltmp);
+                                    }
+                                }
+                            } else {
+                                if (strpos($urltmp, $item)) {
+                                    $urltmp = str_replace($item, mlApi::getClient_id(), $urltmp);
+                                }
+                            }
+                        } else if ($item == 'client_secret') {
+                            if (array_key_exists('body', $endPoint)) {
+                                if (key_exists($item, $endPoint['body'])) {
+                                    $endPoint['body'][$item] = mlApi::getClient_secret();
+                                } else {
+                                    if (strpos($urltmp, $item)) {
+                                        $urltmp = str_replace($item, mlApi::getClient_secret(), $urltmp);
+                                    }
+                                }
+                            } else {
+                                if (strpos($urltmp, $item)) {
+                                    $urltmp = str_replace($item, mlApi::getClient_secret(), $urltmp);
+                                }
+                            }
                         }
                     }
+                    unset($endPoint['required']);
+                }
+
+
+                if (array_key_exists('body', $endPoint)) {
                     if (array_key_exists('body', $data_json)) {
                         foreach (array_keys($data_json['body']) as $key) {
                             $endPoint['body'][$key] = $data_json['body'][$key];
                         }
                     }
                 }
+                // echo '<br>';
+                // var_dump($endPoint);
+                // // echo $urltmp;
+                // echo '<br>';
 
 
                 $endPoint['headers'][0] = sprintf($endPoint['headers'][0], $data_json['access_token']);

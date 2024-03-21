@@ -6,16 +6,26 @@ mlApi::init('../arethafw/plugins/ml/conf/app.ini');
 Aretha::allErrors();
 Aretha::sessionStart();
 
-$tmp_json = json_decode(file_get_contents('php://input'), true);
+header('Content-Type: application/json');
+
+$tmp_json = file_get_contents('php://input');
+$all_headers = getallheaders();
 
 if ($tmp_json != null) {
-    $file_json=json_decode(file_get_contents('log.json'), true);
+    
+    $log_file=json_decode(file_get_contents('request.json'),true);
+    $tmp_json=json_decode($tmp_json,true);
+    // $header_dunp=print_r($all_headers,true);
+    // $response_dunp=print_r($tmp_json,true);
+    array_push($log_file,$tmp_json);
+    // $fp = file_put_contents( 'request.log', $header_dunp);
+   file_put_contents('request.json',json_encode($log_file));
 
-    var_dump($file_json);
-    echo '<br>';
-    var_dump($tmp_json);
+    // var_dump($tmp_json);
+    // echo '<br>';
+    // var_dump($tmp_json);
 
-    file_put_contents('log.json',json_encode($tmp_json));
+    
 }
 
 

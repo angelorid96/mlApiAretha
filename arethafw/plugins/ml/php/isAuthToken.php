@@ -50,6 +50,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
         'status' => 'success',
         'url' => mlApi::getUrlAuth($_REQUEST['endpoint']),
     );
+    // var_dump($response);
 } else {
 
     if (isset($_SESSION['nickname']) && isset($_SESSION['user_id'])) {

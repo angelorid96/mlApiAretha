@@ -12,7 +12,7 @@
                 "redirect_uri": "https://localhost/MlAretha/resources/apiAuth.php"
             },
             "method": "POST",
-            "required": ["none"]
+            "required": ["client_id","client_secret"]
         },
         "refresh_token": {
             "url": "https://api.mercadolibre.com/oauth/token",
@@ -24,7 +24,7 @@
                 "refresh_token": ""
             },
             "method": "POST",
-            "required": ["none"]
+            "required": ["client_id","client_secret"]
         }
     },
     "users": {
@@ -303,6 +303,20 @@
             "method": "POST",
             "body": {},
             "required": ["none"]
+        }, 
+        "health": {
+            "name": "Calidad del item",
+            "url": "https://api.mercadolibre.com/items/item_id/health",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": ["none"]
+        }, 
+        "health_actions": {
+            "name": "Acciones para mejorar calidad del item",
+            "url": "https://api.mercadolibre.com/items/item_id/health/actions",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required": ["none"]
         }
     },
     "pictures": {
@@ -479,9 +493,9 @@
         }
     },
     "messages": {
-        "title": "GEstions de mensajes Post-venta",
+        "title": "Gestiona de mensajes Post-venta",
         "viewFmPack": {
-            "name": "Obtenr mensajes por pack",
+            "name": "Obtener mensajes por pack",
             "url": "https://api.mercadolibre.com/messages/packs/pack_id/sellers/user_id?tag=post_sale",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
@@ -489,7 +503,7 @@
             "required":["user_id"]
         },
         "viewFmId": {
-            "name": "Obtenr mensajes por ID",
+            "name": "Obtener mensajes por ID",
             "url": "https://api.mercadolibre.com/messages/message_id?tag=post_sale",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
@@ -672,6 +686,15 @@
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required":["none"]
+        }
+    },
+    "notify":{
+        "missed":{
+            "name": "Notificaciones perdidas",
+            "url": "https://api.mercadolibre.com/missed_feeds?app_id=client_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["client_id"]
         }
     }
 }
