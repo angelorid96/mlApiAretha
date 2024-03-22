@@ -76,9 +76,8 @@ if ($isExpireTK['value']) {
                     EndPoint: {
                         endpoint_parent: 'users',
                         endpointChild: 'listItems',
-                        paging:{
-                            offset:0,
-                            limit:0,
+                        filters_orders:{
+                            orders:'stop_time_asc',
                         },
                         childData: {
                             endpoint_parent: 'items',

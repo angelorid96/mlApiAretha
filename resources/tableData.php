@@ -64,16 +64,13 @@ if ($tmp_json != null) {
                 $oApiToken = $existUser[0];
                 $tmp_json['EndPoint']['access_token'] = $oApiToken->getAcces_token();
                 $tmp_json['EndPoint']['childData']['access_token'] = $oApiToken->getAcces_token();
-
-                if (array_key_exists('paging', $tmp_json['EndPoint']['childData'])) {
-                    $tmp_json['EndPoint']['paging']['childData']['offset'] = $tmp_json['start'];
-                    $tmp_json['EndPoint']['paging']['childData']['limit'] = $tmp_json['length'];
-                }
-
-                if (array_key_exists('paging', $tmp_json['EndPoint'])) {
-                    $tmp_json['EndPoint']['paging']['offset'] = $tmp_json['start'];
-                    $tmp_json['EndPoint']['paging']['limit'] = $tmp_json['length'];
-                }
+                
+                $tmp_json['EndPoint']['filters_orders']['offset'] = $tmp_json['start'];
+                $tmp_json['EndPoint']['filters_orders']['limit'] = $tmp_json['length'];
+                // if (array_key_exists('filters_orders', $tmp_json['EndPoint'])) {
+                //     $tmp_json['EndPoint']['filters_orders']['offset'] = $tmp_json['start'];
+                //     $tmp_json['EndPoint']['filters_orders']['limit'] = $tmp_json['length'];
+                // }
                 // $response['limit'] = $oApiToken->getAcces_token();
                 $list_required_endpoint = mlApi::data_required($tmp_json['EndPoint']['endpoint_parent'], $tmp_json['EndPoint']['endpointChild']);
                 // echo '<br>';
@@ -97,8 +94,8 @@ if ($tmp_json != null) {
                             $keys_columns = keys_datatables($tmp_json['columns']);
                             $response['draw']    = $tmp_json['draw'];
                             $response['recordsTotal']    = $response_endpoint['data']['paging']['total'];
-                            $response['recordsFiltered'] = $response_endpoint['data']['paging']['limit'];
-                            $response['paging'] = $response_endpoint['data']['paging'];
+                            $response['recordsFiltered'] = $response_endpoint['data']['paging']['limit'];                           
+                          
                             foreach ($response_endpoint['data']['results'] as $item_id) {
                                 $tmp_json['EndPoint']['childData']['body']['item_id'] = $item_id;
                                 $item_ml = mlApi::request_endPoint($tmp_json['EndPoint']['childData']);
@@ -125,6 +122,8 @@ if ($tmp_json != null) {
                                 array_push($new_row, $btn);
                                 $response['data'][] = $new_row;
                             }
+                            unset($response_endpoint['data']['results']);
+                            $response['settings'] = $response_endpoint['data'];
                         } else {
                             $response=fail_response_add(array('draw'=>$tmp_json['draw'],'EndPoint'=>$tmp_json['EndPoint']['childData']));
                         }

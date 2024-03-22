@@ -40,7 +40,7 @@ Aretha::sessionStart();
 </div>
 <script type="text/javascript">
     apiML('#menu').isAuth({
-        defaultMenu:true,
+        defaultMenu: true,
         // scope: ['site', 'products', 'users']
     });
     $('body').off('click', '#authML');
@@ -74,13 +74,13 @@ Aretha::sessionStart();
                 },
             },
         });
-        document.getElementById('body-api').hidden=false;
+        document.getElementById('body-api').hidden = false;
     });
     $('body').off('click', '#publish');
     $('body').on('click', '#publish', (e) => {
         e.preventDefault();
-        apiML().post({},'resources/layer2.php','#body-api',true);
-        document.getElementById('body-api').hidden=false;
+        apiML().post({}, 'resources/layer2.php', '#body-api', true);
+        document.getElementById('body-api').hidden = false;
         // apiML('#body-api').requestEndPoint({
         //     EndPoint: {
         //         endpoint_parent: 'users',
@@ -104,16 +104,16 @@ Aretha::sessionStart();
         //         },
         //     },
         // });
-    });  
+    });
     $('body').off('click', '#listItems');
     $('body').on('click', '#listItems', (e) => {
         e.preventDefault();
-        apiML().post({},'resources/layer3.php','#body-api',true);
-        document.getElementById('body-api').hidden=false;
-       
+        apiML().post({}, 'resources/layer3.php', '#body-api', true);
+        document.getElementById('body-api').hidden = false;
+
     });
     $('body').off('click', '#orderBlackList');
-    $('body').on('click', '#orderBlackList', async(e) => {
+    $('body').on('click', '#orderBlackList', async (e) => {
         e.preventDefault();
         console.log('debug');
         // apiML('#body-api').requestEndPoint({
@@ -125,17 +125,23 @@ Aretha::sessionStart();
         //         }
         //     },
         // });
-        let response=apiML('#body-api').requestEndPoint({
+        let response = apiML('#body-api').requestEndPoint({
             EndPoint: {
-                endpoint_parent: 'notify',
-                endpointChild: 'missed',
+                endpoint_parent: 'users',
+                endpointChild: 'shipping_modes',
                 // endpointChild: 'queId',
                 // endpointChild: 'anwers',
-                // body:{
-                //     // item_id:'MLM2939710174'
-                //     // question_id:'13008271704',
-                //     // text:'debug test respuesta pregunta'
-                // },
+                body: {
+                    // item_id:'MLM2939710174'
+                    // question_id:'13008271704',
+                    // text:'debug test respuesta pregunta'
+                    category_id: "MLM1055",
+                    channels: [
+                        {id: "marketplace"}
+                    ], 
+                    buying_mode: "buy_it_now",
+
+                },
                 // paging:{
                 //     offset:0,
                 //     limit:10
@@ -143,8 +149,7 @@ Aretha::sessionStart();
             },
         });
         console.log(response);
-        document.getElementById('body-api').hidden=false;
-       
+        document.getElementById('body-api').hidden = false;
+
     });
-    
 </script>

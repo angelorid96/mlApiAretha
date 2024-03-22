@@ -444,7 +444,7 @@ if ($isExpireTK['value']) {
                     endpoint_parent: 'site',
                     endpointChild: 'predict',
                     body: {
-                        q_char: title,
+                        q: title,
                     }
                 },
             });

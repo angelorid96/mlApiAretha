@@ -148,10 +148,16 @@ class mlApi
     //     'access_token'=> 'token', token del cliente si es requerido. si no es requeerido dejar un cadena vacia 
     // }
     public static function request_endPoint($data_json)
-    {   
+    {
         $isFile = false;
         $file_pass = true;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
+
+        /*
+            carga de archivos creacion de curl File multipart/form-data
+
+            De momento solo se carga un archivo a la vez
+        */
         if (key_exists('body', $data_json)) {
             if (key_exists('file', $data_json['body'])) {
                 // var_dump($data_json['body']['file']);
@@ -168,39 +174,55 @@ class mlApi
                 }
             }
         }
+
         if ($file_pass) {
             if ($endPoint != false) {
 
-                var_dump($data_json);
+                // var_dump($data_json);
                 $urltmp = $endPoint['url'];
                 if (key_exists('params_url', $endPoint)) {
                     if (key_exists('body', $data_json)) {
                         foreach (array_keys($data_json['body']) as $key) {
                             if (!is_array($data_json['body'][$key])) {
-                                if (key_exists($key, $endPoint['params_url'])) {
-                                    if(in_array($endPoint['params_url'][$key],$endPoint['required'])){
-                                        if($endPoint['params_url'][$key]=='client_id'){
-                                            $endPoint['params_url'][$key]=mlApi::getClient_id();
-                                        }else if($endPoint['params_url'][$key]=='client_secret'){
-                                            $endPoint['params_url'][$key]=mlApi::getClient_secret();
+                                $index_url = array_search($key, $endPoint['params_url']);
+                                if ($index_url !== false) {
+                                    // echo sprintf('debug param %s',$endPoint['params_url'][$index_url]);
+                                    $endPoint['params_url'][$index_url] = $data_json['body'][$key];
+                                    unset($data_json['body'][$key]);
+                                } else if (key_exists($key, $endPoint['params_url'])) {
+                                    if (in_array($endPoint['params_url'][$key], $endPoint['required'])) {
+                                        if ($endPoint['params_url'][$key] == 'client_id') {
+                                            $endPoint['params_url'][$key] = mlApi::getClient_id();
+                                        } else if ($endPoint['params_url'][$key] == 'client_secret') {
+                                            $endPoint['params_url'][$key] = mlApi::getClient_secret();
                                         }
-                                    }else{
+                                    } else {
+                                        // echo sprintf('debug param exist key %s',$key);
                                         $endPoint['params_url'][$key] = $data_json['body'][$key];
                                         unset($data_json['body'][$key]);
                                     }
-                                }else if(array_search($key,$endPoint['params_url'])){
-                                    $index_url=array_search($key,$endPoint['params_url']);
-                                    $endPoint['params_url'][$index_url] = $data_json['body'][$key];
-                                    unset($data_json['body'][$key]);
                                 }
                             }
                         }
-                    }else{
-                        
+                    } 
+                    if ($endPoint['required'][0] != 'none') {
+                        foreach ($endPoint['required'] as $item) {
+                            if (array_search($item, $endPoint['params_url'])) {
+                                $index_url = array_search($item, $endPoint['params_url']);
+                                if ($item == 'client_id') {
+                                    $endPoint['params_url'][$index_url] = mlApi::getClient_id();
+                                } else if ($item == 'client_secret') {
+                                    $endPoint['params_url'][$index_url] = mlApi::getClient_secret();
+                                }
+                            }
+                        }
+                    }
+                    if(key_exists('access_token',$endPoint['params_url'])){
+                        $endPoint['params_url']['access_token']=$data_json['access_token'];
                     }
                     $urltmp = str_replace('params', http_build_query($endPoint['params_url']), $urltmp);
-                    unset($endPoint['params_url']);
                 }
+
                 if (key_exists('body', $data_json)) {
                     foreach (array_keys($data_json['body']) as $key) {
                         if (!is_array($data_json['body'][$key])) {
@@ -211,28 +233,6 @@ class mlApi
                         }
                     }
                 }
-                // echo $urltmp;
-                // echo '<br>';
-                if (array_key_exists('paging', $endPoint)) {
-                    if ($endPoint['paging'] && array_key_exists('paging', $data_json)) {
-                        if (strpos($urltmp, '?') !== false) {
-                            if (key_exists('searchAfter', $data_json['paging'])) {
-                                $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
-                            } else {
-                                $urltmp = sprintf('%s&ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
-                            }
-                        } else {
-                            if (key_exists('searchAfter', $data_json['paging'])) {
-                                $urltmp = sprintf('%s&search_after=%s', $urltmp, $data_json['paging']['searchAfter']);
-                            } else {
-                                $urltmp = sprintf('%s?ofsset=%d&limit=%d', $urltmp, $data_json['paging']['offset'], $data_json['paging']['limit']);
-                            }
-                        }
-                    }
-                }
-                // var_dump($endPoint);
-                echo $urltmp;
-                echo '<br>';
 
                 if ($endPoint['required'][0] != 'none') {
                     foreach ($endPoint['required'] as $item) {
@@ -253,17 +253,34 @@ class mlApi
                     unset($endPoint['required']);
                 }
 
-
                 if (array_key_exists('body', $endPoint)) {
                     if (array_key_exists('body', $data_json)) {
-                        foreach (array_keys($data_json['body']) as $key) {
-                            $endPoint['body'][$key] = $data_json['body'][$key];
-                        }
+                        // foreach (array_keys($data_json['body']) as $key) {
+                        //     $endPoint['body'][$key] = $data_json['body'][$key];
+                        // }
+                        $endPoint['body']=array_merge($endPoint['body'],$data_json['body']);
                     }
                 }
+
+                // echo $urltmp;
+                // echo '<br>';
+                // var_dump($endPoint['body']);
+                // echo '<br>';
+
+                if (array_key_exists('filters_orders', $data_json)) {
+                    if(key_exists('params_url', $endPoint)){
+                        $urltmp = sprintf('%s&%s',$urltmp, http_build_query($data_json['filters_orders']));
+                        unset($endPoint['params_url']);
+                        // unset($data_json['filters_orders']);
+                    }else{
+                        $urltmp = sprintf('%s?%s',$urltmp, http_build_query($data_json['filters_orders']));
+                        // unset($data_json['filters_orders']);
+                    }
+                }
+
                 // echo '<br>';
                 // var_dump($endPoint);
-                // // echo $urltmp;
+                // echo $urltmp;
                 // echo '<br>';
 
 
@@ -300,9 +317,11 @@ class mlApi
 
                 // var_dump($response);
                 $response = json_decode(substr($response, $header_size), true);
-
                 // var_dump($response);
-
+                if($response=== null){
+                    $response=array();
+                }
+                
                 if (key_exists('error', $response)) {
                     return array(
                         'reject' => array(

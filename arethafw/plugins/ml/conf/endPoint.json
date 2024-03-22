@@ -63,10 +63,12 @@
         }, 
         "listItems": {
             "name": "Listar Items del vendedor",
-            "url": "https://api.mercadolibre.com/users/user_id/items/search",
+            "url": "https://api.mercadolibre.com/users/user_id/items/search?params",
+            "params_url":{
+                "include_filters":"true"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required": ["user_id"]
         }, 
         "orderBlackList": {
@@ -138,7 +140,6 @@
             "url": "https://api.mercadolibre.com/my/received_questions/search",
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required": ["none"]
         },
         "queItem": {
@@ -150,12 +151,14 @@
             },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required": ["none"]
         },
         "queId": {
             "name": "Ver pregunta",
-            "url": "https://api.mercadolibre.com/questions/question_id?api_version=4",
+            "url": "https://api.mercadolibre.com/questions/question_id?params",
+            "params_url":{
+                "api_version":"4"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": ["none"]
@@ -433,7 +436,6 @@
             },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required":["user_id"]
         },
          "createPromo": {
@@ -511,14 +513,13 @@
         },
         "itemPromoType": {
             "name": "Consultar item en un promocion",
-            "url": "https://api.mercadolibre.com/seller-promotions/promotions/promotions_id/items?promotion_type=promotions_type&app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/promotions/promotions_id/items?params",
             "params_url":{
                 "promotion_type":"promotions_type",
                 "app_version":"v2"
             },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required":["none"]
         },
         "itemAlPromo": {
@@ -563,7 +564,6 @@
             },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required":["user_id"]
         },
         "viewFmId": {
@@ -574,7 +574,6 @@
             },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
-            "paging":true,
             "required":["user_id"]
         },
         "createMSG": {
@@ -614,7 +613,11 @@
         },
         "unreadList": {
             "name": "Obtener todas las ordenes con mensajes pendientes de leer",
-            "url": "https://api.mercadolibre.com/messages/unread?role=seller&tag=post_sale",
+            "url": "https://api.mercadolibre.com/messages/unread?params",
+            "params_url":{
+                "tag":"post_sale",
+                "role":"seller"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",        
             "required":["none"]
@@ -629,16 +632,14 @@
                 "stage":"dispute"
             },
             "headers": ["Authorization: Bearer %s"],
-            "method": "GET",
-            "paging":true,        
+            "method": "GET",        
             "required":["none"]
         }, 
         "viewClaim": {
             "name": "Ver detalles de un reclamo",
             "url": "https://api.mercadolibre.com/v1/claims/claims_id",
             "headers": ["Authorization: Bearer %s"],
-            "method": "GET",
-            "paging":true,        
+            "method": "GET",        
             "required":["none"]
         }, 
         "getClaimMsg": {
@@ -820,6 +821,31 @@
             },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
+            "required":["none"]
+        },
+        "limits":{
+            "name": "Consultar limites de presupuesto",
+            "url": "https://api.mercadolibre.com/advertising/product_ads_2/budgets/limits?params",
+            "params_url":{
+                "campaign_type":"default"
+            },
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        },
+        "adsItem":{
+            "name": "Consultar anuncio asociado a un item",
+            "url": "https://api.mercadolibre.com/advertising/product_ads/ads/item_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        }, 
+        "adsMod":{
+            "name": "Modificar estado de un anuncio",
+            "url": "https://api.mercadolibre.com/advertising/product_ads/ads/item_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "PUT",
+            "body":{},
             "required":["none"]
         }
     }
