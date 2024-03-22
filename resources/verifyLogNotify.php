@@ -11,7 +11,7 @@ Aretha::sessionStart();
 $array_nofi=json_decode(file_get_contents('request.json'),true);
 if($array_nofi!=null){
 
-    file_put_contents('request.json','[]');
+    // file_put_contents('request.json','[]');
     
     echo json_encode($array_nofi);
 }

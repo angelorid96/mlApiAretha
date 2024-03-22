@@ -82,7 +82,10 @@
         "title": "Site Ml",
         "price": {
             "name": " Ver precios de venta en ML",
-            "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?price=1",
+            "url": "https://api.mercadolibre.com/sites/site_user/listing_prices?params",
+            "params_url":{
+                "price":"1"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": ["site_user"]
@@ -96,7 +99,11 @@
         },
         "predict": {
             "name": "Predecier categoria",
-            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?limit=3&q=q_char",
+            "url": "https://api.mercadolibre.com/sites/site_user/domain_discovery/search?params",
+            "params_url":{
+                "limit":"3",
+                "q":"q_char"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": ["site_user"]
@@ -110,7 +117,10 @@
         },
         "chart_attr": {
             "name": "Atributos para guia de tallas",
-            "url": "https://api.mercadolibre.com/domains/domain_id/technical_specs/?section=grids",
+            "url": "https://api.mercadolibre.com/domains/domain_id/technical_specs/?params",
+            "params_url":{
+                "section":"grids"
+            },
             "headers": ["Authorization: Bearer %s"],
             "body": {
                 "domain_id": "",
@@ -133,7 +143,11 @@
         },
         "queItem": {
             "name": "Ver preguntas de un Item",
-            "url": "https://api.mercadolibre.com/questions/search?item=item_id&api_version=4",
+            "url": "https://api.mercadolibre.com/questions/search?params",
+            "params_url":{
+                "item":"item_id",
+                "api_version":"4"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "paging":true,
@@ -202,7 +216,11 @@
         }, 
          "shipLabelPDf": {
             "name": "Descargar etiqueta envio formato PDF",
-            "url": "https://api.mercadolibre.com/shipment_labels?shipment_ids=shipment_id&savePdf=Y",
+            "url": "https://api.mercadolibre.com/shipment_labels?params",
+            "params_url":{
+                "shipment_ids":"shipment_id",
+                "savePdf":"Y"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": ["none"]
@@ -290,7 +308,10 @@
         }, 
         "descritionMod": {
             "name": "Modificar descripcion de producto",
-            "url": "https://api.mercadolibre.com/items/item_id/description?api_version=2",
+            "url": "https://api.mercadolibre.com/items/item_id/description?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s","Content-Type: application/json"],
             "method": "PUT",
             "body": {},
@@ -332,10 +353,13 @@
         }
     },
     "moderations": {
-        "title": "infractions",
-        "upload": {
+        "title": "Consultar si un item tiene indracciones",
+        "infractions": {
             "name": "Ver infreacciones de una publiacion",
-            "url": "https://api.mercadolibre.com/moderations/infractions/user_id?related_item_id=item:id",
+            "url": "https://api.mercadolibre.com/moderations/infractions/user_id?params",
+            "params_url":{
+                "related_item_id":"item_id"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required": ["user_id"]
@@ -403,7 +427,10 @@
         "title": "Gestion de promociones",
         "fowProm": {
             "name": "Consultar invitaciones de promociones",
-            "url": "https://api.mercadolibre.com/seller-promotions/users/user_id?app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/users/user_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "paging":true,
@@ -411,7 +438,10 @@
         },
          "createPromo": {
             "name": "Crear campañna de promo",
-            "url": " https://api.mercadolibre.com/seller-promotions/promotions?app_version=v2",
+            "url": " https://api.mercadolibre.com/seller-promotions/promotions?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "POST",
             "body":{},
@@ -419,7 +449,10 @@
         },
         "modPromo": {
             "name": "Modificar campañna de promo",
-            "url": " https://api.mercadolibre.com/seller-promotions/promotions/promotions_id?app_version=v2",
+            "url": " https://api.mercadolibre.com/seller-promotions/promotions/promotions_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "PUT",
             "body":{},
@@ -427,35 +460,51 @@
         },
         "dlPromo": {
             "name": "Eliminar campañna de promo",
-            "url": " https://api.mercadolibre.com/seller-promotions/promotions/promotions_id?app_version=v2",
+            "url": " https://api.mercadolibre.com/seller-promotions/promotions/promotions_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "DELETE",
             "required":["none"]
         },
         "detailPromo": {
             "name": "Consultar detalles de una campaña",
-            "url": "https://api.mercadolibre.com/seller-promotions/promotions/promotions_id?promotion_type=promotions_type&app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/promotions/promotions_id?params",
+            "params_url":{
+                "promotion_type":"promotions_type",
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required":["none"]
         },
         "candidates": {
             "name": "Consultar items candidatos de promociones",
-            "url": "https://api.mercadolibre.com/seller-promotions/candidates/candidate_id?app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/candidates/candidate_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required":["none"]
         }, 
         "offers": {
             "name": "Consultar ofertas",
-            "url": " https://api.mercadolibre.com/seller-promotions/offers/offer_id?app_version=v2",
+            "url": " https://api.mercadolibre.com/seller-promotions/offers/offer_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required":["none"]
         },
         "itemVWPromo": {
             "name": "Consultar promociones para un item",
-            "url": "https://api.mercadolibre.com/seller-promotions/items/item_id?app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/items/item_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required":["none"]
@@ -463,6 +512,10 @@
         "itemPromoType": {
             "name": "Consultar item en un promocion",
             "url": "https://api.mercadolibre.com/seller-promotions/promotions/promotions_id/items?promotion_type=promotions_type&app_version=v2",
+            "params_url":{
+                "promotion_type":"promotions_type",
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "paging":true,
@@ -478,7 +531,10 @@
         }, 
         "itemModPromo": {
             "name": "Modificar item en una campañna",
-            "url": "https://api.mercadolibre.com/seller-promotions/items/item_id?app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/items/item_id?params",
+            "params_url":{
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "PUT",
             "body":{},
@@ -486,7 +542,12 @@
         }, 
         "itemDlPromo": {
             "name": "Eliminar item de una campañna",
-            "url": "https://api.mercadolibre.com/seller-promotions/items/item_id?promotion_type=promotions_type&promotion_id=promotions_id&app_version=v2",
+            "url": "https://api.mercadolibre.com/seller-promotions/items/item_id?params",
+            "params_url":{
+                "promotion_type":"promotions_type",
+                "promotion_id":"promotions_id",
+                "app_version":"v2"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "DELETE",
             "required":["none"]
@@ -496,7 +557,10 @@
         "title": "Gestiona de mensajes Post-venta",
         "viewFmPack": {
             "name": "Obtener mensajes por pack",
-            "url": "https://api.mercadolibre.com/messages/packs/pack_id/sellers/user_id?tag=post_sale",
+            "url": "https://api.mercadolibre.com/messages/packs/pack_id/sellers/user_id?params",
+            "params_url":{
+                "tag":"post_sale"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "paging":true,
@@ -504,7 +568,10 @@
         },
         "viewFmId": {
             "name": "Obtener mensajes por ID",
-            "url": "https://api.mercadolibre.com/messages/message_id?tag=post_sale",
+            "url": "https://api.mercadolibre.com/messages/message_id?params",
+            "params_url":{
+                "tag":"post_sale"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "paging":true,
@@ -512,7 +579,10 @@
         },
         "createMSG": {
             "name": "Crear mensaje para un comprador",
-            "url": "https://api.mercadolibre.com/messages/packs/pack_id/sellers/user_id?tag=post_sale",
+            "url": "https://api.mercadolibre.com/messages/packs/pack_id/sellers/user_id?params",
+            "params_url":{
+                "tag":"post_sale"              
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "body":{},
@@ -520,7 +590,11 @@
         }, 
          "attachments": {
             "name": "Subir Archivos adjuntos",
-            "url": "https://api.mercadolibre.com/messages/attachments/attachment_id?tag=post_sale&site_id=site_user",
+            "url": "https://api.mercadolibre.com/messages/attachments/attachment_id?params",
+            "params_url":{
+                "tag":"post_sale",
+                "site_id":"site_user"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "POST",
             "body":{},
@@ -529,7 +603,11 @@
         },
         "attachmentsGet": {
             "name": "Obtener  Archivos adjuntos",
-            "url": "https://api.mercadolibre.com/messages/attachments?tag=post_sale&site_id=site_user",
+            "url": "https://api.mercadolibre.com/messages/attachments?params",
+            "params_url":{
+                "tag":"post_sale",
+                "site_id":"site_user"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",        
             "required":["site_user"]
@@ -546,7 +624,10 @@
         "title": "Gestionar reclamos",
         "listClaims": {
             "name": "Listar reclamos del vendedor",
-            "url": "https://api.mercadolibre.com/v1/claims/search?stage=dispute",
+            "url": "https://api.mercadolibre.com/v1/claims/search?params",
+            "params_url":{
+                "stage":"dispute"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "paging":true,        
@@ -578,7 +659,11 @@
         }, 
         "messageAtt": {
             "name": "Responder reclamo con archivo adjunto anterior",
-            "url": "https://api.mercadolibre.com/v1/claims/claims_id/actions/message?access_token=token_user&application_id=client_id",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/actions/message?params",
+            "params_url":{
+                "access_token":"token_user",
+                "application_id":"client_id"
+            },
             "headers": ["Content-Type: application/json"],
             "method": "POST",
             "body":{
@@ -653,7 +738,10 @@
         },  
         "evideces_send":{
             "name": "Caragr evidendencia del reclamo",
-            "url": "https://api.mercadolibre.com/v1/claims/claims_id/actions/evidences?access_token=token_user",
+            "url": "https://api.mercadolibre.com/v1/claims/claims_id/actions/evidences?params",
+            "params_url":{
+                "access_token":"token_user"
+            },
             "headers": ["Content-Type: application/json"],
             "method": "POST",
             "body":{},
@@ -691,10 +779,48 @@
     "notify":{
         "missed":{
             "name": "Notificaciones perdidas",
-            "url": "https://api.mercadolibre.com/missed_feeds?app_id=client_id",
+            "url": "https://api.mercadolibre.com/missed_feeds?params",
+            "params_url":{
+                "app_id":"client_id"
+            },
             "headers": ["Authorization: Bearer %s"],
             "method": "GET",
             "required":["client_id"]
+        }
+    },  
+    "ads":{
+        "create":{
+            "name": "Crear una campañana de anuncios",
+            "url": "https://api.mercadolibre.com/advertising/product_ads_2/campaigns",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "POST",
+            "body":{},
+            "required":["none"]
+        }, 
+        "mod":{
+            "name": "Modificar una campañana de anuncios",
+            "url": "https://api.mercadolibre.com/advertising/product_ads_2/campaigns/campings_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "PUT",
+            "body":{},
+            "required":["none"]
+        },
+        "show":{
+            "name": "Consultar una campañana de anuncios",
+            "url": "https://api.mercadolibre.com/advertising/product_ads_2/campaigns/campings_id",
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
+        },
+        "show_UserID":{
+            "name": "Consultar una campañana de anuncios por usuaio",
+            "url": "https://api.mercadolibre.com/advertising/product_ads_2/campaigns/search?params",
+            "params_url":{
+                "user_id":""
+            },
+            "headers": ["Authorization: Bearer %s"],
+            "method": "GET",
+            "required":["none"]
         }
     }
 }

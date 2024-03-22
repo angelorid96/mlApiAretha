@@ -148,7 +148,7 @@ class mlApi
     //     'access_token'=> 'token', token del cliente si es requerido. si no es requeerido dejar un cadena vacia 
     // }
     public static function request_endPoint($data_json)
-    {
+    {   
         $isFile = false;
         $file_pass = true;
         $endPoint = mlApi::getEndPointChild($data_json['endpoint_parent'], $data_json['endpointChild']);
@@ -171,7 +171,36 @@ class mlApi
         if ($file_pass) {
             if ($endPoint != false) {
 
+                var_dump($data_json);
                 $urltmp = $endPoint['url'];
+                if (key_exists('params_url', $endPoint)) {
+                    if (key_exists('body', $data_json)) {
+                        foreach (array_keys($data_json['body']) as $key) {
+                            if (!is_array($data_json['body'][$key])) {
+                                if (key_exists($key, $endPoint['params_url'])) {
+                                    if(in_array($endPoint['params_url'][$key],$endPoint['required'])){
+                                        if($endPoint['params_url'][$key]=='client_id'){
+                                            $endPoint['params_url'][$key]=mlApi::getClient_id();
+                                        }else if($endPoint['params_url'][$key]=='client_secret'){
+                                            $endPoint['params_url'][$key]=mlApi::getClient_secret();
+                                        }
+                                    }else{
+                                        $endPoint['params_url'][$key] = $data_json['body'][$key];
+                                        unset($data_json['body'][$key]);
+                                    }
+                                }else if(array_search($key,$endPoint['params_url'])){
+                                    $index_url=array_search($key,$endPoint['params_url']);
+                                    $endPoint['params_url'][$index_url] = $data_json['body'][$key];
+                                    unset($data_json['body'][$key]);
+                                }
+                            }
+                        }
+                    }else{
+                        
+                    }
+                    $urltmp = str_replace('params', http_build_query($endPoint['params_url']), $urltmp);
+                    unset($endPoint['params_url']);
+                }
                 if (key_exists('body', $data_json)) {
                     foreach (array_keys($data_json['body']) as $key) {
                         if (!is_array($data_json['body'][$key])) {
@@ -202,8 +231,8 @@ class mlApi
                     }
                 }
                 // var_dump($endPoint);
-                // echo $urltmp;
-                // echo '<br>';
+                echo $urltmp;
+                echo '<br>';
 
                 if ($endPoint['required'][0] != 'none') {
                     foreach ($endPoint['required'] as $item) {
@@ -211,28 +240,12 @@ class mlApi
                             if (array_key_exists('body', $endPoint)) {
                                 if (key_exists($item, $endPoint['body'])) {
                                     $endPoint['body'][$item] = mlApi::getClient_id();
-                                } else {
-                                    if (strpos($urltmp, $item)) {
-                                        $urltmp = str_replace($item, mlApi::getClient_id(), $urltmp);
-                                    }
-                                }
-                            } else {
-                                if (strpos($urltmp, $item)) {
-                                    $urltmp = str_replace($item, mlApi::getClient_id(), $urltmp);
                                 }
                             }
                         } else if ($item == 'client_secret') {
                             if (array_key_exists('body', $endPoint)) {
                                 if (key_exists($item, $endPoint['body'])) {
                                     $endPoint['body'][$item] = mlApi::getClient_secret();
-                                } else {
-                                    if (strpos($urltmp, $item)) {
-                                        $urltmp = str_replace($item, mlApi::getClient_secret(), $urltmp);
-                                    }
-                                }
-                            } else {
-                                if (strpos($urltmp, $item)) {
-                                    $urltmp = str_replace($item, mlApi::getClient_secret(), $urltmp);
                                 }
                             }
                         }

@@ -427,5 +427,5 @@ function loopNotiFy(){
     }, 60000);
 }
 
-apiML('container-toast').verifyNotify();
-loopNotiFy();
+// apiML('container-toast').verifyNotify();
+// loopNotiFy();

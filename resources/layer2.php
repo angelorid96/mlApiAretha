@@ -813,7 +813,7 @@ if ($isExpireTK['value']) {
         let item_select_parent = select_parent.options[select_parent.selectedIndex];
         if (item_select_parent.value != 'none') {
             category_id_value = item_select_parent.value;
-            let select_child = document.getElementById('category_parent');
+            let select_child = document.getElementById('category_child1');
             let item_select_child = select_child.options[select_child.selectedIndex];
             if (item_select_child.value != 'none') {
                 category_id_value = item_select_child.value;
