@@ -7,6 +7,7 @@ function isExpiredAccessToken()
         'code' => '001',
         'message'   => 'Surgio un problema al obtener nuevo token!',
         'value' => false,
+        'cause'=>'none'
     );
 
     $oApiToken = new \mod_apitoken\entities\apiToken();
@@ -18,6 +19,9 @@ function isExpiredAccessToken()
     // var_dump($list_menu_endpoints);
     if (count($existUser) > 0) {
         $oApiTokenTmp = $existUser[0];
+        // var_dump($oApiTokenTmp);
+        // echo '<br>';
+
         $date_now = new DateTime(date("Y-m-d H:i:s"));
         $date_6hhPlus = new DateTime($oApiTokenTmp->getDateAcces_token());
         $date_6hhPlus->modify('+6 hour');
@@ -28,13 +32,23 @@ function isExpiredAccessToken()
 
 
         $isExpireDate_refresh = ($date_now_refresh >= $date_6hhPlus_refresh) ? true : false;
+        if(($oApiTokenTmp->getAcces_token()=='')||($oApiTokenTmp->getRefresh_token()=='')){
+            
+            $response['status'] = 'invalid';
+            $response['code'] = '004';
+            $response['message'] = 'acces token o refresh token indefinidos';
+            $response['value'] = false;
+            $response['cause'] ='acces token o refresh token no se encuentrar';
 
+            return $response;
+        }
 
         if ($isExpireDate_refresh) {
             $response['status'] = 'expired';
             $response['code'] = '004';
-            $response['message'] = 'refresh token no valido';
+            $response['message'] = 'refresh token no valido, necesita volver autenticar';
             $response['value'] = false;
+            $response['cause'] ='Tiempo valido de refresh token revasado';
         } else {
             $isExpireDate = ($date_now >= $date_6hhPlus) ? true : false;
             if ($isExpireDate) {
@@ -62,15 +76,25 @@ function isExpiredAccessToken()
                 }
                 $response_endpoint = mlApi::request_endPoint($tmp_json);
 
+              
+
                 $oApiToken->getPO()->setAcces_token($response_endpoint['data']['access_token']);
                 $oApiToken->getPO()->setRefresh_token($response_endpoint['data']['refresh_token']);
                 $oApiToken->getPO()->setDateAcces_token(date("Y-m-d H:i:s"));
                 $oApiToken->getPO()->setDateRefresh_token(date("Y-m-d H:i:s"));
                 if ($oApiToken->update()) {
-                    $response['status'] = 'success';
+                    $response['status'] = 'valid';
                     $response['code'] = '000';
                     $response['message'] = 'Token actulizado';
                     $response['value'] = true;
+                }else{
+                    $response['status'] = 'invalid';
+                    $response['code'] = '405';
+                    $response['message'] = 'no se puede actualizar';
+                    $response['value'] = false;
+                    if(key_exists('cause',$response_endpoint['data'])){
+                        $response['cause'] =$response_endpoint['data']['cause'];
+                    }
                 }
             } else {
                 $response['status'] = 'valid';

@@ -181,10 +181,21 @@ class mlApi
         }
 
         if ($file_pass) {
-            if ($endPoint != false) {
+            if ($endPoint !== false) {
 
                 // var_dump($data_json);
-                $urltmp = $endPoint['url'];
+                if (key_exists('body', $data_json) && key_exists('resource',$data_json['body']) ) {
+                    if(key_exists('params_url',$endPoint)){
+                        $urltmp =sprintf('https://api.mercadolibre.com%s?params',$data_json['body']['resource']);
+                    }else{
+                        $urltmp =sprintf('https://api.mercadolibre.com%s',$data_json['body']['resource']);
+                    }
+                    unset($data_json['body']['resource']);
+                }else{
+                    $urltmp = $endPoint['url'];
+                }
+                
+                
                 if (key_exists('params_url', $endPoint)) {
                     if (key_exists('body', $data_json)) {
                         foreach (array_keys($data_json['body']) as $key) {
@@ -338,7 +349,7 @@ class mlApi
                         'reject' => array(
                             'status' => 'fail',
                             'error' => $response['message'],
-                            'cause' => $response['cause']
+                            'cause' => (key_exists('cause',$response))?$response['cause']:"",
                         ),
                     );
                 } else {

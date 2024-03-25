@@ -147,7 +147,7 @@ const apiML = (target) => ({
                 aretha(target_op).html(data);
             }
         } else {
-            console.log(data);
+            // console.log(data);
             if(data.length!==0){
                 return JSON.parse(data);
             }else{
@@ -400,7 +400,7 @@ const apiML = (target) => ({
                 let toast=null;
                 container_toast.innerHTML='';
                 data.forEach((item) => {
-                    console.log(item);
+                    // console.log(item);
                     toast=document.createElement('div');
                     toast.setAttribute('class','toast');
                     toast.setAttribute( 'role','alert');
@@ -411,22 +411,80 @@ const apiML = (target) => ({
                         '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>' +
                         '</div>' +
                         '<div class="toast-body">' +
-                        `<a class="btn btn-primary" role="button" resource="${data.resource}" id="btnActionToast">Ver contendo</a>`+
+                        `<a class="btn btn-primary" role="button" resource="${item.resource}" topic="${item.topic}" id="btnAcNTMl">Ver contendo</a>`+
                         '</div>' ;
                     toast.innerHTML=toast_innerHtml;
                     container_toast.appendChild(toast);
-                    const new_toats=bootstrap.Toast.getOrCreateInstance(toast);
+                    const new_toats=bootstrap.Toast.getOrCreateInstance(toast); 
                     new_toats.show();
                 });
             }
         }
     }
 });
-function loopNotiFy(){
-    setInterval(() => {
-        apiML('container-toast').verifyNotify();
-    }, 60000);
-}
+// function loopNotiFy(){
+//     setInterval(() => {
+//         apiML('container-toast').verifyNotify();
+//     }, 60000);
+// }
 
 apiML('container-toast').verifyNotify();
-loopNotiFy();
+// loopNotiFy();
+
+$('body').off('click', '#btnAcNTMl');
+$('body').on('click', '#btnAcNTMl', async (e) => {
+    e.preventDefault();
+    let pointersEndPoint={
+        'items':{
+            endpoint_parent: 'items',
+            endpointChild: 'view',
+        },'orders_v2':{
+            endpoint_parent: 'orders',
+            endpointChild: 'orderId',
+        },'questions':{
+            endpoint_parent: 'q&a',
+            endpointChild: 'queId',
+        },'payments':{
+            endpoint_parent: 'miscl',
+            endpointChild: 'payments',
+        },'messages':{
+            endpoint_parent: 'messages',
+            endpointChild: 'viewFmId',
+        },'claims':{
+            endpoint_parent: 'claims',
+            endpointChild: 'viewClaim',
+        },'catalog_item_competition_status':{
+            endpoint_parent: 'items',
+            endpointChild: 'lossViews',
+        },'catalog_suggestions':{
+            endpoint_parent: 'catalog',
+            endpointChild: 'catalogSugg',
+        },'public_candidates':{
+            endpoint_parent: 'promotions',
+            endpointChild: 'candidates',
+        },'public_offers':{
+            endpoint_parent: 'promotions',
+            endpointChild: 'offers',
+        }
+    }
+    let data_resource = e.target.getAttribute('resource');
+    let data_topic = e.target.getAttribute('topic');
+    console.log(`data resource {${data_resource}}, data topic {${data_topic}}`);
+    if(data_topic=='messages'){
+        data_resource=`/messages/${data_resource}`;
+    }
+    let response = apiML().requestEndPoint({
+        EndPoint: {
+            endpoint_parent:pointersEndPoint[data_topic].endpoint_parent,
+            endpointChild: pointersEndPoint[data_topic].endpointChild,
+            body:{
+                resource:data_resource
+            }
+
+        },
+    });
+    console.log(response);
+    // setTimeout(() => {
+    //     e.target.parentElement.parentElement.remove()
+    // }, 3000);
+});

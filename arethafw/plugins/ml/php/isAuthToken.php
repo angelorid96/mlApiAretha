@@ -99,7 +99,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                     //create Nav struct
                     $nav = $docHtml->createElement('ul');
                     ($orientationMenu != 'horizontal') ? $nav->setAttribute('class', 'nav flex-column') : $nav->setAttribute('class', 'nav');
-                    $nav->setAttribute('id', 'menu'); //var_dump($list_menu_endpoints['site'][3][0]);
+                    $nav->setAttribute('id', 'menu-list'); //var_dump($list_menu_endpoints['site'][3][0]);
 
                     foreach (array_keys($list_menu_endpoints) as $key) {
 
@@ -159,7 +159,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                 $response['message'] = 'autenticacion correcta';
                 $response['isAuth']['not-menu']=$notMenu;
                 $response['isAuth']['code']='valid_user_authentication';
-                $response['isAuth']['html'] = $docHtml->saveHTML($docHtml->getElementById('menu'));
+                $response['isAuth']['html'] = $docHtml->saveHTML($docHtml->getElementById('menu-list'));
             }
         }else{
             $response['isAuth'] = array(
