@@ -23,7 +23,12 @@ class mlApi
     //===================================================================================================
     public static function init($iniFile = "")
     {
-        mlApi::$list_endPoints = json_decode(file_get_contents('/xampp/htdocs/MlAretha/arethafw/plugins/ml/conf/endPoint.json'), true);
+        $current_file_path = dirname(__FILE__,2);
+        $path_endpoints=sprintf('%s%sconf%s%s',$current_file_path,DIRECTORY_SEPARATOR,DIRECTORY_SEPARATOR,'endPoint.json');
+        // var_dump($path_endpoints);
+        // echo '<br>';
+        // var_dump(is_file($path_endpoints));
+        mlApi::$list_endPoints = json_decode(file_get_contents($path_endpoints), true);
         if (trim($iniFile) != "" && mlApi::endsWith($iniFile, ".ini")) {
             if (is_file($iniFile)) {
                 mlApi::$confapiML = parse_ini_file($iniFile, true);
@@ -246,6 +251,12 @@ class mlApi
                             if (array_key_exists('body', $endPoint)) {
                                 if (key_exists($item, $endPoint['body'])) {
                                     $endPoint['body'][$item] = mlApi::getClient_secret();
+                                }
+                            }
+                        }else if ($item == 'redirect_uri') {
+                            if (array_key_exists('body', $endPoint)) {
+                                if (key_exists($item, $endPoint['body'])) {
+                                    $endPoint['body'][$item] = mlApi::getUrl_redirect();
                                 }
                             }
                         }

@@ -127,21 +127,21 @@ Aretha::sessionStart();
         // });
         let response = apiML('#body-api').requestEndPoint({
             EndPoint: {
-                endpoint_parent: 'users',
-                endpointChild: 'shipping_modes',
+                endpoint_parent: 'notify',
+                endpointChild: 'missed',
                 // endpointChild: 'queId',
                 // endpointChild: 'anwers',
-                body: {
-                    // item_id:'MLM2939710174'
-                    // question_id:'13008271704',
-                    // text:'debug test respuesta pregunta'
-                    category_id: "MLM1055",
-                    channels: [
-                        {id: "marketplace"}
-                    ], 
-                    buying_mode: "buy_it_now",
+                // body: {
+                //     // item_id:'MLM2939710174'
+                //     // question_id:'13008271704',
+                //     // text:'debug test respuesta pregunta'
+                //     category_id: "MLM1055",
+                //     channels: [
+                //         {id: "marketplace"}
+                //     ], 
+                //     buying_mode: "buy_it_now",
 
-                },
+                // },
                 // paging:{
                 //     offset:0,
                 //     limit:10

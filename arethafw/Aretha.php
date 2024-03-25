@@ -11,6 +11,7 @@
  *
  */
 define('ARETHA_DIRNAME', "arethafw");
+define('GLOBAL_PATH',dirname(__FILE__));
 define('ARETHA_VERSION', "2.16");
 
 define('POSTGRESQL', 1);
@@ -19,6 +20,9 @@ define('SQLSERVER', 3);
 
 define('AF_LOGIN', 0);
 define('CUSTOM_PATH', 1);
+
+
+// echo GLOBAL_PATH;
 
 $arethaPaths = array();
 

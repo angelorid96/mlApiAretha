@@ -19,8 +19,7 @@ class apiToken
     public function insert()
     {
         $da = new \aretha\dao\DataAccess();
-        $query = sprintf(
-            "INSERT INTO api_tokens(user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s','%s') returning user_id;",
+        $query = sprintf("INSERT INTO api_tokens(user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s','%s');",
             $da->escape_string($this->poApiToken->getUser_id()),
             $da->escape_string($this->poApiToken->getNickname()),
             $da->escape_string($this->poApiToken->getSite_userId()),
@@ -32,9 +31,13 @@ class apiToken
         // echo $query;
         if ($da->connect()) {
             $result = $da->execGetQuery($query);
+            // var_dump($result);
             $da->disconnect();
+            // if ($result != false) {
+            //     return $result[0][0];
+            // }
             if ($result != false) {
-                return $result[0][0];
+                return $result;
             }
             return 0;
         } else {
@@ -56,13 +59,13 @@ class apiToken
             if ($result != false) {
                 foreach ($result as $row) {
                     $oBusinessPO = new \mod_apitoken\plainObjects\apiTokenPO();
-                    $oBusinessPO->setUser_id($row[0]);
-                    $oBusinessPO->setNickname($row[1]);
-                    $oBusinessPO->setSite_userID($row[2]);
-                    $oBusinessPO->setAcces_token($row[3]);
-                    $oBusinessPO->setRefresh_token($row[4]);
-                    $oBusinessPO->setDateAcces_token($row[5]);
-                    $oBusinessPO->setDateRefresh_token($row[6]);
+                    $oBusinessPO->setUser_id($row->user_id);
+                    $oBusinessPO->setNickname($row->nickname);
+                    $oBusinessPO->setSite_userID($row->site_user);
+                    $oBusinessPO->setAcces_token($row->access_token);
+                    $oBusinessPO->setRefresh_token($row->refresh_token);
+                    $oBusinessPO->setDateAcces_token($row->date_token);
+                    $oBusinessPO->setDateRefresh_token($row->date_refresh_token);
                     $arrResult[] = $oBusinessPO;
                 }
             }
@@ -86,13 +89,13 @@ class apiToken
             if ($result != false) {
                 foreach ($result as $row) {
                     $oBusinessPO = new \mod_apitoken\plainObjects\apiTokenPO();
-                    $oBusinessPO->setUser_id($row[0]);
-                    $oBusinessPO->setNickname($row[1]);
-                    $oBusinessPO->setSite_userID($row[2]);
-                    $oBusinessPO->setAcces_token($row[3]);
-                    $oBusinessPO->setRefresh_token($row[4]);
-                    $oBusinessPO->setDateAcces_token($row[5]);
-                    $oBusinessPO->setDateRefresh_token($row[6]);
+                    $oBusinessPO->setUser_id($row->user_id);
+                    $oBusinessPO->setNickname($row->nickname);
+                    $oBusinessPO->setSite_userID($row->site_user);
+                    $oBusinessPO->setAcces_token($row->access_token);
+                    $oBusinessPO->setRefresh_token($row->refresh_token);
+                    $oBusinessPO->setDateAcces_token($row->date_token);
+                    $oBusinessPO->setDateRefresh_token($row->date_refresh_token);
                     $arrResult[] = $oBusinessPO;
                 }
             }
@@ -112,7 +115,7 @@ class apiToken
             $result = $da->execGetQuery($query);
             $da->disconnect();
             if ($result != false) {
-                if ($result[0][0] > 0) {
+                if ($result[0]->{"COUNT(user_id)"} > 0) {
                     return true;
                 }
             }
@@ -132,7 +135,10 @@ class apiToken
             $result = $da->execGetQuery($query);
             $da->disconnect();
             if ($result != false) {
-                if ($result[0][0] > 0) {
+                // if ($result[0][0] > 0) {
+                //     return true;
+                // }
+                if ($result[0]->{"COUNT(user_id)"} > 0) {
                     return true;
                 }
             }

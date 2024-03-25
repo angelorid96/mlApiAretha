@@ -398,6 +398,7 @@ const apiML = (target) => ({
             if (data.length != 0) {
                 let container_toast=document.getElementById(target);
                 let toast=null;
+                container_toast.innerHTML='';
                 data.forEach((item) => {
                     console.log(item);
                     toast=document.createElement('div');

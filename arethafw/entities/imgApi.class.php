@@ -20,15 +20,18 @@ class imgApi
     {
         $da = new \aretha\dao\DataAccess();
         $query = sprintf(
-            "INSERT INTO imgs_api(id) VALUES ('%s') returning id;",
+            "INSERT INTO imgs_api(id) VALUES ('%s');",
             $da->escape_string($this->poImgApi->getId())
         );
         // echo $query;
         if ($da->connect()) {
             $result = $da->execGetQuery($query);
             $da->disconnect();
+            // if ($result != false) {
+            //     return $result[0][0];
+            // }
             if ($result != false) {
-                return $result[0][0];
+                return $result;
             }
             return 0;
         } else {
@@ -47,7 +50,10 @@ class imgApi
             $result = $da->execGetQuery($query);
             $da->disconnect();
             if ($result != false) {
-                if ($result[0][0] > 0) {
+                 // if ($result[0][0] > 0) {
+                //     return true;
+                // }
+                if ($result[0]->{"COUNT(user_id)"} > 0) {
                     return true;
                 }
             }
@@ -59,7 +65,7 @@ class imgApi
     public function selectAll()
     {
         $da = new \aretha\dao\DataAccess();
-        $query = "SELECT id, name FROM imgs_api;";
+        $query = "SELECT id FROM imgs_api;";
 
         if ($da->connect()) {
             $result = $da->execGetQuery($query);
@@ -68,7 +74,7 @@ class imgApi
             if ($result != false) {
                 foreach ($result as $row) {
                     $oBusinessPO = new \mod_apitoken\plainObjects\imgApiPO();
-                    $oBusinessPO->setId($row[0]);
+                    $oBusinessPO->setId($row->id);
                     $arrResult[] = $oBusinessPO;
                 }
             }

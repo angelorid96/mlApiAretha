@@ -31,20 +31,22 @@ if (isset($_REQUEST['code']) && $_REQUEST['code'] != '') {
     $oApiToken->getPO()->setDateRefresh_token(date("Y-m-d H:i:s"));
 
     $existUser = $oApiToken->existId();
+    // var_dump($existUser);
     if ($existUser) {
             // echo 'debug';
             $_SESSION['nickname']=$oApiToken->getPO()->getNickname();
             $_SESSION['user_id']=$oApiToken->getPO()->getUser_id();
             // header('Location:../');
         header('Location:../');
+    }else{
+        if($oApiToken->insert()){
+            // echo 'debug';
+            $_SESSION['nickname']=$oApiToken->getPO()->getNickname();
+            $_SESSION['user_id']=$oApiToken->getPO()->getUser_id();
+            // header('Location:../');
+        }
     }
     // echo $oApiToken->insert();
-    if($oApiToken->insert()){
-        // echo 'debug';
-        $_SESSION['nickname']=$oApiToken->getPO()->getNickname();
-        $_SESSION['user_id']=$oApiToken->getPO()->getUser_id();
-        // header('Location:../');
-    }
 }
 ?>
 <!DOCTYPE html>

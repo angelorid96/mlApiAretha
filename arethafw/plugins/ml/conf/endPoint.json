@@ -9,10 +9,10 @@
                 "client_id": "",
                 "client_secret": "",
                 "code": "",
-                "redirect_uri": "https://localhost/MlAretha/resources/apiAuth.php"
+                "redirect_uri": ""
             },
             "method": "POST",
-            "required": ["client_id","client_secret"]
+            "required": ["client_id","client_secret","redirect_uri"]
         },
         "refresh_token": {
             "url": "https://api.mercadolibre.com/oauth/token",

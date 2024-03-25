@@ -52,6 +52,12 @@ class MySQL {
         	$this->lastError = $error;
 	        return false;
         }
+		// var_dump($result);
+		if($result===TRUE){
+			// printf("New record has ID %d.\n", mysqli_insert_id($this->connection));
+			return $result;
+		}
+		// var_dump($result);
 
         $resultSet = false;
         if (mysqli_num_rows($result) > 0) {
