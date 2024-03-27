@@ -64,6 +64,7 @@ for ($i = 0; $i < $files_length; $i++) {
 
 
 if ($tmp_json != null) {
+    
     $isExpireTK = isExpiredAccessToken();
     $response_endpoint = null;
     if ($isExpireTK['value']) {

@@ -239,10 +239,16 @@ if ($isExpireTK['value']) {
                         <div class="col-md-12 mb-2 ms-1">
                             <p class="h3 text-center">Guia de tallas</p>
                         </div>
-                        <div class="col-md-4  align-self-start">
-                            <button class="btn btn-outline-secondary" type="button" id="get_attr_grid_layout">Consultar atributos</button>
+                        <div class="col-md-12">
+                            <div class="row justify-content-md-start">
+                                <div class="col-md-2">
+                                    <button class="btn btn-outline-secondary" type="button" id="get_attr_grid_layout">Consultar atributos</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-secondary" type="button" id="add_attr_grid_layout">Crear guia de tallas perzsonalizada</button>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
                     <div class="row g-3 mt-2" id="panel_grip_view">
 
@@ -1015,9 +1021,9 @@ if ($isExpireTK['value']) {
                     op_att_var.appendChild(document.createTextNode(`${attr.name}`));
                     select_variation_attr.appendChild(op_att_var);
                 }
-                // if (attr.id == 'GENDER') {
-                //     document.getElementById('panel_grid').hidden = false;
-                // }
+                if (attr.tags.hasOwnProperty('grid_template_required')) {
+                    document.getElementById('panel_grid').hidden = false;
+                }
 
                 div_col.setAttribute('id', `attr_id_${attr.id}`);
                 view_attr.appendChild(div_col);
@@ -1624,8 +1630,8 @@ if ($isExpireTK['value']) {
         // console.log(domain_id_value);
         let chart_attrs = await apiML().requestEndPoint({
             EndPoint: {
-                endpoint_parent: 'site',
-                endpointChild: 'chart_attr',
+                endpoint_parent: 'catalog',
+                endpointChild: 'searchChars',
                 body: {
                     domain_id: domain_id_value,
                 }

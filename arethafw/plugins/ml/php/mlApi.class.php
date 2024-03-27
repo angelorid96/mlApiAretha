@@ -25,9 +25,7 @@ class mlApi
     {
         $current_file_path = dirname(__FILE__,2);
         $path_endpoints=sprintf('%s%sconf%s%s',$current_file_path,DIRECTORY_SEPARATOR,DIRECTORY_SEPARATOR,'endPoint.json');
-        // var_dump($path_endpoints);
-        // echo '<br>';
-        // var_dump(is_file($path_endpoints));
+        
         mlApi::$list_endPoints = json_decode(file_get_contents($path_endpoints), true);
         if (trim($iniFile) != "" && mlApi::endsWith($iniFile, ".ini")) {
             if (is_file($iniFile)) {
@@ -349,7 +347,7 @@ class mlApi
                         'reject' => array(
                             'status' => 'fail',
                             'error' => $response['message'],
-                            'cause' => (key_exists('cause',$response))?$response['cause']:"",
+                            'cause' => (key_exists('cause',$response))?$response['cause']:$response['error'],
                         ),
                     );
                 } else {

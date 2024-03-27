@@ -173,25 +173,59 @@
             "required": [
                 "site_user"
             ]
-        },
-        "chart_attr": {
-            "name": "Atributos para guia de tallas",
+        }, "gridSpecs": {
+            "name": "Consultar ficha tecnica para la guia de tallas",
             "url": "https://api.mercadolibre.com/domains/domain_id/technical_specs/?params",
             "params_url": {
-                "section": "grids"
+                "section":"grids"
             },
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
-            "body": {
-                "domain_id": "",
-                "site_id": "",
-                "seller_id": ""
-            },
+            "body":{},
             "method": "POST",
             "required": [
-                "site_id",
-                "seller_id"
+                "none"
+            ]
+        },
+        "createGrid": {
+            "name": "Crear guia de tallas personalizada",
+            "url": "https://api.mercadolibre.com/catalog/charts",
+            "headers": [
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
+            ],
+            "body":{},
+            "method": "POST",
+            "required": [
+                "none"
+            ]
+        },
+        "putRowGrid": {
+            "name": "Agregar fila a la guia de tallas",
+            "url": "https://api.mercadolibre.com/catalog/charts/charts_id/row/row_id",
+            "headers": [
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
+            ],
+            "body":{},
+            "method": "POST",
+            "required": [
+                "none"
+            ]
+        },
+        "modGrid": {
+            "name": "Modificar guia de tallas personalizada",
+            "url": "https://api.mercadolibre.com/catalog/charts/charts_id",
+            "headers": [
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
+            ],
+            "body":{},
+            "method": "PUT",
+            "required": [
+                "none"
             ]
         }
     },
@@ -527,12 +561,35 @@
             "required": [
                 "none"
             ]
+        }, 
+        "avForCatalog": {
+            "name": "Verifica si un item publicado se puede publicar en catalogo",
+            "url": "https://api.mercadolibre.com/items/item_id/catalog_listing_eligibility",
+            "headers": [
+                "Authorization: Bearer %s"
+            ],
+            "method": "GET",
+            "required": [
+                "none"
+            ]
+        },"dateCatalog": {
+            "name": "Consultar fecha limite para asociar a catalogo",
+            "url": "https://api.mercadolibre.com/items/item_id/catalog_forewarning/date",
+            "headers": [
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
+            ],
+            "method": "POST",
+            "required": [
+                "none"
+            ]
         },
         "catalogAdd": {
             "name": "Agregar item a catalogo",
             "url": "https://api.mercadolibre.com/items/catalog_listings",
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "required": [
@@ -546,7 +603,8 @@
             "name": "Subir imagen",
             "url": "https://api.mercadolibre.com/pictures/items/upload",
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "body": {},
@@ -635,7 +693,8 @@
             "name": "Subir factura",
             "url": " https://api.mercadolibre.com/packs/pack_id/fiscal_documents",
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "allowed_files": [
@@ -692,7 +751,8 @@
                 "app_version": "v2"
             },
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "body": {},
@@ -805,7 +865,8 @@
             "name": "Indicar item para una campañna",
             "url": "https://api.mercadolibre.com/seller-promotions/items/item_id",
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "body": {},
@@ -985,7 +1046,8 @@
             "name": "Subir Archivo adjunto",
             "url": "https://api.mercadolibre.com/v1/claims/claims_id/attachments",
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "body": {},
@@ -1187,7 +1249,8 @@
             "name": "Crear una campañana de anuncios",
             "url": "https://api.mercadolibre.com/advertising/product_ads_2/campaigns",
             "headers": [
-                "Authorization: Bearer %s"
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
             ],
             "method": "POST",
             "body": {},
@@ -1299,6 +1362,57 @@
             "required": [
                 "none"
             ]
+        },"searchProduct": {
+            "name": "Buscador de productos existentes en catalogo",
+            "url": "https://api.mercadolibre.com/products/search?params",
+            "params_url":{
+                "status":"active",
+                "site_id":"site_user",
+                "q":""
+            },
+            "headers": [
+                "Authorization: Bearer %s"
+            ],
+            "method": "GET",
+            "required": [
+                "site_user"
+            ]
+        },"viewProduct": {
+            "name": "Ver detalles de un producto de catalogo",
+            "url": "https://api.mercadolibre.com/products/product_id",
+            "headers": [
+                "Authorization: Bearer %s"
+            ],
+            "method": "GET",
+            "required": [
+                "none"
+            ]
+        },"itemsProduct": {
+            "name": "Ver items asociados  a un producto",
+            "url": "https://api.mercadolibre.com/products/product_id/items",
+            "headers": [
+                "Authorization: Bearer %s"
+            ],
+            "method": "GET",
+            "required": [
+                "none"
+            ]
+        },"searchChars": {
+            "name": "",
+            "url": "https://api.mercadolibre.com/catalog/charts/search",
+            "headers": [
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
+            ],
+            "method": "POST",
+            "body":{
+                "site_id":"site_user",
+                "seller_id":""
+            },
+            "required": [
+                "site_user",
+                "seller_id"
+            ]
         }
     },
     "miscl": {
@@ -1310,6 +1424,29 @@
                 "Authorization: Bearer %s"
             ],
             "method": "GET",
+            "required": [
+                "none"
+            ]
+        }, 
+        "checkSyncItem": {
+            "name": "",
+            "url": "https://api.mercadolibre.com/public/buybox/sync/item_id",
+            "headers": [
+                "Authorization: Bearer %s"
+            ],
+            "method": "GET",
+            "required": [
+                "none"
+            ]
+        }, "syncItem": {
+            "name": "",
+            "url": "https://api.mercadolibre.com/public/buybox/sync",
+            "headers": [
+                "Authorization: Bearer %s",
+                "Content-Type: application/json"
+            ],
+            "body":{},
+            "method": "POST",
             "required": [
                 "none"
             ]
