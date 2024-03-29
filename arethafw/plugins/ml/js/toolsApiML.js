@@ -160,8 +160,16 @@ const apiML = (target) => ({
         // console.log(data);
 
         if (data.status == 'warning') {
+            let msg='';
             aretha('#error-title').html('Error al obtener informacion!');
-            aretha('#error-body').html(`<p class="card-text">${data.endpoint_data.reject.error}</p>`);
+
+            if(data.endpoint_data.reject.hasOwnProperty('error')){
+                msg=`${msg} \n <p class="card-text"> Error: ${data.endpoint_data.reject.error}</p>`;
+            }
+            if(data.endpoint_data.reject.hasOwnProperty('cause')){
+                msg=`${msg} \n <p class="card-text"> Causa: ${data.endpoint_data.reject.cause}</p>`;
+            }
+            aretha('#error-body').html(`${msg}`);
             document.getElementById('card-error').hidden = false;
             // document.getElementById('card-error').focus();
 
@@ -241,7 +249,7 @@ const apiML = (target) => ({
                 }
             }
 
-            if (struct_value == 'object') {
+            if (struct_value  == 'object') {
                 json_endpoints_data[id_endpoint].push(value_format);
             } else {
                 if (Array.isArray(json_endpoints_data[id_endpoint])) {

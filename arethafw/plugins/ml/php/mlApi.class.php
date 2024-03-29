@@ -89,6 +89,13 @@ class mlApi
     {
         return mlApi::$url_redirect;
     }
+    public static function array_is_list($array)
+    {
+        if ($array === []) {
+            return true;
+        }
+        return array_keys($array) === range(0, count($array) - 1);
+    }
     public static function getEndPointChild($endPoint_parent, $endPoint)
     {
         // echo $endPoint;
@@ -342,6 +349,18 @@ class mlApi
                     $response=array();
                 }
                 
+                if(key_exists('groups',$response) || key_exists('input',$response) ){
+                    if(key_exists('input',$response) ){
+                        $response=$response['input'];
+                    }
+                    if(array_is_list($response['groups']) && count($response['groups'])==1){
+                        $response=$response['groups'][0];
+                    }else{
+                        $response=$response['groups'];
+                    }
+                    
+                }
+
                 if (key_exists('error', $response)) {
                     return array(
                         'reject' => array(

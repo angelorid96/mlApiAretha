@@ -19,16 +19,34 @@ class apiToken
     public function insert()
     {
         $da = new \aretha\dao\DataAccess();
-        $query = sprintf(
-            "INSERT INTO api_tokens(user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s','%s');",
-            $da->escape_string($this->poApiToken->getUser_id()),
-            $da->escape_string($this->poApiToken->getNickname()),
-            $da->escape_string($this->poApiToken->getSite_userId()),
-            $da->escape_string($this->poApiToken->getAcces_token()),
-            $da->escape_string($this->poApiToken->getRefresh_token()),
-            $da->escape_string($this->poApiToken->getDateAcces_token()),
-            $da->escape_string($this->poApiToken->getDateRefresh_token())
-        );
+        $query='';
+        switch ($da->getEngine()) {
+            case 1:
+                $query = sprintf(
+                    "INSERT INTO api_tokens(user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s','%s') RETURNING user_id;",
+                    $da->escape_string($this->poApiToken->getUser_id()),
+                    $da->escape_string($this->poApiToken->getNickname()),
+                    $da->escape_string($this->poApiToken->getSite_userId()),
+                    $da->escape_string($this->poApiToken->getAcces_token()),
+                    $da->escape_string($this->poApiToken->getRefresh_token()),
+                    $da->escape_string($this->poApiToken->getDateAcces_token()),
+                    $da->escape_string($this->poApiToken->getDateRefresh_token())
+                );
+                break;
+            case 2:
+                $query = sprintf(
+                    "INSERT INTO api_tokens(user_id,nickname,site_user,access_token,refresh_token,date_token,date_refresh_token) VALUES (%d,'%s','%s','%s','%s','%s','%s');",
+                    $da->escape_string($this->poApiToken->getUser_id()),
+                    $da->escape_string($this->poApiToken->getNickname()),
+                    $da->escape_string($this->poApiToken->getSite_userId()),
+                    $da->escape_string($this->poApiToken->getAcces_token()),
+                    $da->escape_string($this->poApiToken->getRefresh_token()),
+                    $da->escape_string($this->poApiToken->getDateAcces_token()),
+                    $da->escape_string($this->poApiToken->getDateRefresh_token())
+                );
+                break;
+        }
+        
         // echo $query;
         if ($da->connect()) {
             $result = $da->execGetQuery($query);

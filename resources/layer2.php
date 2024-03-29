@@ -81,7 +81,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col d-none">
                                     <input type="text" class="form-control apiML-param apiML-shipp" id="category_id" value-type="text" hidden>
-                                    <input type="text" class="form-control" id="domain_id" value-type="text" hidden>
+                                    <input type="text" class="form-control apiML-charts" id="domain_id" value-type="text" hidden>
                                 </div>
                                 <div class="col-md-3 mb-2 ms-1" id>
                                     <label for="price" class="form-label">Precio</label>
@@ -239,13 +239,50 @@ if ($isExpireTK['value']) {
                         <div class="col-md-12 mb-2 ms-1">
                             <p class="h3 text-center">Guia de tallas</p>
                         </div>
+                        <div class="card col-md-12" id="panel_charts" hidden>
+                            <div class="card-header text-center col-md-12">
+                                <div class="row justify-content-md-center">
+                                    <div class="col-md-8 text-center"><span class="h4" id="nameForCharts"></span></div>
+                                    <div class="col-md-2 align-self-end"> <button class="btn btn-outline-secondary" type="button" id="add_charts_row">agregar fila</button></div>
+                                    <div class="col-md-2 align-self-end"> <button class="btn btn-outline-secondary" type="button" id="del_charts_row">eliminar fila</button></div>
+                                </div>
+                            </div>
+                            <div class="card-body text-center col-md-12">
+                                <div class="row g-3 mt-3">
+                                    <div class="col-md-12">
+                                        <table class="display" width="100%" id="tableCharts">
+                                            <thead id="headChart">
+
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="row justify-content-md-start">
                                 <div class="col-md-2">
                                     <button class="btn btn-outline-secondary" type="button" id="get_attr_grid_layout">Consultar atributos</button>
                                 </div>
                                 <div class="col-md-4">
-                                    <button class="btn btn-outline-secondary" type="button" id="add_attr_grid_layout">Crear guia de tallas perzsonalizada</button>
+                                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#chartsModal" type="button" id="add_attr_grid_layout">Crear guia de tallas perzsonalizada</button>
+                                </div>
+                                <div class="modal fade" id="chartsModal" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Seleccione atributos para guia de tallas</h5>
+                                            </div>
+                                            <div class="modal-body row" id="att_charts">
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="createTableCharts">Crear tabla</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -340,6 +377,9 @@ if ($isExpireTK['value']) {
     let tmp_prev_elem = null;
 
     let list_attr_vars = [];
+    let list_attr_charts = [];
+    let dyRow_attr_chart = null;
+    let tableCharts = null;
 
     let select_variation_attr = document.createElement('select');
     select_variation_attr.setAttribute('class', 'form-select');
@@ -839,7 +879,7 @@ if ($isExpireTK['value']) {
                 }
             }
         } else {
-            show_error_element('#category_parent', 'Seleccione la categoria del producto', 'border-warning');
+            // show_error_element('#category_parent', 'Seleccione la categoria del producto', 'border-warning');
             show_error_element([{
                 target: "#category_parent",
                 msg: "Seleccione la categoria del producto",
@@ -1024,7 +1064,9 @@ if ($isExpireTK['value']) {
                 if (attr.tags.hasOwnProperty('grid_template_required')) {
                     document.getElementById('panel_grid').hidden = false;
                 }
-
+                if (attr.id == 'GENDER' || attr.id == 'BRAND') {
+                    attr_comp.classList.add('apiML-charts');
+                }
                 div_col.setAttribute('id', `attr_id_${attr.id}`);
                 view_attr.appendChild(div_col);
             }
@@ -1611,33 +1653,175 @@ if ($isExpireTK['value']) {
         }
         imgs_vars[`var_${id_var}`]['count_imgs_add'] = count_imgs_var;
     });
-    // $('body').off('change', '#select_var_attr_item');
-    // $('body').on('change', '#select_var_attr_item', async (e) => {
-    //     e.preventDefault();
-    //     let select_child = aretha().targetize(e);
-    //     let item_select = select_child.options[select_child.selectedIndex];
-    //     let tmp_attr_var=document.getElementById(item_select.value).cloneNode(true);
-    //     tmp_attr_var.setAttribute('id',`${tmp_attr_var.getAttribute('id')}_var${select_child.getAttribute('id-var')}`)
-    //     console.log(tmp_attr_var);
 
-
-    // });
-
+    add_attr_grid_layout
     $('body').off('click', '#get_attr_grid_layout');
     $('body').on('click', '#get_attr_grid_layout', async (e) => {
         e.preventDefault();
+        let body_json = apiML('.apiML-tdCharts').jsontargetize();
+        console.log(body_json);
+        // let chart_attrs = await apiML().requestEndPoint({
+        //     EndPoint: {
+        //         endpoint_parent: 'catalog',
+        //         endpointChild: 'searchChars',
+        //         body: body_json,
+        //     },
+        // });
+        // console.log(chart_attrs);
 
-        // console.log(domain_id_value);
+    });
+    $('body').off('click', '#add_attr_grid_layout');
+    $('body').on('click', '#add_attr_grid_layout', async (e) => {
+        e.preventDefault();
+        let body_json = apiML('.apiML-charts').jsontargetize();
+        // console.log(body_json);
         let chart_attrs = await apiML().requestEndPoint({
             EndPoint: {
-                endpoint_parent: 'catalog',
-                endpointChild: 'searchChars',
-                body: {
-                    domain_id: domain_id_value,
-                }
+                endpoint_parent: 'site',
+                endpointChild: 'gridSpecs',
+                body: body_json,
             },
         });
-        console.log(chart_attrs);
+        // console.log(chart_attrs);
+        components = chart_attrs.data.components[0].components;
+        // console.log(list_attr_charts);
+        let all_cols = '';
+        components.forEach((element) => {
+            // console.log(element);
+            let tmp_col = '';
+            // console.log(element.label != 'BRAND');
+            if (element.label != 'Marca') {
+                if (element.label == 'Género') {
+                    tmp_col = '<div class="col-md-4">' +
+                        ' <div class="form-check form-switch">' +
+                        `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${element.label}" checked disabled>` +
+                        `<label class="form-check-label" >${element.label}</label>` +
+                        '</div>' +
+                        '</div>';
+                } else if (element.attributes[0].tags.includes('main_attribute_candidate')) {
+                    tmp_col = '<div class="col-md-4">' +
+                        ' <div class="form-check form-switch">' +
+                        `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${element.label}" checked disabled>` +
+                        `<label class="form-check-label" >${element.label}</label>` +
+                        '</div>' +
+                        '</div>';
+                } else {
+                    tmp_col = '<div class="col-md-4">' +
+                        ' <div class="form-check form-switch">' +
+                        `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${element.label}">` +
+                        `<label class="form-check-label" >${element.label}</label>` +
+                        '</div>' +
+                        '</div>';
+                }
+
+                all_cols = `${all_cols} \n ${tmp_col}`;
+                list_attr_charts.push(element);
+            }
+        });
+        all_cols = `${all_cols} \n <div class="col-md-12 pt-3">` +
+            '<div class="form-check form-switch">' +
+            '<label class="form-check-label">Titulo guia de tallas</label>' +
+            '<input class="form-control apiML-tdCharts" id-endpoint="names" type-struct="object"  tag-var="MLM" value-type="string" type-endpoint="object" type="text" id="nameCharts">' +
+            '</div>' +
+            '</div>';
+        document.getElementById('att_charts').innerHTML = all_cols;
+    });
+    $('body').off('click', '#createTableCharts');
+    $('body').on('click', '#createTableCharts', (e) => {
+        let data_table = [];
+        let head_table = '<tr>';
+        let attr_table_charts = document.getElementById('att_charts').querySelectorAll('input[id="checkAttrCharts"]');
+        // console.log(attr_table_charts);
+        document.getElementById('nameForCharts').innerHTML = document.getElementById('nameCharts').value;
+        document.getElementById('panel_charts').hidden = false;
+        //  console.log(list_attr_charts);
+        attr_table_charts.forEach((element) => {
+            if (element.checked && element.value != 'Género') {
+                // console.log(element);
+                let index_attr_chart = list_attr_charts.findIndex((item) => {
+                    // console.log(element);
+                    if (element.value == item.label) {
+                        return item;
+                    }
+                });
+                let input = null;
+                let attr_chart = list_attr_charts[index_attr_chart];
+                attr_chart.attributes.forEach((attr) => {
+                    if (attr.value_type == 'list') {
+                        input = document.createElement('select');
+                        input.setAttribute('class', 'form-select');
+                        input.setAttribute('id-attr', `${attr.id}`);
+                        input.setAttribute('id-endpoint', 'attributes');
+                        input.setAttribute('type-endpoint', 'list');
+                        input.setAttribute('type-struct', 'object');
+                        input.setAttribute('value-type', 'string');
+                        input.setAttribute('tag-var', 'attr');
+                        input.setAttribute('select-sndata', 'all');
+                        for (let index_val = 0; index_val < attr.values.length; index_val++) {
+                            let op_sel = document.createElement('option');
+                            op_sel.setAttribute('value', `${attr.values[index_val].id}`);
+                            op_sel.appendChild(document.createTextNode(`${attr.values[index_val].name}`));
+                            input.appendChild(op_sel);
+                        }
+                        data_table.push(`${input.outerHTML}`);
+                    } else {
+                        let group_div = document.createElement('div');
+                        input = document.createElement('input');
+                        input.setAttribute('class', 'form-control  apiML-param');
+                        input.setAttribute('type', 'text');                        
+                        input.setAttribute('id-attr', `${attr.id}`);
+                        input.setAttribute('id-endpoint', 'attributes');
+                        input.setAttribute('type-endpoint', 'list');
+                        input.setAttribute('type-struct', 'object');
+                        input.setAttribute('value-type', 'string');
+                        input.setAttribute('tag-var', 'attr');
+
+                        if (attr.hasOwnProperty('units')) {
+                            input.setAttribute('need-unit', 'y');
+
+                            group_div.setAttribute('class', 'input-group mb-3');
+                            let sl_units = document.createElement('select');
+                            sl_units.setAttribute('class', 'form-select');
+                            sl_units.setAttribute('id', `${attr.id}_unit`);
+                            for (let index_val = 0; index_val < attr.units.length; index_val++) {
+                                let op_units = document.createElement('option');
+                                op_units.setAttribute('value', `${attr.units[index_val].id}`);
+                                op_units.appendChild(document.createTextNode(`${attr.units[index_val].name}`));
+                                sl_units.appendChild(op_units);
+                            }
+                            group_div.appendChild(input);
+                            group_div.appendChild(sl_units);
+                            data_table.push(`${input.outerHTML}`);
+                        } else {
+                            data_table.push(`${input.outerHTML}`);
+                        }
+                    }
+                });
+                head_table = `${head_table} \n <th>${attr_chart.label}</th>`;
+            }
+        });
+        head_table = `${head_table} \n </th>`;
+        document.getElementById('headChart').innerHTML = head_table;
+        // console.log(data_table);
+        dyRow_attr_chart=data_table;
+        tableCharts= new DataTable('#tableCharts',{
+            data:Array(data_table),
+            paging: false,
+            searching: false
+        });
+    });
+    $('body').off('click', '#add_charts_row');
+    $('body').on('click', '#add_charts_row', (e) => {
+
+        tableCharts.row.add(dyRow_attr_chart).draw(false);
+
+    });
+    $('body').off('click', '#del_charts_row');
+    $('body').on('click', '#del_charts_row', (e) => {
+        let index_table_chart=(tableCharts.data().length-1);
+        if(index_table_chart>0){
+            tableCharts.rows(index_table_chart).remove().draw(false);
+        }
 
     });
 
