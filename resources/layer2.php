@@ -1868,35 +1868,36 @@ if ($isExpireTK['value']) {
 
         let body_json = apiML('.apiML-param').jsontargetize();
         body_json['buying_mode'] = "buy_it_now";
-        if (count_variations_add > 0) {
-            body_json['variations'] = [];
-            for (let index = 1; index <= count_variations_add; index++) {
-                let vars = apiML(`.apiML-param-var${index}`).jsontargetize();
-                // console.log(vars);
-                body_json['variations'].push(vars);
-            }
-        }
         console.log(body_json);
+        // if (count_variations_add > 0) {
+        //     body_json['variations'] = [];
+        //     for (let index = 1; index <= count_variations_add; index++) {
+        //         let vars = apiML(`.apiML-param-var${index}`).jsontargetize();
+        //         // console.log(vars);
+        //         body_json['variations'].push(vars);
+        //     }
+        // }
+        // console.log(body_json);
 
-        let val_publish = await apiML().requestEndPoint({
-            EndPoint: {
-                endpoint_parent: 'items',
-                endpointChild: 'validate',
-                body: body_json,
-            },
-        });
-        console.log(val_publish);
-        if (!val_publish.hasOwnProperty('reject')) {
-            aretha('#collapseThree').addClass('border-success');
-            // document.getElementById('item_id').setAttribute('value', `${val_publish.data.id}`);
-            setInterval(() => {
-                aretha('#collapseThree').removeClass('show');
-                aretha('#collapseThree').removeClass('border-success');
-                aretha('#collapseFour').addClass('show');
-            }, 1000);
-        } else {
-            aretha(e).addClass('border-danger');
-        }
+        // let val_publish = await apiML().requestEndPoint({
+        //     EndPoint: {
+        //         endpoint_parent: 'items',
+        //         endpointChild: 'validate',
+        //         body: body_json,
+        //     },
+        // });
+        // console.log(val_publish);
+        // if (!val_publish.hasOwnProperty('reject')) {
+        //     aretha('#collapseThree').addClass('border-success');
+        //     // document.getElementById('item_id').setAttribute('value', `${val_publish.data.id}`);
+        //     setInterval(() => {
+        //         aretha('#collapseThree').removeClass('show');
+        //         aretha('#collapseThree').removeClass('border-success');
+        //         aretha('#collapseFour').addClass('show');
+        //     }, 1000);
+        // } else {
+        //     aretha(e).addClass('border-danger');
+        // }
 
     });
     $('body').off('click', '#publish_send');

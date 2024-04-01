@@ -1,41 +1,4 @@
-/* 
-    format_value retorna el valor agregar establecindo el tipo de valor y formato correspodiente 
-    que se establesca mediante los valores obtenidos de los atributos
-    tag_value : key del valor si la type_struct es un objecto
-    value : valor a ingresar
-    value_type: tipo de dato al que se debe convrtir value
-    type_struc: si el formato del value debe ser un objecto o valor plano
-    value_id: id del value si al atributo lo  pose. 
-    id_attr: id del atributo que se agreara
-    
-*/
-function format_value(tag_value, value, value_type, type_struct, value_id = '', id_attr = '') {
-    let value_format;
 
-    if (value_type == 'number') {
-        value_format = parseInt(value);
-    } else if (value_type == 'boolean') {
-        value_format = (value.toLowerCase() === 'true');
-    } else {
-        value_format = value;
-    }
-
-    if (type_struct == 'object') {
-        value_format = `"${value}"`;
-        // console.log(value_format);
-        if (tag_value == 'attr') {
-            if (value == '') {
-                return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}"}`);
-            } else if (value_id == '') {
-                return JSON.parse(`{"id":"${id_attr}","value_name":${value_format}}`);
-            }
-            return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}","value_name":${value_format}}`);
-        }
-        return JSON.parse(`{"${tag_value}":${value_format}}`);
-    }
-
-    return value_format;
-}
 function verifity_error_request_server(json_data) {
     // if(json_data.hasOwnProperty('error')){
     //     if(json_data.error='validation_error'){
@@ -102,7 +65,7 @@ const apiML = (target) => ({
                 // console.log(response);
                 if (response.urlAuth.status == 'success') {
                     // console.log(response.url);
-                    window.open(response.urlAuth.url,'_self');
+                    window.open(response.urlAuth.url, '_self');
                 }
             },
             notfound: function (xhr) {
@@ -148,9 +111,9 @@ const apiML = (target) => ({
             }
         } else {
             // console.log(data);
-            if(data.length!==0){
+            if (data.length !== 0) {
                 return JSON.parse(data);
-            }else{
+            } else {
                 return Array();
             }
         }
@@ -160,14 +123,14 @@ const apiML = (target) => ({
         // console.log(data);
 
         if (data.status == 'warning') {
-            let msg='';
+            let msg = '';
             aretha('#error-title').html('Error al obtener informacion!');
 
-            if(data.endpoint_data.reject.hasOwnProperty('error')){
-                msg=`${msg} \n <p class="card-text"> Error: ${data.endpoint_data.reject.error}</p>`;
+            if (data.endpoint_data.reject.hasOwnProperty('error')) {
+                msg = `${msg} \n <p class="card-text"> Error: ${data.endpoint_data.reject.error}</p>`;
             }
-            if(data.endpoint_data.reject.hasOwnProperty('cause')){
-                msg=`${msg} \n <p class="card-text"> Causa: ${data.endpoint_data.reject.cause}</p>`;
+            if (data.endpoint_data.reject.hasOwnProperty('cause')) {
+                msg = `${msg} \n <p class="card-text"> Causa: ${data.endpoint_data.reject.cause}</p>`;
             }
             aretha('#error-body').html(`${msg}`);
             document.getElementById('card-error').hidden = false;
@@ -219,6 +182,16 @@ const apiML = (target) => ({
 
         return data.endpoint_data;
     },
+    /* 
+    format_value retorna el valor agregar establecindo el tipo de valor y formato correspodiente 
+    que se establesca mediante los valores obtenidos de los atributos
+    tag_value : key del valor si la type_struct es un objecto
+    value : valor a ingresar
+    value_type: tipo de dato al que se debe convrtir value
+    type_struc: si el formato del value debe ser un objecto o valor plano
+    value_id: id del value si al atributo lo  pose. 
+    id_attr: id del atributo que se agreara
+    */
     jsontargetize: () => {
         let json_endpoints_data = {
 
@@ -235,33 +208,50 @@ const apiML = (target) => ({
         let select_sndata = '';
 
         let items;
+        let format_value = (value, value_id = '') => {
+            let value_format;
+
+            if (type_value == 'number') {
+                value_format = parseInt(value);
+            } else if (type_value == 'boolean') {
+                value_format = (value.toLowerCase() === 'true');
+            } else {
+                value_format = value + value_unit;
+            }
+
+            if (struct_value == 'object' && key_value == 'attr') {
+                if (type_value == 'string' || type_value == '') {
+                    value_format = `"${value_format}"`;
+                }
+                // console.log(value_format);
+                if (value == '') {
+                    return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}"}`);
+                } else if (value_id == '') {
+                    return JSON.parse(`{"id":"${id_attr}","value_name":${value_format}}`);
+                }
+
+                return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}","value_name":${value_format}}`);
+            }
+
+            return value_format;
+        }
         let insert_value = (value_name, value_id = '') => {
 
-            let value_format = format_value(key_value, value_name + value_unit, type_value, struct_value, value_id, id_attr);
+            let value_format = format_value(value_name, value_id);
 
             if (type_endpoint == 'list') {
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = [];
                 }
+                json_endpoints_data[id_endpoint].push(value_format);
             } else if (type_endpoint == 'object') {
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = {};
                 }
-            }
-
-            if (struct_value  == 'object') {
-                json_endpoints_data[id_endpoint].push(value_format);
+                json_endpoints_data[id_endpoint][key_value] = value_format;
             } else {
-                if (Array.isArray(json_endpoints_data[id_endpoint])) {
-                    json_endpoints_data[id_endpoint].push(value_format);
-                } else if (typeof json_endpoints_data[id_endpoint] === 'object') {
-                    json_endpoints_data[id_endpoint][key_value] = value_format;
-                } else {
-                    json_endpoints_data[id_endpoint] = value_format;
-                }
-
+                json_endpoints_data[id_endpoint] = value_format;
             }
-
         }
         let mulit_values_insert = (value_id) => {
             let key_multi_vals = key_value.split('|');
@@ -404,26 +394,26 @@ const apiML = (target) => ({
         // console.log(data);
         if (typeof target !== 'undefined') {
             if (data.length != 0) {
-                let container_toast=document.getElementById(target);
-                let toast=null;
-                container_toast.innerHTML='';
+                let container_toast = document.getElementById(target);
+                let toast = null;
+                container_toast.innerHTML = '';
                 data.forEach((item) => {
                     // console.log(item);
-                    toast=document.createElement('div');
-                    toast.setAttribute('class','toast');
-                    toast.setAttribute( 'role','alert');
-                    toast.setAttribute('aria-live','assertive');
-                    toast.setAttribute('aria-atomic','true');
-                    let toast_innerHtml ='<div class="toast-header">' +
+                    toast = document.createElement('div');
+                    toast.setAttribute('class', 'toast');
+                    toast.setAttribute('role', 'alert');
+                    toast.setAttribute('aria-live', 'assertive');
+                    toast.setAttribute('aria-atomic', 'true');
+                    let toast_innerHtml = '<div class="toast-header">' +
                         `<strong class="me-auto">Notifiacion ML ${item.topic}</strong>` +
                         '<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>' +
                         '</div>' +
                         '<div class="toast-body">' +
-                        `<a class="btn btn-primary" role="button" resource="${item.resource}" topic="${item.topic}" id="btnAcNTMl">Ver contendo</a>`+
-                        '</div>' ;
-                    toast.innerHTML=toast_innerHtml;
+                        `<a class="btn btn-primary" role="button" resource="${item.resource}" topic="${item.topic}" id="btnAcNTMl">Ver contendo</a>` +
+                        '</div>';
+                    toast.innerHTML = toast_innerHtml;
                     container_toast.appendChild(toast);
-                    const new_toats=bootstrap.Toast.getOrCreateInstance(toast); 
+                    const new_toats = bootstrap.Toast.getOrCreateInstance(toast);
                     new_toats.show();
                 });
             }
@@ -442,35 +432,35 @@ apiML('container-toast').verifyNotify();
 $('body').off('click', '#btnAcNTMl');
 $('body').on('click', '#btnAcNTMl', async (e) => {
     e.preventDefault();
-    let pointersEndPoint={
-        'items':{
+    let pointersEndPoint = {
+        'items': {
             endpoint_parent: 'items',
             endpointChild: 'view',
-        },'orders_v2':{
+        }, 'orders_v2': {
             endpoint_parent: 'orders',
             endpointChild: 'orderId',
-        },'questions':{
+        }, 'questions': {
             endpoint_parent: 'q&a',
             endpointChild: 'queId',
-        },'payments':{
+        }, 'payments': {
             endpoint_parent: 'miscl',
             endpointChild: 'payments',
-        },'messages':{
+        }, 'messages': {
             endpoint_parent: 'messages',
             endpointChild: 'viewFmId',
-        },'claims':{
+        }, 'claims': {
             endpoint_parent: 'claims',
             endpointChild: 'viewClaim',
-        },'catalog_item_competition_status':{
+        }, 'catalog_item_competition_status': {
             endpoint_parent: 'items',
             endpointChild: 'lossViews',
-        },'catalog_suggestions':{
+        }, 'catalog_suggestions': {
             endpoint_parent: 'catalog',
             endpointChild: 'catalogSugg',
-        },'public_candidates':{
+        }, 'public_candidates': {
             endpoint_parent: 'promotions',
             endpointChild: 'candidates',
-        },'public_offers':{
+        }, 'public_offers': {
             endpoint_parent: 'promotions',
             endpointChild: 'offers',
         }
@@ -478,15 +468,15 @@ $('body').on('click', '#btnAcNTMl', async (e) => {
     let data_resource = e.target.getAttribute('resource');
     let data_topic = e.target.getAttribute('topic');
     console.log(`data resource {${data_resource}}, data topic {${data_topic}}`);
-    if(data_topic=='messages'){
-        data_resource=`/messages/${data_resource}`;
+    if (data_topic == 'messages') {
+        data_resource = `/messages/${data_resource}`;
     }
     let response = apiML().requestEndPoint({
         EndPoint: {
-            endpoint_parent:pointersEndPoint[data_topic].endpoint_parent,
+            endpoint_parent: pointersEndPoint[data_topic].endpoint_parent,
             endpointChild: pointersEndPoint[data_topic].endpointChild,
-            body:{
-                resource:data_resource
+            body: {
+                resource: data_resource
             }
 
         },
