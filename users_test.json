@@ -5,7 +5,12 @@
         "nickname": "TESTUSER2037808951",
         "site_status": "active",
         "password": "5As3rJ3AlL",
-        "type":"seller"
+        "type":"seller",
+        "list_grid":[
+            {
+                "id": "1624795"
+            }
+        ]
     },
     {
         "id": 1726421559,

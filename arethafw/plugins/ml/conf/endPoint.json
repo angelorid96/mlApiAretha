@@ -199,7 +199,7 @@
             "body":{},
             "method": "POST",
             "required": [
-                "none"
+                "site_id"
             ]
         },
         "putRowGrid": {

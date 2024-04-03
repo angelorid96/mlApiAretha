@@ -214,7 +214,12 @@ const apiML = (target) => ({
             if (type_value == 'number') {
                 value_format = parseInt(value);
             } else if (type_value == 'boolean') {
-                value_format = (value.toLowerCase() === 'true');
+                console.log(value);
+                if(typeof value !== 'boolean'){
+                    value_format = (value.toLowerCase() === 'true');
+                }else{
+                    value_format=value;
+                }   
             } else {
                 value_format = value + value_unit;
             }
@@ -231,6 +236,18 @@ const apiML = (target) => ({
                 }
 
                 return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}","value_name":${value_format}}`);
+            }else  if ((struct_value == 'object' && key_value == 'chart')||(struct_value == 'object' && key_value == 'chartV2')) {
+                if (type_value == 'string' || type_value == '') {
+                    value_format = `"${value_format}"`;
+                }
+                // console.log(value_format);
+                if (value == '') {
+                    return JSON.parse(`{"id":"${id_attr}","values":[{"id":"${value_id}"}]}`);
+                } else if (value_id == '') {
+                    return JSON.parse(`{"id":"${id_attr}","values":[{"name":${value_format}}]}`);
+                }
+
+                return JSON.parse(`{"id":"${id_attr}","values":[{"id":"${value_id}","name":${value_format}}]}`);
             }
 
             return value_format;
@@ -243,12 +260,37 @@ const apiML = (target) => ({
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = [];
                 }
-                json_endpoints_data[id_endpoint].push(value_format);
+                if(key_value=='chart'){
+                    if(index_row!=-1){
+                        
+                        if(json_endpoints_data[id_endpoint].at(index_row)!==undefined){
+                            json_endpoints_data[id_endpoint][index_row]["attributes"].push(value_format);
+                        }else{
+                            json_endpoints_data[id_endpoint].push({"attributes":[value_format]});
+                        }
+                    }else{
+                        if(json_endpoints_data[id_endpoint].at(index_row)!==undefined){
+                            json_endpoints_data[id_endpoint]["attributes"].push(value_format);
+                        }else{
+                            json_endpoints_data[id_endpoint]["attributes"]=[value_format];
+                        }
+                    }   
+                }else{
+                    json_endpoints_data[id_endpoint].push(value_format);
+                }
             } else if (type_endpoint == 'object') {
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = {};
                 }
-                json_endpoints_data[id_endpoint][key_value] = value_format;
+                if(key_value=='chart'){
+                    if(!json_endpoints_data[id_endpoint].hasOwnProperty("attributes")){
+                        json_endpoints_data[id_endpoint]["attributes"]=[value_format];
+                    }else{
+                        json_endpoints_data[id_endpoint]["attributes"].push(value_format);
+                    }
+                }else{
+                    json_endpoints_data[id_endpoint][key_value] = value_format;
+                }
             } else {
                 json_endpoints_data[id_endpoint] = value_format;
             }
@@ -269,6 +311,7 @@ const apiML = (target) => ({
             struct_value = '';
             value_unit = '';
             select_sndata = 'value';
+            index_row=-1;
             mulit_val = false;
 
             if (item_elm.hasAttribute('id-endpoint')) {
@@ -307,6 +350,9 @@ const apiML = (target) => ({
             }
             if (item_elm.hasAttribute('select-sndata')) {
                 select_sndata = item_elm.getAttribute('select-sndata');
+            }  
+            if (item_elm.hasAttribute('row-index')) {
+                index_row = parseInt(item_elm.getAttribute('row-index'));
             }
         }
 

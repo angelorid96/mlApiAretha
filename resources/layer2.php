@@ -243,6 +243,7 @@ if ($isExpireTK['value']) {
                             <div class="card-header text-center col-md-12">
                                 <div class="row justify-content-md-center">
                                     <div class="col-md-8 text-center"><span class="h4" id="nameForCharts"></span></div>
+                                    <div class="col-md-8 d-none text-center" id="genderForCharts"></div>
                                     <div class="col-md-2 align-self-end"> <button class="btn btn-outline-secondary" type="button" id="add_charts_row">agregar fila</button></div>
                                     <div class="col-md-2 align-self-end"> <button class="btn btn-outline-secondary" type="button" id="del_charts_row">eliminar fila</button></div>
                                 </div>
@@ -261,11 +262,14 @@ if ($isExpireTK['value']) {
                         </div>
                         <div class="col-md-12">
                             <div class="row justify-content-md-start">
-                                <div class="col-md-2">
-                                    <button class="btn btn-outline-secondary" type="button" id="get_attr_grid_layout">Consultar atributos</button>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-secondary" type="button" id="get_attr_grid_layout">Buscar guias existentes</button>
                                 </div>
                                 <div class="col-md-4">
                                     <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#chartsModal" type="button" id="add_attr_grid_layout">Crear guia de tallas perzsonalizada</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-secondary" type="button" id="asc_attr_grid_layout">Asociar guia personalizada</button>
                                 </div>
                                 <div class="modal fade" id="chartsModal" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
@@ -380,6 +384,8 @@ if ($isExpireTK['value']) {
     let list_attr_charts = [];
     let dyRow_attr_chart = null;
     let tableCharts = null;
+    let main_attr_grid = null;
+    let grid_row_id = null;
 
     let select_variation_attr = document.createElement('select');
     select_variation_attr.setAttribute('class', 'form-select');
@@ -1658,17 +1664,18 @@ if ($isExpireTK['value']) {
     $('body').off('click', '#get_attr_grid_layout');
     $('body').on('click', '#get_attr_grid_layout', async (e) => {
         e.preventDefault();
-        let body_json = apiML('.apiML-tdCharts').jsontargetize();
+        // let body_json = apiML('.apiML-tdCharts').jsontargetize();
+        // console.log(body_json);
+        let body_json = apiML('.apiML-charts').jsontargetize();
         console.log(body_json);
-        // let chart_attrs = await apiML().requestEndPoint({
-        //     EndPoint: {
-        //         endpoint_parent: 'catalog',
-        //         endpointChild: 'searchChars',
-        //         body: body_json,
-        //     },
-        // });
-        // console.log(chart_attrs);
-
+        let chart_attrs = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'catalog',
+                endpointChild: 'searchChars',
+                body: body_json,
+            },
+        });
+        console.log(chart_attrs);
     });
     $('body').off('click', '#add_attr_grid_layout');
     $('body').on('click', '#add_attr_grid_layout', async (e) => {
@@ -1691,31 +1698,34 @@ if ($isExpireTK['value']) {
             let tmp_col = '';
             // console.log(element.label != 'BRAND');
             if (element.label != 'Marca') {
-                if (element.label == 'Género') {
-                    tmp_col = '<div class="col-md-4">' +
-                        ' <div class="form-check form-switch">' +
-                        `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${element.label}" checked disabled>` +
-                        `<label class="form-check-label" >${element.label}</label>` +
-                        '</div>' +
-                        '</div>';
-                } else if (element.attributes[0].tags.includes('main_attribute_candidate')) {
-                    tmp_col = '<div class="col-md-4">' +
-                        ' <div class="form-check form-switch">' +
-                        `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${element.label}" checked disabled>` +
-                        `<label class="form-check-label" >${element.label}</label>` +
-                        '</div>' +
-                        '</div>';
-                } else {
-                    tmp_col = '<div class="col-md-4">' +
-                        ' <div class="form-check form-switch">' +
-                        `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${element.label}">` +
-                        `<label class="form-check-label" >${element.label}</label>` +
-                        '</div>' +
-                        '</div>';
-                }
+                element.attributes.forEach((item) => {
+                    let tmp_col = '';
+                    if (item.id == 'GENDER') {
+                        tmp_col = '<div class="col-md-4">' +
+                            ' <div class="form-check form-switch">' +
+                            `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${item.id}" checked disabled>` +
+                            `<label class="form-check-label" >${item.name}</label>` +
+                            '</div>' +
+                            '</div>';
+                    } else if (item.tags.includes('main_attribute_candidate')) {
+                        tmp_col = '<div class="col-md-4">' +
+                            ' <div class="form-check form-switch">' +
+                            `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${item.id}" checked disabled>` +
+                            `<label class="form-check-label" >${item.name}</label>` +
+                            '</div>' +
+                            '</div>';
+                    } else {
+                        tmp_col = '<div class="col-md-4">' +
+                            ' <div class="form-check form-switch">' +
+                            `<input class="form-check-input" type="checkbox" id="checkAttrCharts" value="${item.id}">` +
+                            `<label class="form-check-label" >${item.name}</label>` +
+                            '</div>' +
+                            '</div>';
+                    }
+                    all_cols = `${all_cols} \n ${tmp_col}`;
+                    list_attr_charts.push(item);
 
-                all_cols = `${all_cols} \n ${tmp_col}`;
-                list_attr_charts.push(element);
+                });
             }
         });
         all_cols = `${all_cols} \n <div class="col-md-12 pt-3">` +
@@ -1734,78 +1744,107 @@ if ($isExpireTK['value']) {
         // console.log(attr_table_charts);
         document.getElementById('nameForCharts').innerHTML = document.getElementById('nameCharts').value;
         document.getElementById('panel_charts').hidden = false;
+
         //  console.log(list_attr_charts);
         attr_table_charts.forEach((element) => {
-            if (element.checked && element.value != 'Género') {
+            if (element.checked) {
                 // console.log(element);
                 let index_attr_chart = list_attr_charts.findIndex((item) => {
                     // console.log(element);
-                    if (element.value == item.label) {
+                    if (element.value == item.id) {
                         return item;
                     }
                 });
+                // console.log(index_attr_chart);
                 let input = null;
                 let attr_chart = list_attr_charts[index_attr_chart];
-                attr_chart.attributes.forEach((attr) => {
-                    if (attr.value_type == 'list') {
+                // console.log(attr_chart);
+
+                if (attr_chart.id == 'GENDER') {
+
+                    input = document.createElement('input');
+                    input.setAttribute('class', 'form-control apiML-tdCharts');
+                    input.setAttribute('type', 'text');
+                    input.setAttribute('id-attr', `${attr_chart.id}`);
+                    input.setAttribute('value-id', `${attr_chart.values[0].id}`);
+                    input.setAttribute('value', `${attr_chart.values[0].name}`);
+                    input.setAttribute('id-endpoint', 'attributes');
+                    input.setAttribute('type-endpoint', 'list');
+                    input.setAttribute('type-struct', 'object');
+                    input.setAttribute('value-type', 'string');
+                    input.setAttribute('tag-var', 'chartV2');
+                    input.disabled = true;
+                    document.getElementById('genderForCharts').appendChild(input);
+
+                } else {
+                    if (attr_chart.value_type == 'list') {
                         input = document.createElement('select');
-                        input.setAttribute('class', 'form-select');
-                        input.setAttribute('id-attr', `${attr.id}`);
-                        input.setAttribute('id-endpoint', 'attributes');
+                        input.setAttribute('class', 'form-select apiML-tdCharts');
+                        input.setAttribute('id-attr', `${attr_chart.id}`);
+                        if (attr_chart.tags.includes('main_attribute_candidate')) {
+                            main_attr_grid=attr_chart.id;
+                        }
+                        input.setAttribute('id-endpoint', 'rows');
                         input.setAttribute('type-endpoint', 'list');
                         input.setAttribute('type-struct', 'object');
+                        input.setAttribute('row-index', '0');
+
                         input.setAttribute('value-type', 'string');
-                        input.setAttribute('tag-var', 'attr');
                         input.setAttribute('select-sndata', 'all');
-                        for (let index_val = 0; index_val < attr.values.length; index_val++) {
+                        input.setAttribute('tag-var', 'chart');
+                        for (let index_val = 0; index_val < attr_chart.values.length; index_val++) {
                             let op_sel = document.createElement('option');
-                            op_sel.setAttribute('value', `${attr.values[index_val].id}`);
-                            op_sel.appendChild(document.createTextNode(`${attr.values[index_val].name}`));
+                            op_sel.setAttribute('value', `${attr_chart.values[index_val].id}`);
+                            op_sel.appendChild(document.createTextNode(`${attr_chart.values[index_val].name}`));
                             input.appendChild(op_sel);
                         }
                         data_table.push(`${input.outerHTML}`);
                     } else {
                         let group_div = document.createElement('div');
                         input = document.createElement('input');
-                        input.setAttribute('class', 'form-control  apiML-param');
-                        input.setAttribute('type', 'text');                        
-                        input.setAttribute('id-attr', `${attr.id}`);
-                        input.setAttribute('id-endpoint', 'attributes');
+                        input.setAttribute('class', 'form-control apiML-tdCharts');
+                        input.setAttribute('type', 'text');
+                        input.setAttribute('id-attr', `${attr_chart.id}`);
+                        if (attr_chart.tags.includes('main_attribute_candidate')) {
+                            main_attr_grid=attr_chart.id;
+                        }
+                        input.setAttribute('id-endpoint', 'rows');
                         input.setAttribute('type-endpoint', 'list');
                         input.setAttribute('type-struct', 'object');
+                        input.setAttribute('row-index', '0');
                         input.setAttribute('value-type', 'string');
-                        input.setAttribute('tag-var', 'attr');
+                        input.setAttribute('tag-var', 'chart');
 
-                        if (attr.hasOwnProperty('units')) {
+                        if (attr_chart.hasOwnProperty('units')) {
                             input.setAttribute('need-unit', 'y');
 
                             group_div.setAttribute('class', 'input-group mb-3');
                             let sl_units = document.createElement('select');
                             sl_units.setAttribute('class', 'form-select');
-                            sl_units.setAttribute('id', `${attr.id}_unit`);
-                            for (let index_val = 0; index_val < attr.units.length; index_val++) {
+                            sl_units.setAttribute('id', `${attr_chart.id}_unit`);
+                            for (let index_val = 0; index_val < attr_chart.units.length; index_val++) {
                                 let op_units = document.createElement('option');
-                                op_units.setAttribute('value', `${attr.units[index_val].id}`);
-                                op_units.appendChild(document.createTextNode(`${attr.units[index_val].name}`));
+                                op_units.setAttribute('value', `${attr_chart.units[index_val].id}`);
+                                op_units.appendChild(document.createTextNode(`${attr_chart.units[index_val].name}`));
                                 sl_units.appendChild(op_units);
                             }
                             group_div.appendChild(input);
                             group_div.appendChild(sl_units);
-                            data_table.push(`${input.outerHTML}`);
+                            data_table.push(`${group_div.outerHTML}`);
                         } else {
                             data_table.push(`${input.outerHTML}`);
                         }
                     }
-                });
-                head_table = `${head_table} \n <th>${attr_chart.label}</th>`;
+                    head_table = `${head_table} \n <th>${attr_chart.name}</th>`;
+                }
             }
         });
         head_table = `${head_table} \n </th>`;
         document.getElementById('headChart').innerHTML = head_table;
         // console.log(data_table);
-        dyRow_attr_chart=data_table;
-        tableCharts= new DataTable('#tableCharts',{
-            data:Array(data_table),
+        dyRow_attr_chart = data_table;
+        tableCharts = new DataTable('#tableCharts', {
+            data: Array(data_table),
             paging: false,
             searching: false
         });
@@ -1813,15 +1852,57 @@ if ($isExpireTK['value']) {
     $('body').off('click', '#add_charts_row');
     $('body').on('click', '#add_charts_row', (e) => {
 
+        for (let index = 0; index < dyRow_attr_chart.length; index++) {
+            dyRow_attr_chart[index] = dyRow_attr_chart[index].replace(`row-index="${(tableCharts.data().length-1)}"`, `row-index="${tableCharts.data().length}"`);
+            // console.log(dyRow_attr_chart[index].includes('id-endpoint="main_attribute"'));
+            if (dyRow_attr_chart[index].includes('id-endpoint="main_attribute"')) {
+                // console.log(dyRow_attr_chart[index].replace('class="form-control apiML-tdCharts"','class="form-select"'));
+                if (dyRow_attr_chart[index].includes('form-control')) {
+                    dyRow_attr_chart[index] = dyRow_attr_chart[index].replace('class="form-control apiML-tdCharts"', 'class="form-control"');
+                } else {
+                    dyRow_attr_chart[index] = dyRow_attr_chart[index].replace('class="form-select apiML-tdCharts"', 'class="form-select"');
+                }
+            }
+        }
+        // dyRow_attr_chart.forEach((item)=>{
+        //     item.replace(`row-index="${(tableCharts.data().length-1)}"`,`row-index="${tableCharts.data().length}"`);
+        // });
         tableCharts.row.add(dyRow_attr_chart).draw(false);
 
     });
     $('body').off('click', '#del_charts_row');
     $('body').on('click', '#del_charts_row', (e) => {
-        let index_table_chart=(tableCharts.data().length-1);
-        if(index_table_chart>0){
+        let index_table_chart = (tableCharts.data().length - 1);
+        if (index_table_chart > 0) {
             tableCharts.rows(index_table_chart).remove().draw(false);
         }
+
+    });
+    $('body').off('click', '#asc_attr_grid_layout');
+    $('body').on('click', '#asc_attr_grid_layout', async (e) => {
+        e.preventDefault();
+        let body_json = apiML('.apiML-tdCharts').jsontargetize();
+        console.log(body_json);
+        body_json['domain_id'] = document.getElementById('domain_id').value.replace('MLM-', '');
+        // console.log(body_json['main_attribute']);
+        body_json['main_attribute']={'attributes':[{  'site_id':'MLM','id':main_attr_grid}]};
+
+        // body_json['site_id']="MLM";
+        console.log(body_json);
+        // let response = await apiML().requestEndPoint({
+        //     EndPoint: {
+        //         endpoint_parent: 'site',
+        //         endpointChild: 'createGrid',
+        //         body: body_json,
+        //     },
+        // });
+
+        // console.log(response);
+        // grid_row_id = {
+        //     "id": "SIZE_GRID_ROW_ID",
+        //     "value_id": "11286240",
+        //     "value_name": response.id
+        // }
 
     });
 
@@ -1868,16 +1949,19 @@ if ($isExpireTK['value']) {
 
         let body_json = apiML('.apiML-param').jsontargetize();
         body_json['buying_mode'] = "buy_it_now";
-        console.log(body_json);
-        // if (count_variations_add > 0) {
-        //     body_json['variations'] = [];
-        //     for (let index = 1; index <= count_variations_add; index++) {
-        //         let vars = apiML(`.apiML-param-var${index}`).jsontargetize();
-        //         // console.log(vars);
-        //         body_json['variations'].push(vars);
-        //     }
-        // }
         // console.log(body_json);
+        if (count_variations_add > 0) {
+            body_json['variations'] = [];
+            for (let index = 1; index <= count_variations_add; index++) {
+                let vars = apiML(`.apiML-param-var${index}`).jsontargetize();
+                // console.log(vars);
+                body_json['variations'].push(vars);
+            }
+        }
+        if (dyRow_attr_chart !== null) {
+            body_json['attributes'].push(grid_row_id);
+        }
+        console.log(body_json);
 
         // let val_publish = await apiML().requestEndPoint({
         //     EndPoint: {
