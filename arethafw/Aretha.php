@@ -28,6 +28,8 @@ $arethaPaths = array();
 
 spl_autoload_register(
 	function ($theclass) {
+
+		// var_dump($theclass);
 		$arethaPaths = array(
 			"./",
 			"../",

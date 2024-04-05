@@ -29,8 +29,15 @@ if ($tmp_json != null) {
     $log_file = json_decode(file_get_contents('request.json'), true);
     // $header_dunp=print_r($all_headers,true);
     // $response_dunp=print_r($tmp_json,true);
-    array_push($log_file, $tmp_json);
+    // var_dump($log_file);
+    if($log_file['notis']==null){
+        $log_file['notis']=array();
+    }
+    array_push($log_file['notis'], $tmp_json);
+    $log_file['offset']+=1;
     // $fp = file_put_contents( 'request.log', $header_dunp);
+
+    // var_dump($log_file);
     file_put_contents('request.json', json_encode($log_file));
     // file_put_contents('request.json', json_encode($all_headers));
 
@@ -39,3 +46,4 @@ if ($tmp_json != null) {
     // var_dump($tmp_json);
 
 }
+?>

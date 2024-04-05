@@ -2,6 +2,7 @@
 include "../arethafw/Aretha.php";
 Aretha::allErrors();
 Aretha::sessionStart();
+// Aretha::loadPlugin('ml');
 ?>
 <div class="row" id="">
     <div class="col-md-12">

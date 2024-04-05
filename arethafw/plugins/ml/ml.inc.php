@@ -3,7 +3,7 @@ $afPluginConf = '
 {
 	"name":"ml",
     "javascript": [
-        "loadApiJs.js" 
+        "toolsApiML.js" 
     ], 
     "css": [
      

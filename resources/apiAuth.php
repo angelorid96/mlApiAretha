@@ -37,7 +37,7 @@ if (isset($_REQUEST['code']) && $_REQUEST['code'] != '') {
             $_SESSION['nickname']=$oApiToken->getPO()->getNickname();
             $_SESSION['user_id']=$oApiToken->getPO()->getUser_id();
             // header('Location:../');
-        header('Location:../');
+        // header('Location:../');
     }else{
         if($oApiToken->insert()){
             // echo 'debug';

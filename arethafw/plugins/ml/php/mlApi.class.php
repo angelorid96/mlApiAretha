@@ -1,5 +1,5 @@
 <?php
-// namespace aretha\plugins;
+
 class mlApi
 {
 
@@ -23,9 +23,9 @@ class mlApi
     //===================================================================================================
     public static function init($iniFile = "")
     {
-        $current_file_path = dirname(__FILE__,2);
-        $path_endpoints=sprintf('%s%sconf%s%s',$current_file_path,DIRECTORY_SEPARATOR,DIRECTORY_SEPARATOR,'endPoint.json');
-        
+        $current_file_path = dirname(__FILE__, 2);
+        $path_endpoints = sprintf('%s%sconf%s%s', $current_file_path, DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, 'endPoint.json');
+
         mlApi::$list_endPoints = json_decode(file_get_contents($path_endpoints), true);
         if (trim($iniFile) != "" && mlApi::endsWith($iniFile, ".ini")) {
             if (is_file($iniFile)) {
@@ -96,6 +96,34 @@ class mlApi
         }
         return array_keys($array) === range(0, count($array) - 1);
     }
+    /*  
+            getEndPointChild
+
+            Retorna un objecto (array asoc) con los datos para relizar un reqeust a la api de ML segun el EndPoint a consumir.
+
+            {
+                "name":"",
+                "url": "",
+                "params_url": {
+                    
+                }
+                "headers": [
+
+                ],
+                "body": {
+                },
+                "allowed_files": [
+                    
+                 ],
+                "method": "POST|GET|PUT",
+                "required": [
+
+                ]
+            }
+            
+            Estructura del objeto retornadado, algunas propiedades pueden no estar disponiles segun requiera el EndPoint
+
+    */
     public static function getEndPointChild($endPoint_parent, $endPoint)
     {
         // echo $endPoint;
@@ -104,10 +132,22 @@ class mlApi
         }
         return false;
     }
+    /*  
+           exist_endPoint
+
+           retorna si existe la clave padre que engloba un EndPoint
+
+    */
     public static function exist_endPoint($key_endPoint)
     {
         return key_exists($key_endPoint, mlApi::$list_endPoints);
     }
+    /*  
+           exist_endPoint_child
+
+           retorna si existe el EndPoint en un contenedor padre
+
+    */
     public static function exist_endPoint_Child($endPoint_parent, $endPoint)
     {
         if (key_exists($endPoint_parent, mlApi::$list_endPoints)) {
@@ -115,10 +155,22 @@ class mlApi
         }
         return false;
     }
+    /*  
+           getUrlAuth
+
+           retorna la  URL para autenticarse con ML y dar persimo a la app
+
+    */
     public static function getUrlAuth($endPoint)
     {
         return sprintf(mlApi::getEndPointChild('auth', $endPoint), mlApi::getClient_id(), mlApi::getUrl_redirect());
     }
+    /*  
+           getNames_endpoints
+
+           retorna un un diccionario con los titulos del contenedor padre y nombres(Propiedad name; que hace cada EndPoint) de los EndPoint que contenidos
+
+    */
     public static function getNames_endpoints($keys_endpoints)
     {
         $tmpKeys_menu = array();
@@ -136,6 +188,12 @@ class mlApi
         }
         return $tmpKeys_menu;
     }
+    /*  
+           data_required
+
+           retorna un array de datos que son necesarios enviar. informacion referente el id del usuario de ML, sitio del usurario,token, etc. 
+
+    */
     public static function data_required($endPoint_parent, $endPoint)
     {
         // echo $endPoint;
@@ -146,17 +204,40 @@ class mlApi
         }
         return false;
     }
-    // ===================================================================================================
-    // ===================================================================================================
-    // request endpoint API ML  -> return array associative
-    // ===================================================================================================
-    // ===================================================================================================
-    // $data_json={
-    //     'endpoint_parent'=> 'key endPoint request',
-    //     'endpointChild'=> 'name endPoint request',
-    //     'body'=>  'array(key=>parm1,key=>parm2,....)', array asociativo de parametros a remplazar en la url o enviar por body al endpoit
-    //     'access_token'=> 'token', token del cliente si es requerido. si no es requeerido dejar un cadena vacia 
-    // }
+   /*  
+           request_endPoint
+
+           retorna la repuesta del request al EndPoint de la api de ML
+
+           recibe un objecto (arra asoc) con la siguiente estructura
+           {
+            "endpoint_parent":"",
+            "endpointChild":"",
+            "body":[
+
+            ],
+            "access_token":"",
+            "filters_orders":{
+
+            }
+           } 
+           
+           la propiedad filters_orders puede no ser enviada ya que esta esta relacionada a la paginacion no admitidad en todos los EndPoints
+
+           todos los datos deeberan ser guardados en la propiedad body ya sean parametros por url o que iran en el cuerpo de la solicitud
+           
+           en caso de un error por apuntar un EndPoint no existente o que la api de ML retorne un error. se retornara un objeto (array asoc)
+           con la propiedad la clave reject donde se podran econtrar detalles de la caura o error. 
+
+           la propierdad  resource contenida den body se utiliza para el sistema de notifiaciones de ML. es un dato que la api de ML
+           envia por medio de un callback. estan se contiene en el log.json estructura 
+           {
+            "total":10,
+            "last_count":1,
+            notis:[]
+           } 
+
+    */
     public static function request_endPoint($data_json)
     {
         $isFile = false;
@@ -189,18 +270,18 @@ class mlApi
             if ($endPoint !== false) {
 
                 // var_dump($data_json);
-                if (key_exists('body', $data_json) && key_exists('resource',$data_json['body']) ) {
-                    if(key_exists('params_url',$endPoint)){
-                        $urltmp =sprintf('https://api.mercadolibre.com%s?params',$data_json['body']['resource']);
-                    }else{
-                        $urltmp =sprintf('https://api.mercadolibre.com%s',$data_json['body']['resource']);
+                if (key_exists('body', $data_json) && key_exists('resource', $data_json['body'])) {
+                    if (key_exists('params_url', $endPoint)) {
+                        $urltmp = sprintf('https://api.mercadolibre.com%s?params', $data_json['body']['resource']);
+                    } else {
+                        $urltmp = sprintf('https://api.mercadolibre.com%s', $data_json['body']['resource']);
                     }
                     unset($data_json['body']['resource']);
-                }else{
+                } else {
                     $urltmp = $endPoint['url'];
                 }
-                
-                
+
+
                 if (key_exists('params_url', $endPoint)) {
                     if (key_exists('body', $data_json)) {
                         foreach (array_keys($data_json['body']) as $key) {
@@ -225,7 +306,7 @@ class mlApi
                                 }
                             }
                         }
-                    } 
+                    }
                     if ($endPoint['required'][0] != 'none') {
                         foreach ($endPoint['required'] as $item) {
                             if (array_search($item, $endPoint['params_url'])) {
@@ -238,8 +319,8 @@ class mlApi
                             }
                         }
                     }
-                    if(key_exists('access_token',$endPoint['params_url'])){
-                        $endPoint['params_url']['access_token']=$data_json['access_token'];
+                    if (key_exists('access_token', $endPoint['params_url'])) {
+                        $endPoint['params_url']['access_token'] = $data_json['access_token'];
                     }
                     $urltmp = str_replace('params', http_build_query($endPoint['params_url']), $urltmp);
                 }
@@ -269,7 +350,7 @@ class mlApi
                                     $endPoint['body'][$item] = mlApi::getClient_secret();
                                 }
                             }
-                        }else if ($item == 'redirect_uri') {
+                        } else if ($item == 'redirect_uri') {
                             if (array_key_exists('body', $endPoint)) {
                                 if (key_exists($item, $endPoint['body'])) {
                                     $endPoint['body'][$item] = mlApi::getUrl_redirect();
@@ -285,7 +366,7 @@ class mlApi
                         // foreach (array_keys($data_json['body']) as $key) {
                         //     $endPoint['body'][$key] = $data_json['body'][$key];
                         // }
-                        $endPoint['body']=array_merge($endPoint['body'],$data_json['body']);
+                        $endPoint['body'] = array_merge($endPoint['body'], $data_json['body']);
                     }
                 }
 
@@ -295,12 +376,12 @@ class mlApi
                 // echo '<br>';
 
                 if (array_key_exists('filters_orders', $data_json)) {
-                    if(key_exists('params_url', $endPoint)){
-                        $urltmp = sprintf('%s&%s',$urltmp, http_build_query($data_json['filters_orders']));
+                    if (key_exists('params_url', $endPoint)) {
+                        $urltmp = sprintf('%s&%s', $urltmp, http_build_query($data_json['filters_orders']));
                         unset($endPoint['params_url']);
                         // unset($data_json['filters_orders']);
-                    }else{
-                        $urltmp = sprintf('%s?%s',$urltmp, http_build_query($data_json['filters_orders']));
+                    } else {
+                        $urltmp = sprintf('%s?%s', $urltmp, http_build_query($data_json['filters_orders']));
                         // unset($data_json['filters_orders']);
                     }
                 }
@@ -345,20 +426,19 @@ class mlApi
                 // var_dump($response);
                 $response = json_decode(substr($response, $header_size), true);
                 // var_dump($response);
-                if($response=== null){
-                    $response=array();
+                if ($response === null) {
+                    $response = array();
                 }
-                
-                if(key_exists('groups',$response) || key_exists('input',$response) ){
-                    if(key_exists('input',$response) ){
-                        $response=$response['input'];
+
+                if (key_exists('groups', $response) || key_exists('input', $response)) {
+                    if (key_exists('input', $response)) {
+                        $response = $response['input'];
                     }
-                    if(array_is_list($response['groups']) && count($response['groups'])==1){
-                        $response=$response['groups'][0];
-                    }else{
-                        $response=$response['groups'];
+                    if (array_is_list($response['groups']) && count($response['groups']) == 1) {
+                        $response = $response['groups'][0];
+                    } else {
+                        $response = $response['groups'];
                     }
-                    
                 }
 
                 if (key_exists('error', $response)) {
@@ -366,7 +446,7 @@ class mlApi
                         'reject' => array(
                             'status' => 'fail',
                             'error' => $response['message'],
-                            'cause' => (key_exists('cause',$response))?$response['cause']:$response['error'],
+                            'cause' => (key_exists('cause', $response)) ? $response['cause'] : $response['error'],
                         ),
                     );
                 } else {
@@ -389,3 +469,5 @@ class mlApi
         );
     }
 }
+
+?>

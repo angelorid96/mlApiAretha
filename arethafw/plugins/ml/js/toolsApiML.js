@@ -183,14 +183,26 @@ const apiML = (target) => ({
         return data.endpoint_data;
     },
     /* 
-    format_value retorna el valor agregar establecindo el tipo de valor y formato correspodiente 
-    que se establesca mediante los valores obtenidos de los atributos
-    tag_value : key del valor si la type_struct es un objecto
-    value : valor a ingresar
-    value_type: tipo de dato al que se debe convrtir value
-    type_struc: si el formato del value debe ser un objecto o valor plano
-    value_id: id del value si al atributo lo  pose. 
-    id_attr: id del atributo que se agreara
+    onbtencion de los datos de los campos de formulario y conversion a formato json para enviar como body al EndpOint de ML
+    atributos de un elemento y funcion
+    id-endpoint -> estabece la clave a la cual se asociara un valor  yasea un objecto, vector o dato simple si no existe el atributo el se asiganra el valor de id
+    id-attr-> valor id que espesificara el campo al que se asignara esto es empleado por ML si noesite la propiedad tomara el valor de id
+    type-endpoint -> tipo de estructura que contendra la llave id-endPoint podra ser un la lista, objecto o dato simple
+    value-type -> tipo de dato a convertir para el valor del campo del formulario number para numeros, boolean para valor logico y string para tipo texto 
+    tag-var-> clave para asociar el valor del campo del formulacio cuando la estructtura del valor es un objecto, se emplea con el valor "attr"
+    cuando el id-endPoint contendra los atributos de un producto o una estructura similar.
+    el valor "chart"  cambiara la estructura de valor para el formato de las propiedades de la guia de tallas espesifico para las filas
+    el valor "chartV2"  cambia la estructura del valor para el atributo de la guia de tallas
+
+    type-struct-> si la estructura del valor del campo del formulari sera un objecto o un dato simple
+    need-unit -> agrega caracter de medida al valor del campo de formulario. ej cm, ", ft, etc.
+    multi-val -> establece si un elemento select contendra multiples valores a ingresar estos deberan estar separados por el caracter | 
+    para los atributos value y tag-var no valido para estructuras tipo attr.
+    select-sndata ->  indica que valores se utilizaran para agregar de n  el elemento select, "all" para obtener valor del atributo value y html del option
+     "value" para obtener solo para obtener el value del atributo option y "text" para obtener solo el valor html del elemento option
+    value-id -> para indicar el valor del value_id que es utilizado en los attributos u otras propiedades. esto para elementos input text 
+    del cual el valor ya tenga asociado un id esto lo propociona la api ML
+    row-index -> indice posicion para guia de tallas con este se agregaran las propieades correspondienes a cada fila nueva
     */
     jsontargetize: () => {
         let json_endpoints_data = {
@@ -199,7 +211,6 @@ const apiML = (target) => ({
         let id_endpoint = '';
         let type_endpoint = '';
         let key_value = '';
-        let id_value = '';
         let type_value = '';
         let struct_value = '';
         let id_attr = '';
@@ -439,11 +450,11 @@ const apiML = (target) => ({
         let data = await apiML().get({}, 'resources/verifyLogNotify.php');
         // console.log(data);
         if (typeof target !== 'undefined') {
-            if (data.length != 0) {
+            if (data.notis.length != 0) {
                 let container_toast = document.getElementById(target);
                 let toast = null;
                 container_toast.innerHTML = '';
-                data.forEach((item) => {
+                data.notis.forEach((item) => {
                     // console.log(item);
                     toast = document.createElement('div');
                     toast.setAttribute('class', 'toast');
@@ -466,11 +477,11 @@ const apiML = (target) => ({
         }
     }
 });
-// function loopNotiFy(){
-//     setInterval(() => {
-//         apiML('container-toast').verifyNotify();
-//     }, 60000);
-// }
+function loopNotiFy(){
+    setInterval(() => {
+        apiML('container-toast').verifyNotify();
+    }, 6000);
+}
 
 apiML('container-toast').verifyNotify();
 // loopNotiFy();
