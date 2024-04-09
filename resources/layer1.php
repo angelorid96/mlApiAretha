@@ -82,29 +82,7 @@ Aretha::sessionStart();
         e.preventDefault();
         apiML().post({}, 'resources/layer2.php', '#body-api', true);
         document.getElementById('body-api').hidden = false;
-        // apiML('#body-api').requestEndPoint({
-        //     EndPoint: {
-        //         endpoint_parent: 'users',
-        //         endpointChild: 'userID',
-        //     },
-        //     urlPage: 'html/userInfo.html',
-        //     listIdPage: {
-        //         'card-header-name': ['first_name', 'last_name'],
-        //         'data-email': 'email',
-        //         'data-tel': {
-        //             'phone': 'number'
-        //         },
-        //         'data-dni': {
-        //             'identification': 'number'
-        //         },
-        //         'data-dir1': {
-        //             'address': 'address'
-        //         },
-        //         'data-dir2': {
-        //             'address': ['city', 'state', 'zip_code']
-        //         },
-        //     },
-        // });
+        
     });
     $('body').off('click', '#listItems');
     $('body').on('click', '#listItems', (e) => {

@@ -161,9 +161,9 @@ class mlApi
            retorna la  URL para autenticarse con ML y dar persimo a la app
 
     */
-    public static function getUrlAuth($endPoint)
+    public static function getUrlAuth()
     {
-        return sprintf(mlApi::getEndPointChild('auth', $endPoint), mlApi::getClient_id(), mlApi::getUrl_redirect());
+        return sprintf(mlApi::getEndPointChild('auth','auth'), mlApi::getClient_id(), mlApi::getUrl_redirect());
     }
     /*  
            getNames_endpoints

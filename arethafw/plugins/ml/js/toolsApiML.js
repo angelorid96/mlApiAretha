@@ -1,13 +1,3 @@
-
-function verifity_error_request_server(json_data) {
-    // if(json_data.hasOwnProperty('error')){
-    //     if(json_data.error='validation_error'){
-    //         json.data.cause
-    //     }else{
-
-    //     }
-    // }
-}
 const apiML = (target) => ({
 
     //isAuth proporciona un menu Nav utilizando bootstrap con los endpoints que quiera mostrar
@@ -24,7 +14,7 @@ const apiML = (target) => ({
             valid_user_authenticatio
             required_authenticatio
     */
-    isAuth: async (confDomJson) => {
+    isAuth: async (confDomJson, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
         const response = await fetch('arethafw/plugins/ml/php/isAuthToken.php', {
             method: 'POST',
             headers: {
@@ -32,20 +22,28 @@ const apiML = (target) => ({
             },
             body: JSON.stringify(confDomJson),
         });
-        const data = await response.json();
-        // console.log(data);
-        if (typeof document.getElementById(target) === 'object') {
-            if ('html' in data.isAuth) {
-                if (data.isAuth.status != 'fail') {
-                    aretha(target).html(aretha(target).html() + data['isAuth']['html']);
+        if (response.status == 404) {
+            const failPage = await fetch(pageNotFound.url, {
+                method: 'GET'
+            });
+            document.getElementById(pageNotFound.target).innerHTML = await failPage.text();
+
+        } else {
+            const data = await response.json();
+            // console.log(data);
+            if (typeof document.getElementById(target) === 'object') {
+                if ('html' in data.isAuth) {
+                    if (data.isAuth.status != 'fail') {
+                        aretha(target).html(aretha(target).html() + data['isAuth']['html']);
+                    } else {
+                        aretha(target).html(data['isAuth']['html']);
+                    }
                 } else {
-                    aretha(target).html(data['isAuth']['html']);
+                    return data.isAuth;
                 }
             } else {
                 return data.isAuth;
             }
-        } else {
-            return data.isAuth;
         }
     },
     /*
@@ -54,26 +52,49 @@ const apiML = (target) => ({
         isExpireToken.php se encarga de validar si tanto el token como refresh_token ya no son validos
 
     */
-    redirecAuth: () => {
-        aretha().get({
-            "url": "arethafw/plugins/ml/php/isAuthToken.php",
-            "data": "endpoint=auth",
-            "useNotFoundPage": true,
-            "notFoundPage": 'arethafw/html/404.html',
-            success: function (data) {
-                const response = JSON.parse(data);
-                // console.log(response);
-                if (response.urlAuth.status == 'success') {
-                    // console.log(response.url);
-                    window.open(response.urlAuth.url, '_self');
-                }
+    redirecAuth: async (pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        const response = await fetch('arethafw/plugins/ml/php/isAuthToken.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            notfound: function (xhr) {
-                aretha(target).html(xhr);
-            }
+            body:JSON.stringify({
+                "endpoint": "auth"
+            }),
         });
+        if (response.status == 404) {
+            const failPage = await fetch(pageNotFound.url, {
+                method: 'GET'
+            });
+            document.getElementById(pageNotFound.target).innerHTML = await failPage.text();
+
+        } else {
+            const data = await response.json();
+            if (data.urlAuth.status == 'success') {
+                // console.log(response.url);
+                window.open(data.urlAuth.url, '_self');
+            }
+        }
+
+        // aretha().get({
+        //     "url": "arethafw/plugins/ml/php/isAuthToken.php",
+        //     "data": "endpoint=auth",
+        //     "useNotFoundPage": true,
+        //     "notFoundPage": 'arethafw/html/404.html',
+        //     success: function (data) {
+        //         const response = JSON.parse(data);
+        //         // console.log(response);
+        //         if (response.urlAuth.status == 'success') {
+        //             // console.log(response.url);
+        //             window.open(response.urlAuth.url, '_self');
+        //         }
+        //     },
+        //     notfound: function (xhr) {
+        //         aretha(target).html(xhr);
+        //     }
+        // });
     },
-    post: async (json_data, url, target_op, innet_id = false) => {
+    post: async (json_data, url, target_op, innet_id = false, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
 
         const response = await fetch(url, {
             method: 'POST',
@@ -82,39 +103,59 @@ const apiML = (target) => ({
             },
             body: JSON.stringify(json_data),
         });
-        const data = await response.text();
-        if (innet_id) {
-            if (typeof target !== 'undefined') {
-                aretha(target).html(data);
-            } else if (typeof target_op !== 'undefined') {
-                aretha(target_op).html(data);
-            }
+        if (response.status == 404) {
+            const failPage = await fetch(pageNotFound.url, {
+                method: 'GET'
+            });
+            document.getElementById(pageNotFound.target).innerHTML = await failPage.text();
+            return await failPage.text();
         } else {
-            return JSON.parse(data);
-        }
-    }, get: async (params_url, url, target_op, innet_id = false) => {
-        const queryString = new URLSearchParams(params_url).toString();
-        const fullUrl = `${url}?${queryString}`;
+            const data = await response.text();
+            if (innet_id) {
+                if (typeof target !== 'undefined') {
+                    aretha(target).html(data);
+                } else if (typeof target_op !== 'undefined') {
+                    aretha(target_op).html(data);
+                }
+            } else {
+                return JSON.parse(data);
+            }
 
+        }
+
+    }, get: async (params_url, url, target_op, innet_id = false, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        const queryString = new URLSearchParams(params_url).toString();
+        let fullUrl=url;
+        if(queryString.length!=0){
+            fullUrl = `${url}?${queryString}`;
+        }    
         const response = await fetch(fullUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
         });
-        const data = await response.text();
-        if (innet_id) {
-            if (typeof target !== 'undefined') {
-                aretha(target).html(data);
-            } else if (typeof target_op !== 'undefined') {
-                aretha(target_op).html(data);
-            }
+        if (response.status == 404) {
+            const failPage = await fetch(pageNotFound.url, {
+                method: 'GET'
+            });
+            document.getElementById(pageNotFound.target).innerHTML = await failPage.text();
+            return await failPage.text();
         } else {
-            // console.log(data);
-            if (data.length !== 0) {
-                return JSON.parse(data);
+            const data = await response.text();
+            if (innet_id) {
+                if (typeof target !== 'undefined') {
+                    aretha(target).html(data);
+                } else if (typeof target_op !== 'undefined') {
+                    aretha(target_op).html(data);
+                }
             } else {
-                return Array();
+                // console.log(data);
+                if (data.length !== 0) {
+                    return JSON.parse(data);
+                } else {
+                    return Array();
+                }
             }
         }
     },
@@ -226,11 +267,11 @@ const apiML = (target) => ({
                 value_format = parseInt(value);
             } else if (type_value == 'boolean') {
                 console.log(value);
-                if(typeof value !== 'boolean'){
+                if (typeof value !== 'boolean') {
                     value_format = (value.toLowerCase() === 'true');
-                }else{
-                    value_format=value;
-                }   
+                } else {
+                    value_format = value;
+                }
             } else {
                 value_format = value + value_unit;
             }
@@ -247,7 +288,7 @@ const apiML = (target) => ({
                 }
 
                 return JSON.parse(`{"id":"${id_attr}","value_id":"${value_id}","value_name":${value_format}}`);
-            }else  if ((struct_value == 'object' && key_value == 'chart')||(struct_value == 'object' && key_value == 'chartV2')) {
+            } else if ((struct_value == 'object' && key_value == 'chart') || (struct_value == 'object' && key_value == 'chartV2')) {
                 if (type_value == 'string' || type_value == '') {
                     value_format = `"${value_format}"`;
                 }
@@ -271,35 +312,35 @@ const apiML = (target) => ({
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = [];
                 }
-                if(key_value=='chart'){
-                    if(index_row!=-1){
-                        
-                        if(json_endpoints_data[id_endpoint].at(index_row)!==undefined){
+                if (key_value == 'chart') {
+                    if (index_row != -1) {
+
+                        if (json_endpoints_data[id_endpoint].at(index_row) !== undefined) {
                             json_endpoints_data[id_endpoint][index_row]["attributes"].push(value_format);
-                        }else{
-                            json_endpoints_data[id_endpoint].push({"attributes":[value_format]});
+                        } else {
+                            json_endpoints_data[id_endpoint].push({ "attributes": [value_format] });
                         }
-                    }else{
-                        if(json_endpoints_data[id_endpoint].at(index_row)!==undefined){
+                    } else {
+                        if (json_endpoints_data[id_endpoint].at(index_row) !== undefined) {
                             json_endpoints_data[id_endpoint]["attributes"].push(value_format);
-                        }else{
-                            json_endpoints_data[id_endpoint]["attributes"]=[value_format];
+                        } else {
+                            json_endpoints_data[id_endpoint]["attributes"] = [value_format];
                         }
-                    }   
-                }else{
+                    }
+                } else {
                     json_endpoints_data[id_endpoint].push(value_format);
                 }
             } else if (type_endpoint == 'object') {
                 if (!json_endpoints_data.hasOwnProperty(id_endpoint)) {
                     json_endpoints_data[id_endpoint] = {};
                 }
-                if(key_value=='chart'){
-                    if(!json_endpoints_data[id_endpoint].hasOwnProperty("attributes")){
-                        json_endpoints_data[id_endpoint]["attributes"]=[value_format];
-                    }else{
+                if (key_value == 'chart') {
+                    if (!json_endpoints_data[id_endpoint].hasOwnProperty("attributes")) {
+                        json_endpoints_data[id_endpoint]["attributes"] = [value_format];
+                    } else {
                         json_endpoints_data[id_endpoint]["attributes"].push(value_format);
                     }
-                }else{
+                } else {
                     json_endpoints_data[id_endpoint][key_value] = value_format;
                 }
             } else {
@@ -322,7 +363,7 @@ const apiML = (target) => ({
             struct_value = '';
             value_unit = '';
             select_sndata = 'value';
-            index_row=-1;
+            index_row = -1;
             mulit_val = false;
 
             if (item_elm.hasAttribute('id-endpoint')) {
@@ -361,7 +402,7 @@ const apiML = (target) => ({
             }
             if (item_elm.hasAttribute('select-sndata')) {
                 select_sndata = item_elm.getAttribute('select-sndata');
-            }  
+            }
             if (item_elm.hasAttribute('row-index')) {
                 index_row = parseInt(item_elm.getAttribute('row-index'));
             }
@@ -477,7 +518,7 @@ const apiML = (target) => ({
         }
     }
 });
-function loopNotiFy(){
+function loopNotiFy() {
     setInterval(() => {
         apiML('container-toast').verifyNotify();
     }, 6000);

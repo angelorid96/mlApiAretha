@@ -1,6 +1,9 @@
 <?php
 
 // include "/xampp/htdocs/MlAretha/arethafw/Aretha.php";
+
+use function PHPSTORM_META\exitPoint;
+
 include "../../../Aretha.php";
 include "./mlApi.class.php";
 include './isExpireToken.php';
@@ -45,12 +48,11 @@ if ($tmp_json != null) {
     $docHtml = null;
 }
 
-if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
+if (key_exists('endpoint', $tmp_json)) {
     $response['urlAuth'] = array(
         'status' => 'success',
-        'url' => mlApi::getUrlAuth($_REQUEST['endpoint']),
+        'url' => mlApi::getUrlAuth(),
     );
-    // var_dump($response);
 } else {
 
     if (isset($_SESSION['nickname']) && isset($_SESSION['user_id'])) {
@@ -69,13 +71,13 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
             $oApiTokenTmp = $existUser[0];
             // echo '<br>';
             // var_dump( new DateTime($oApiToken->getDateAcces_token()));
-            
+
             if ($notMenu) {
                 $response['status'] = 'success';
                 $response['code'] = '000';
                 $response['message'] = 'autenticacion correcta';
-                $response['isAuth']['not-menu']=$notMenu;
-                $response['isAuth']['code']='valid_user_authentication';
+                $response['isAuth']['not-menu'] = $notMenu;
+                $response['isAuth']['code'] = 'valid_user_authentication';
             } else {
                 if ($defaultMenu) {
                     // if ($orientationMenu != 'horizontal') {
@@ -157,18 +159,18 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                 $response['status'] = 'success';
                 $response['code'] = '000';
                 $response['message'] = 'autenticacion correcta';
-                $response['isAuth']['not-menu']=$notMenu;
-                $response['isAuth']['code']='valid_user_authentication';
+                $response['isAuth']['not-menu'] = $notMenu;
+                $response['isAuth']['code'] = 'valid_user_authentication';
                 $response['isAuth']['html'] = $docHtml->saveHTML($docHtml->getElementById('menu-list'));
             }
-        }else{
+        } else {
             $response['isAuth'] = array(
                 'status' => 'fail',
                 'html' => '<h5>Bienvenido: necesita autenticarse</h5>' .
                     '<button class="btn btn-primary btn-sm" type="button" id="authML" value="authfirs">' .
                     'Ir a ML' .
                     '</button>',
-                'code'=>'required_authentication',
+                'code' => 'required_authentication',
             );
         }
     } else {
@@ -178,7 +180,7 @@ if (isset($_REQUEST['endpoint']) && $_REQUEST['endpoint'] != '') {
                 '<button class="btn btn-primary btn-sm" type="button" id="authML" value="authfirs">' .
                 'Ir a ML' .
                 '</button>',
-            'code'=>'required_authentication',
+            'code' => 'required_authentication',
         );
     }
 }
