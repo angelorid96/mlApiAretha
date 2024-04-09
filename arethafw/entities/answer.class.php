@@ -120,11 +120,11 @@ class answer
     public function update()
     {
         $da = new \aretha\dao\DataAccess();
-        $query = sprintf("UPDATE answer SET text='%s',status='%s',date_created='%s'",
-            $da->escape_string($this->poAnswer->getId()),
+        $query = sprintf("UPDATE answer SET text='%s',status='%s',date_created='%s' where id=%d",
+            $da->escape_string($this->poAnswer->getText()),    
             $da->escape_string($this->poAnswer->getStatus()),
-            $da->escape_string($this->poAnswer->getText()),
-            $da->escape_string($this->poAnswer->getDateCreated())
+            $da->escape_string($this->poAnswer->getDateCreated()),
+            $da->escape_string($this->poAnswer->getId())
         );
         if ($da->connect()) {
             $result = $da->execSetQuery($query);

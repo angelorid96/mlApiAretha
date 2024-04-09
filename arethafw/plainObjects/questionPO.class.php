@@ -14,6 +14,7 @@ class questionPO
     private $text;
     private $date_created;
     private $id_answer;
+    private $id_session_redshop;
     private $queryDinam = "";
 
     public function setId($id)
@@ -48,10 +49,15 @@ class questionPO
     {
         $this->date_created = $dateCreated;
     }
-    public function setIDAnswer($idAnswer)
+    public function setIdAnswer($idAnswer)
     {
         $this->id_answer = $idAnswer;
     }
+    public function setIdRedshop($idSeRedShop)
+    {
+        $this->id_session_redshop=$idSeRedShop;
+    }
+
     public function setQuery_diam($queryDinam)
     {
         $this->queryDinam = $queryDinam;
@@ -90,9 +96,13 @@ class questionPO
     {
         return $this->date_created;
     }
-    public function getIDAnswer()
+    public function getIdAnswer()
     {
         return $this->id_answer;
+    }
+    public function getIdRedShop()
+    {
+        return $this->id_session_redshop;
     }
     public function getQuery_dinam()
     {

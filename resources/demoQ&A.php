@@ -1,10 +1,9 @@
 <?php
 include "../arethafw/Aretha.php";
-
 Aretha::init('../arethafw/conf/app.ini');
-
 Aretha::allErrors();
 Aretha::sessionStart();
+date_default_timezone_set('America/Mexico_City');
 
 $opQuestion=new \mod_questions\entities\question();
 $opAnswer=new \mod_questions\entities\answer();
@@ -16,7 +15,7 @@ $opQuestion->getPO()->setItemId('MLA903218023');
 $opQuestion->getPO()->setStatus('ANSWERED');
 $opQuestion->getPO()->setText('Texto de la pregunta.');
 $opQuestion->getPO()->setDateCreated(date('c'));
-$opQuestion->getPO()->setIDAnswer(0);
+$opQuestion->getPO()->setIdAnswer(10);
 
 
 if($opQuestion->existIdQuestion()){
@@ -28,6 +27,12 @@ if($opQuestion->existIdQuestion()){
     echo '<br> insertando a db <br>';
     var_dump($opQuestion->insertWithoutIdAnswer());
 }
+
+// echo '<br> update id_answer <br>';
+// $opQuestion->getPO()->setId(8);
+// var_dump($opQuestion->updateIdAnswer());
+
+
 
 echo '<br> obtener todos los registros <br>';
 var_dump($opQuestion->selectAll());
@@ -51,6 +56,14 @@ if($opAnswer->existId()){
 
 echo '<br> obtener todos los registros <br>';
 var_dump($opAnswer->selectAll());
+
+
+
+echo '<br> obtener todos los registros <br>';
+// $opQuestion->getPO()->setId(8);
+// var_dump($opQuestion->countDinam());
+var_dump($opQuestion->selectDinam());
+
 
 
 ?>

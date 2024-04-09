@@ -30,7 +30,7 @@ class question
             $da->escape_string($this->poQuestion->getStatus()),
             $da->escape_string($this->poQuestion->getText()),
             $da->escape_string($this->poQuestion->getDateCreated()),
-            $da->escape_string($this->poQuestion->getIDAnswer())
+            $da->escape_string($this->poQuestion->getIdAnswer())
         );
 
 
@@ -100,7 +100,7 @@ class question
                             $questionOP->setStatus($row[5]);
                             $questionOP->setText($row[6]);
                             $questionOP->setDateCreated($row[7]);
-                            $questionOP->setIDAnswer($row[8]);
+                            $questionOP->setIdAnswer($row[8]);
                             $arrResult[] = $questionOP;
                         }
                     
@@ -134,7 +134,7 @@ class question
                             $questionOP->setStatus($row[5]);
                             $questionOP->setText($row[6]);
                             $questionOP->setDateCreated($row[7]);
-                            $questionOP->setIDAnswer($row[8]);
+                            $questionOP->setIdAnswer($row[8]);
                             $arrResult[] = $questionOP;
                         }
                     
@@ -163,7 +163,7 @@ class question
                     $questionOP->setStatus($row[5]);
                     $questionOP->setText($row[6]);
                     $questionOP->setDateCreated($row[7]);
-                    $questionOP->setIDAnswer($row[8]);
+                    $questionOP->setIdAnswer($row[8]);
                     $arrResult[] = $questionOP;
                 }
             }
@@ -224,7 +224,7 @@ class question
             $da->escape_string($this->poQuestion->getStatus()),
             $da->escape_string($this->poQuestion->getText()),
             $da->escape_string($this->poQuestion->getDateCreated()),
-            $da->escape_string($this->poQuestion->getIDAnswer()),
+            $da->escape_string($this->poQuestion->getIdAnswer()),
             $da->escape_string($this->poQuestion->getId())
         );
         if ($da->connect()) {
@@ -239,7 +239,7 @@ class question
     {
         $da = new \aretha\dao\DataAccess();
         $query = sprintf("UPDATE questions SET id_answer=%d WHERE id=%d;",
-            $da->escape_string($this->poQuestion->getIDAnswer()),
+            $da->escape_string($this->poQuestion->getIdAnswer()),
             $da->escape_string($this->poQuestion->getId())
         );
         if ($da->connect()) {
@@ -282,7 +282,7 @@ class question
     
 	public function selectDinam() {
 		$da = new \aretha\dao\DataAccess();
-		$query = sprintf("SELECT id,id_question,seller_id,buyer_id,item_id,status,text,date_created,id_answer, ar.id, ar.text, ar.status, ar.date_created FROM questions JOIN answer as ar ON id_answer=ar.id %s;", //el comodin "%s" se mantiene por que va a cachar en el dts la busqueda dinamica
+		$query = sprintf("SELECT q.id,q.id_question,q.seller_id,q.buyer_id,q.item_id,q.status,q.text,q.date_created,q.id_answer, ar.id, ar.text, ar.status, ar.date_created FROM questions as q JOIN answer as ar ON q.id_answer=ar.id %s;", //el comodin "%s" se mantiene por que va a cachar en el dts la busqueda dinamica
                         $this->poQuestion->getQuery_dinam());
 
         if ($da->connect()) {
@@ -301,7 +301,7 @@ class question
                     $questionOP->setStatus($row[5]);
                     $questionOP->setText($row[6]);
                     $questionOP->setDateCreated($row[7]);
-                    $questionOP->setIDAnswer($row[8]);
+                    $questionOP->setIdAnswer($row[8]);
                     $answerOP->setId($row[9]);
                     $answerOP->setText($row[10]);
                     $answerOP->setStatus($row[11]);
@@ -318,7 +318,7 @@ class question
 
 	public function countDinam(){ //cuenta la cantidad de datos encontrados en la tabla
         $da = new \aretha\dao\DataAccess();
-        $query = sprintf("SELECT count(id) FROM questions JOIN answer as ar ON id_answer=ar.id %s;", //el comodin "%s" se mantiene por que va a cachar en el dts la busqueda dinamica
+        $query = sprintf("SELECT count(q.id) FROM questions as q JOIN answer as ar ON q.id_answer=ar.id %s;", //el comodin "%s" se mantiene por que va a cachar en el dts la busqueda dinamica
         $this->poQuestion->getQuery_dinam());
                     
         if ($da->connect()){

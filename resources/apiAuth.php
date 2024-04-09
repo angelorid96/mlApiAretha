@@ -6,7 +6,7 @@ mlApi::init('../arethafw/plugins/ml/conf/app.ini');
 Aretha::allErrors();
 Aretha::sessionStart();
 // Aretha::verifySession();
-
+date_default_timezone_set('America/Mexico_City');
 
 if (isset($_REQUEST['code']) && $_REQUEST['code'] != '') {
 
