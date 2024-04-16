@@ -2,7 +2,6 @@
 
 // include "/xampp/htdocs/MlAretha/arethafw/Aretha.php";
 
-use function PHPSTORM_META\exitPoint;
 
 include "../../../Aretha.php";
 include "./mlApi.class.php";
@@ -186,3 +185,5 @@ if (key_exists('endpoint', $tmp_json)) {
 }
 
 echo json_encode($response);
+
+?>

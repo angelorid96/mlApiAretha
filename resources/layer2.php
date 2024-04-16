@@ -87,7 +87,7 @@ if ($isExpireTK['value']) {
                                     <label for="price" class="form-label">Precio</label>
                                     <div class="input-group ">
                                         <span class="input-group-text">$</span>
-                                        <input type="text" class="form-control apiML-param" id="price" value-type="number" aria-label="Amount (to the nearest dollar)">
+                                        <input type="text" class="form-control apiML-param" id="price" value-type="number">
                                         <select class="form-select apiML-param" id="currency_id" value-type="text" aria-label="Default select example">
                                             <option value="MXN">MXN</option>
                                             <option value="USD">USD</option>
@@ -96,7 +96,7 @@ if ($isExpireTK['value']) {
                                 </div>
                                 <div class="col-md-2 mb-2 ms-1">
                                     <label for="condition" class="form-label">Estado del producto</label>
-                                    <select class="form-select apiML-param" id="ITEM_CONDITION" id-endpoint="attributes" select-sndata="all" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" aria-label="Default select example">
+                                    <select class="form-select apiML-param" id="ITEM_CONDITION" id-endpoint="attributes" select-sndata="all" type-endpoint="list" value-type="string" tag-var="attr" type-struct="object" >
                                         <option value="none">...</option>
                                         <option value="2230284">Nuevo</option>
                                         <option value="2230581">Usado</option>
@@ -482,25 +482,28 @@ if ($isExpireTK['value']) {
     $('body').off('click', '#predictCategoryBTN');
     $('body').on('click', '#predictCategoryBTN', async (e) => {
         e.preventDefault();
-
+        
         let title = aretha('#title').val();
-        let input_title = document.getElementById('title');
+        // let input_title = document.getElementById('title');
+
+        // apiML().categorization(title);
 
         if (title.length != 0) {
             document.getElementById('view_category').innerHTML = '';
             // console.log(encodeURIComponent(title));
-            title = encodeURIComponent(title);
+            // title = encodeURIComponent(title);
 
-            let cat_pre = await apiML('#body-api').requestEndPoint({
-                EndPoint: {
-                    endpoint_parent: 'site',
-                    endpointChild: 'predict',
-                    body: {
-                        q: title,
-                    }
-                },
-            });
+            // let cat_pre = await apiML('#body-api').requestEndPoint({
+            //     EndPoint: {
+            //         endpoint_parent: 'site',
+            //         endpointChild: 'predict',
+            //         body: {
+            //             q: title,
+            //         }
+            //     },
+            // });
             // console.log(cat_pre);
+            let cat_pre= await apiML().categorization(title);
             for (let index in cat_pre.data) {
                 // console.log(cat_pre.data[index]);
                 let item = cat_pre.data[index];
@@ -895,7 +898,7 @@ if ($isExpireTK['value']) {
         }
 
         aretha('#collapseOne').removeClass('show');
-        // console.log(category_id_value);
+        console.log(category_id_value);
         let attributes = await apiML('#body-api').requestEndPoint({
             EndPoint: {
                 endpoint_parent: 'categories',

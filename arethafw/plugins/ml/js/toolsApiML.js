@@ -11,8 +11,8 @@ const apiML = (target) => ({
     /*
         si aun no se ha autenticado la funcion regresar un boton para mandarlo a el autenticador de ML
         aparte de un codigo de error (string) cque puede tomar los siguentes estados
-            valid_user_authenticatio
-            required_authenticatio
+            valid_user_authentication
+            required_authentication
     */
     isAuth: async (confDomJson, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
         const response = await fetch('arethafw/plugins/ml/php/isAuthToken.php', {
@@ -58,7 +58,7 @@ const apiML = (target) => ({
             headers: {
                 'Content-Type': 'application/json'
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 "endpoint": "auth"
             }),
         });
@@ -103,6 +103,7 @@ const apiML = (target) => ({
             },
             body: JSON.stringify(json_data),
         });
+
         if (response.status == 404) {
             const failPage = await fetch(pageNotFound.url, {
                 method: 'GET'
@@ -123,18 +124,20 @@ const apiML = (target) => ({
 
         }
 
+
     }, get: async (params_url, url, target_op, innet_id = false, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
         const queryString = new URLSearchParams(params_url).toString();
-        let fullUrl=url;
-        if(queryString.length!=0){
+        let fullUrl = url;
+        if (queryString.length != 0) {
             fullUrl = `${url}?${queryString}`;
-        }    
+        }
         const response = await fetch(fullUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
         });
+
         if (response.status == 404) {
             const failPage = await fetch(pageNotFound.url, {
                 method: 'GET'
@@ -158,9 +161,10 @@ const apiML = (target) => ({
                 }
             }
         }
+
     },
-    requestEndPoint: async (json_data) => {
-        let data = await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php');
+    requestEndPoint: async (json_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        let data = await apiML().post(json_data, 'arethafw/plugins/ml/php/requestEndPoint.php', pageNotFound);
         // console.log(data);
 
         if (data.status == 'warning') {
@@ -300,6 +304,11 @@ const apiML = (target) => ({
                 }
 
                 return JSON.parse(`{"id":"${id_attr}","values":[{"id":"${value_id}","name":${value_format}}]}`);
+            } else if (struct_value == 'object') {
+                if (type_value == 'string' || type_value == '') {
+                    value_format = `"${value_format}"`;
+                }
+                return JSON.parse(`{"${key_value}":${value_format}}`);
             }
 
             return value_format;
@@ -516,6 +525,136 @@ const apiML = (target) => ({
                 });
             }
         }
+    },
+    categorization: async (title, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof title === 'string') && (title.length != 0)) {
+            let categories_predict = await apiML().requestEndPoint({
+                EndPoint: {
+                    endpoint_parent: 'site',
+                    endpointChild: 'predict',
+                    body: {
+                        q: encodeURIComponent(title),
+                    }
+                }
+            }, pageNotFound);
+            // console.log(categories_predict);
+            return categories_predict;
+        }
+
+        return {
+            'reject': {
+                'error': 'fail_title',
+                'code': 400,
+                'cause': 'title no es un string o esta vacio'
+            }
+        }
+    }, categories: async (pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+
+        let categories = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'site',
+                endpointChild: 'categories',
+            },
+        }, pageNotFound);
+        // console.log(categories_predict);
+        return categories;
+        // return {
+        //     'reject': {
+        //         'error': 'fail_title',
+        //         'code': 400,
+        //         'cause': 'title no es un string o esta vacio'
+        //     }
+        // }
+    },category: async (category, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof category === 'string') && (category.length != 0)) {
+            let category = await apiML().requestEndPoint({
+                endpoint_parent: 'categories',
+                endpointChild: 'category',
+                body: {
+                    category_id: item_select.value,
+                }
+            }, pageNotFound);
+            // console.log(categories_predict);
+            return category;
+        }
+
+        return {
+            'reject': {
+                'error': 'fail_title',
+                'code': 400,
+                'cause': 'title no es un string o esta vacio'
+            }
+        }
+    },get_attributes: async (category, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof category === 'string') && (category.length != 0)) {
+            let attr = await apiML().requestEndPoint({
+                endpoint_parent: 'categories',
+                endpointChild: 'attributes',
+                body: {
+                    category_id: item_select.value,
+                }
+            }, pageNotFound);
+            // console.log(categories_predict);
+            return attr;
+        }
+
+        return {
+            'reject': {
+                'error': 'fail_title',
+                'code': 400,
+                'cause': 'title no es un string o esta vacio'
+            }
+        }
+    },shipping_modes_category: async (body_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof body_data === 'object') && (body_data!==null)) {
+            let attr = await apiML().requestEndPoint({
+                endpoint_parent: 'users',
+                endpointChild: 'shipping_modes',
+                body: body_data,
+            }, pageNotFound);
+            // console.log(categories_predict);
+            return attr;
+        }
+
+        return {
+            'reject': {
+                'error': 'fail_title',
+                'code': 400,
+                'cause': 'title no es un string o esta vacio'
+            }
+        }
+    },add_description_item: async (body_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof body_data === 'object') && (body_data!==null)) {
+            let attr = await apiML().requestEndPoint({
+                endpoint_parent: 'items',
+                endpointChild: 'descritionAdd',
+                body: body_data,
+            }, pageNotFound);
+            // console.log(categories_predict);
+            return attr;
+        }
+
+        return {
+            'reject': {
+                'error': 'fail_title',
+                'code': 400,
+                'cause': 'title no es un string o esta vacio'
+            }
+        }
+    },sale_terms: async (pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+       
+        let saleTerms = await apiML().requestEndPoint({
+            endpoint_parent: 'categories',
+            endpointChild: 'sale_terms',
+        }, pageNotFound);
+        // return {
+        //     'reject': {
+        //         'error': 'fail_title',
+        //         'code': 400,
+        //         'cause': 'title no es un string o esta vacio'
+        //     }
+        // }
+        return saleTerms;
     }
 });
 function loopNotiFy() {
