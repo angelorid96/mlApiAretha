@@ -527,6 +527,8 @@ const apiML = (target) => ({
         }
     },
     categorization: async (title, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        
+
         if ((typeof title === 'string') && (title.length != 0)) {
             let categories_predict = await apiML().requestEndPoint({
                 EndPoint: {
@@ -537,8 +539,37 @@ const apiML = (target) => ({
                     }
                 }
             }, pageNotFound);
-            // console.log(categories_predict);
-            return categories_predict;
+            console.log(categories_predict);
+            if(categories_predict.data.length!=0){
+                if ((typeof target !== 'undefined')){
+                    document.getElementById(`${target}`).innerHTML='';
+                    for (let index in categories_predict.data) {
+                        // console.log(cat_pre.data[index]);
+                        let item = categories_predict.data[index];
+                        let div_col = document.createElement('div');
+                        div_col.setAttribute('class', 'col-md-4');
+                        let btn_category_item = document.createElement('a');
+                        btn_category_item.setAttribute('class', 'btn btn-md border-black fs-6');
+                        btn_category_item.setAttribute('role', 'button');
+                        // btn_category_item.setAttribute('id', `predict_cat${index}`);
+                        btn_category_item.setAttribute('id', 'predict_cat');
+                        btn_category_item.setAttribute('category_id', item['category_id']);
+                        btn_category_item.setAttribute('domain_id', item['domain_id']);
+                        btn_category_item.appendChild(document.createTextNode(`Dominio:${item['domain_name']} > Categoria:${item['category_name']}`));
+                        div_col.appendChild(btn_category_item);
+                        document.getElementById(`${target}`).appendChild(div_col);
+                    }
+                }
+                return categories_predict;
+            }else{
+                return {
+                    'reject': {
+                        'error': 'predict_null',
+                        'code': 400,
+                        'cause': 'la prediccion no tiene resultados'
+                    }
+                }
+            }
         }
 
         return {
@@ -556,7 +587,21 @@ const apiML = (target) => ({
                 endpointChild: 'categories',
             },
         }, pageNotFound);
-        // console.log(categories_predict);
+        // console.log(categories);
+        if ((typeof target !== 'undefined') && (document.getElementById(`${target}`).tagName.toLowerCase() == 'select')) {
+            let optin_cate = document.createElement('option');
+            optin_cate.setAttribute('value', 'none');
+            optin_cate.appendChild(document.createTextNode('seleccione categoria'));
+            document.getElementById(`${target}`).appendChild(optin_cate);
+            for (let index in categories.data) {
+                // console.log(cat_pre.data[index]);
+                let item = categories.data[index];
+                optin_cate = document.createElement('option');
+                optin_cate.setAttribute('value', `${item['id']}`);
+                optin_cate.appendChild(document.createTextNode(`${item['name']}`));
+                document.getElementById(`${target}`).appendChild(optin_cate);
+            }
+        }
         return categories;
         // return {
         //     'reject': {
@@ -565,27 +610,42 @@ const apiML = (target) => ({
         //         'cause': 'title no es un string o esta vacio'
         //     }
         // }
-    },category: async (category, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
-        if ((typeof category === 'string') && (category.length != 0)) {
+    }, category: async (category_value, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof category_value === 'string') && (category_value.length != 0)) {
             let category = await apiML().requestEndPoint({
-                endpoint_parent: 'categories',
-                endpointChild: 'category',
-                body: {
-                    category_id: item_select.value,
+                EndPoint: {
+                    endpoint_parent: 'categories',
+                    endpointChild: 'category',
+                    body: {
+                        category_id: category_value
+                    }
                 }
             }, pageNotFound);
-            // console.log(categories_predict);
+            if ((typeof target !== 'undefined') && (document.getElementById(`${target}`).tagName.toLowerCase() == 'select')) {
+                let optin_cate = document.createElement('option');
+                optin_cate.setAttribute('value', 'none');
+                optin_cate.appendChild(document.createTextNode('seleccione categoria'));
+                document.getElementById(`${target}`).appendChild(optin_cate);
+                for (let index in category.data.children_categories) {
+                    // console.log(cat_pre.data[index]);
+                    let item = category.data.children_categories[index];
+                    optin_cate = document.createElement('option');
+                    optin_cate.setAttribute('value', `${item['id']}`);
+                    optin_cate.appendChild(document.createTextNode(`${item['name']}`));
+                    document.getElementById(`${target}`).appendChild(optin_cate);
+                }
+            }
             return category;
         }
 
         return {
             'reject': {
-                'error': 'fail_title',
+                'error': 'fail_category_null',
                 'code': 400,
-                'cause': 'title no es un string o esta vacio'
+                'cause': 'categoria no es un string o esta vacio'
             }
         }
-    },get_attributes: async (category, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+    }, get_attributes: async (category, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
         if ((typeof category === 'string') && (category.length != 0)) {
             let attr = await apiML().requestEndPoint({
                 endpoint_parent: 'categories',
@@ -605,8 +665,8 @@ const apiML = (target) => ({
                 'cause': 'title no es un string o esta vacio'
             }
         }
-    },shipping_modes_category: async (body_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
-        if ((typeof body_data === 'object') && (body_data!==null)) {
+    }, shipping_modes_category: async (body_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof body_data === 'object') && (body_data !== null)) {
             let attr = await apiML().requestEndPoint({
                 endpoint_parent: 'users',
                 endpointChild: 'shipping_modes',
@@ -623,8 +683,8 @@ const apiML = (target) => ({
                 'cause': 'title no es un string o esta vacio'
             }
         }
-    },add_description_item: async (body_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
-        if ((typeof body_data === 'object') && (body_data!==null)) {
+    }, add_description_item: async (body_data, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        if ((typeof body_data === 'object') && (body_data !== null)) {
             let attr = await apiML().requestEndPoint({
                 endpoint_parent: 'items',
                 endpointChild: 'descritionAdd',
@@ -641,8 +701,8 @@ const apiML = (target) => ({
                 'cause': 'title no es un string o esta vacio'
             }
         }
-    },sale_terms: async (pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
-       
+    }, sale_terms: async (pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+
         let saleTerms = await apiML().requestEndPoint({
             endpoint_parent: 'categories',
             endpointChild: 'sale_terms',
@@ -655,6 +715,71 @@ const apiML = (target) => ({
         //     }
         // }
         return saleTerms;
+    }, search_charts: async (name_class, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+
+        let body_json = apiML(`.${name_class}`).jsontargetize();
+        // console.log(body_json);
+        let search_chart = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'catalog',
+                endpointChild: 'searchChars',
+                body: body_json,
+            },
+        }, pageNotFound);
+        return search_chart;
+    }, get_charts_attr: async (pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+
+        let components_chart = null;
+        let chart_attrs = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'site',
+                endpointChild: 'gridSpecs',
+                body: body_json,
+            },
+        }, pageNotFound);
+        components_chart = chart_attrs.data.components[0].components;
+        // return {
+        //     'reject': {
+        //         'error': 'fail_title',
+        //         'code': 400,
+        //         'cause': 'title no es un string o esta vacio'
+        //     }
+        // }
+        return components_chart;
+    }, add_chart: async (name_class, pageNotFound = { target: 'content', url: 'arethafw/html/404.html' }) => {
+        let body_data = apiML(`.${name_class}`).jsontargetize();
+        let response = await apiML().requestEndPoint({
+            EndPoint: {
+                endpoint_parent: 'site',
+                endpointChild: 'createGrid',
+                body: body_data,
+            },
+        }, pageNotFound);
+
+        // console.log(response);
+        grid_row_id = {
+            "id": "SIZE_GRID_ROW_ID",
+            "value_id": "11286240",
+            "value_name": response.id
+        }
+
+    }, removeSiblingElements: (element, is_parent=false) => {
+        
+        let parent_elemt=null;
+        if(is_parent){
+            parent_elemt=element.nextElementSibling;
+        }else{
+            parent_elemt=element.parentElement.nextElementSibling;
+        }
+        
+        while (parent_elemt) {
+            parent_elemt.remove();
+            if(is_parent){
+                parent_elemt=element.nextElementSibling;
+            }else{
+                parent_elemt=element.parentElement.nextElementSibling;
+            }
+        }
     }
 });
 function loopNotiFy() {

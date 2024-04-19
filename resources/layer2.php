@@ -278,7 +278,7 @@ if ($isExpireTK['value']) {
                                                 <h5 class="modal-title">Seleccione atributos para guia de tallas</h5>
                                             </div>
                                             <div class="modal-body row" id="att_charts">
-
+                                                    
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

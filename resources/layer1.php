@@ -133,5 +133,11 @@ Aretha::sessionStart();
         document.getElementById('body-api').hidden = false;
 
     });
-   
+    $('body').off('click', '#payment_methods');
+    $('body').on('click', '#payment_methods', async (e) => {
+        e.preventDefault();
+        apiML().post({}, 'resources/demoProductRS.php', '#body-api', true);
+        document.getElementById('body-api').hidden = false;
+
+    });
 </script>
